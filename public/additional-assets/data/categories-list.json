@@ -1,0 +1,49 @@
+{
+  "data": [
+    {
+      "tipo_de_categoria": "Mantenimiento",
+      "nombre": "Revisión de Motores",
+      "descripcion": "Programa de mantenimiento preventivo para asegurar el rendimiento óptimo de los motores."
+    },
+    {
+      "tipo_de_categoria": "Logística",
+      "nombre": "Gestión de Rutas",
+      "descripcion": "Optimización y planificación de rutas para la entrega eficiente de mercancías."
+    },
+    {
+      "tipo_de_categoria": "Operaciones",
+      "nombre": "Control de Flota",
+      "descripcion": "Monitoreo y gestión en tiempo real de la flota de camiones."
+    },
+    {
+      "tipo_de_categoria": "Seguridad",
+      "nombre": "Inspección de Vehículos",
+      "descripcion": "Verificación de las condiciones de seguridad antes de cada viaje."
+    },
+    {
+      "tipo_de_categoria": "Cargas",
+      "nombre": "Gestión de Carga",
+      "descripcion": "Supervisión de la carga y descarga de mercancías, asegurando su correcta distribución."
+    },
+    {
+      "tipo_de_categoria": "Combustible",
+      "nombre": "Control de Combustible",
+      "descripcion": "Seguimiento del consumo de combustible y planificación de recargas."
+    },
+    {
+      "tipo_de_categoria": "Mantenimiento",
+      "nombre": "Reparaciones de Urgencia",
+      "descripcion": "Procedimientos para la reparación rápida de vehículos en caso de fallos."
+    },
+    {
+      "tipo_de_categoria": "Logística",
+      "nombre": "Seguimiento de Entregas",
+      "descripcion": "Monitoreo del estado y ubicación de las entregas en tiempo real."
+    },
+    {
+      "tipo_de_categoria": "Recursos Humanos",
+      "nombre": "Capacitación de Conductores",
+      "descripcion": "Programas de formación para mejorar las habilidades y conocimientos de los conductores."
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+/* CalendarResponsive.css */
+
+/* Contenedor principal del calendario */
+.app-calendar {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+/* Estilos del Sidebar */
+.app-calendar-sidebar {
+    width: 250px; /* Ancho cuando está expandido */
+    transition: width 0.3s ease;
+}
+
+.app-calendar-sidebar.collapsed {
+    width: 80px; /* Ancho cuando está colapsado */
+}
+
+.app-calendar-sidebar .sidebar-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.app-calendar-sidebar .card-body {
+    padding: 10px;
+}
+
+/* Contenedor del Calendario */
+.app-calendar-container {
+    width: 900px; /* Ancho fijo para el calendario */
+    flex-shrink: 0; /* Evita que se reduzca */
+    display: flex;
+    justify-content: flex-start; /* Alinea a la izquierda */
+    align-items: flex-start;
+    padding: 10px;
+}
+
+/* Estilos de FullCalendar */
+#calendar {
+    width: 100%;
+    height: auto;
+}
+
+/* Ajustes Responsivos */
+@media (max-width: 768px) {
+    .app-calendar {
+        flex-direction: column;
+    }
+
+    .app-calendar-sidebar {
+        width: 100%;
+        height: auto;
+    }
+
+    .app-calendar-container {
+        width: 100%;
+        padding: 5px;
+    }
+
+    #calendar {
+        max-width: 100%;
+    }
+}
+
+/* Estilos de los botones de FullCalendar */
+.fc .fc-today-button{
+    background-color: #7C5CFA; /* Color violeta de los botones */
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 17px;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+/* Efecto Hover para los botones */
+.fc .fc-prev-button:hover,
+.fc .fc.next-button:hover,
+.fc .fc-today-button:hover {
+    background-color: #7C5CFA; /* Color de hover, más oscuro */
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 576px) {
+    .fc .fc-toolbar-title {
+        font-size: 1.25rem; /* Disminuye el tamaño del título en móviles */
+    }
+
+    .fc .fc-daygrid-day-number {
+        font-size: 0.8rem; /* Reduce el tamaño de los números en el calendario */
+    }  
+}
+
+/* Ajustar el margen de la barra de herramientas en pantallas pequeñas */
+@media (max-width: 768px) {
+    .fc-toolbar.fc-header-toolbar {
+        margin-bottom: 0.25rem; /* Reduce el espacio entre el calendario y los botones en pantallas pequeñas */
+    }
+}
+
+/* Asegurar que el contenedor del calendario no se desplace */
+.app-calendar-container {
+    overflow: hidden;
+}

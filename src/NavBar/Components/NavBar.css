@@ -1,0 +1,346 @@
+/* Ajustar el margen del contenido principal cuando el menú está expandido */
+.menu-expanded .app-content {
+  margin-left: 130px; /* Tamaño del menú cuando está expandido */
+  transition: margin-left 0.6s ease; /* Transición suave */
+}
+
+/* Ajustar el margen del contenido principal cuando el menú está colapsado */
+.menu-collapsed .app-content {
+  margin-left: 35px; /* Tamaño del menú cuando está colapsado */
+  transition: margin-left 0.6s ease; /* Transición suave */
+}
+
+/* Estilos adicionales del menú */
+.main-menu {
+  color: #fff;
+  width: 250px; /* Ancho del menú expandido */
+  height: 100vh; /* Hacer que el menú ocupe toda la altura de la ventana */
+  display: flex;
+  flex-direction: column; /* Asegurar que los hijos se alineen verticalmente */
+  justify-content: space-between; /* Asegura que el contenido ocupe toda la altura disponible */
+  transition: width 0.6s ease;
+  position: fixed; /* Fijar el navbar */
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Asegurar que esté por encima de otros elementos */
+  overflow: hidden;
+}
+
+/* Estilos adicionales cuando está en tema oscuro */
+.dark-layout .main-menu {
+  background: #283046;
+  color: #d0d2d6;
+}
+
+/* Cambiar el color del texto y fondo en tema oscuro */
+.dark-layout .menu-item {
+  color: #d0d2d6; /* Cambiar el color de los textos de los ítems del menú */
+  background-color: transparent; /* Asegurar que no haya fondo blanco */
+}
+
+.dark-layout .menu-section-title {
+  color: #ffffff; /* Mejorar la visibilidad en tema oscuro */
+}
+
+.dark-layout .search-bar input {
+  background-color: #3b4253;
+  color: #d0d2d6;
+  border-color: #3b4253;
+}
+
+.dark-layout .sub-menu li a {
+  color: #d0d2d6; /* Color del texto de los ítems del submenú en tema oscuro */
+}
+
+/* Ajustar el color del ítem al hacer hover en tema oscuro */
+.dark-layout .navbar .nav-link:hover {
+  color: #7367f0; /* Color al hacer hover en el tema oscuro */
+}
+
+/* Para aplicar el efecto de puntos suspensivos en textos largos */
+.menu-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px; /* Ajusta el ancho máximo de los nombres antes de truncar */
+  transition: opacity 0.5s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Alinear los íconos en el submenu centrados con el texto cuando el menú está expandido */
+.nav-item.d-flex.align-items-center {
+  justify-content: flex-start; /* Alinear íconos y texto al inicio */
+}
+
+/* Ocultar los labels de los ítems del menú cuando está colapsado */
+.vertical-menu-modern.menu-collapsed .main-menu .navigation > li > a .menu-item {
+  display: none; /* Esconder el texto del menú cuando está colapsado */
+}
+
+/* Expandir el menú temporalmente al hacer hover */
+.menu-hovered {
+  width: 250px; /* Muestra el menú al hacer hover */
+}
+
+/* Mostrar los ítems del menú con puntos suspensivos cuando el menú está en hover */
+.menu-hovered .main-menu-content .menu-item {
+  display: inline-block; /* Mostrar los nombres al hacer hover */
+  max-width: 270px; /* Ajusta el ancho para permitir truncamiento */
+}
+
+.menu-hovered .menu-item.text-truncate {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.sub-menu .menu-selected {
+  display: flex; /* Para alinear correctamente el ícono y el texto */
+  align-items: center; /* Alineación vertical del contenido */
+  justify-content: flex-start; /* Alineación horizontal del contenido */
+  height: 45px; /* Ajusta la altura si es necesario */
+  width: 90%; /* Ajusta el ancho si es necesario */
+  padding: 8px 10px; /* Ajusta el padding para dar más o menos espacio interno */
+  margin-left: -10px; /* Margen desde la izquierda, ajusta el valor según sea necesario */
+  background: linear-gradient(118deg, #7367f0, rgba(115, 103, 240, 0.7)); /* Aplicar gradiente */
+  box-shadow: 0 0 10px 1px rgba(115, 103, 240, 0.7); /* Sombra más intensa */
+  color: #fff; /* Color del texto */
+  font-weight: 400; /* Peso del texto */
+  border-radius: 4px; /* Bordes redondeados */
+  transition: background-color 0.5s ease, box-shadow 0.5s ease, height 0.3s ease, width 0.3s ease; /* Transiciones suaves para altura, ancho, fondo y sombras */
+}
+
+
+/* Reducir el padding y tamaño de los ítems del menú */
+.menu-item {
+  padding: 5px 4px; /* Reduce el padding para que los ítems sean más pequeños */
+  margin-bottom: -5px; /* Reduce el espacio entre los ítems */
+}
+
+/* Ajustar el padding de los submenús */
+.sub-menu li {
+  padding: 0px 0px; /* Reducir el padding para que los ítems sean más compactos */
+  margin-bottom: -20px; /* Reduce el margen inferior para ajustar el espacio entre los ítems */
+}
+
+/* Ajustar el tamaño del texto en los ítems del submenú */
+.sub-menu .menu-item {
+  font-size: 16px; /* Reducir el tamaño de la fuente */
+}
+.menu-item:hover {
+   color: linear-gradient(118deg, #7367f0, rgba(115, 103, 240, 0.7)); /* Aplicar gradiente al hacer hover */;
+  border-radius: 4px; /* Bordes redondeados */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Transición suave */
+}
+
+/* Hover en los ítems del submenú */
+.sub-menu li:hover {
+  color: linear-gradient(118deg, #7367f0, rgba(115, 103, 240, 0.7)); /* Aplicar gradiente al hacer hover */;
+}
+
+.menu-selected {
+  display: flex; /* Para alinear correctamente el ícono y el texto */
+  align-items: center; /* Alineación vertical del contenido */
+  justify-content: flex-start; /* Alineación horizontal del contenido */
+  width: 240px; /* Ajusta el ancho del ítem */
+  height: 43px; /* Ajusta la altura del ítem */
+  padding: 15px; /* Controla el espacio interno del ítem */
+  margin-left: -10px; /* Margen desde la izquierda, ajusta el valor según sea necesario */
+  background-color: #7367f0; /* Color morado de fondo */
+  background: linear-gradient(118deg, #7367f0, rgba(115, 103, 240, 0.7)); /* Aplicar gradiente */
+  border-radius: 6px; /* Bordes redondeados */
+  color: white; /* Texto en blanco */
+  box-shadow: 0px 2px 10px rgba(115, 103, 240, 0.2); /* Sombra suave */
+  transition: background-color 0.5s ease, box-shadow 0.5s ease; /* Transiciones suaves */
+}
+
+.menu-selected:hover {
+  background-color: rgba(115, 103, 240, 0.85); /* Fondo más oscuro al hacer hover */
+  box-shadow: 0 4px 12px rgba(115, 103, 240, 0.3); /* Sombra más intensa al hacer hover */
+}
+/* Estilo del ítem seleccionado en modo oscuro */
+.dark-layout .menu-selected {
+  color: white;
+  box-shadow: 0px 2px 6px rgba(162, 155, 254, 0.2); /* Sombra en modo oscuro */
+}
+/* Ajustar las sombras y el color del ícono seleccionado */
+.menu-selected svg {
+  color: white; /* Asegurarse que los íconos cambien a blanco cuando está seleccionado */
+}
+
+.dark-layout .menu-selected svg {
+  color: #dfe6e9; /* Color claro para los íconos en modo oscuro */
+}
+
+/* Barra de búsqueda */
+.search-bar {
+  padding: 10px 15px;
+  margin-top: 15px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-family: 'Montserrat', sans-serif;
+}
+/* Ajustar el contenedor de la marca para usar flexbox */
+.navbar-brand {
+  display: flex;
+  align-items: center; /* Alinea verticalmente todos los elementos en el centro */
+}
+
+/* Ajustar el estilo del logo */
+.brand-logo img {
+  display: block;
+  height: px; /* Asegúrate de que el logo mantenga su altura */
+  margin-right: 0px; /* Añade espacio entre el logo y el texto */
+}
+
+/* Estilizar el texto para alinearlo con el logo */
+.brand-text {
+  font-size: 1.25rem; /* Ajusta el tamaño del texto */
+  line-height: 1; /* Asegura que la altura de línea del texto sea uniforme */
+}
+
+/* Ajustar el ícono del toggle para alinear correctamente */
+.nav-toggle .nav-link {
+  display: flex;
+  align-items: center; /* Alinea el ícono del toggle verticalmente */
+  margin-left: 0px; /* Añadir un margen a la izquierda del ícono */
+}
+
+.toggle-icon {
+  margin: 6px;
+  width: 24px;
+  height: 24px;
+}
+
+/* Ajustes para tema oscuro en la barra de búsqueda */
+.dark-layout .search-bar input {
+  background-color: #3b4253;
+  color: #d0d2d6;
+  border-color: #3b4253;
+}
+ /* Modo oscuro: Cambiar el color del SVG a morado */
+.dark-layout .toggle-icon {
+  color: #7367f0 !important; /* Color morado en modo oscuro */
+}
+
+.menu-expanded .menu-section-title {
+  font-size: 14px; 
+  font-weight: bold;
+  padding-left: 15px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.main-menu {
+  background: #000;
+  color: #fff;
+  width: 250px; /* Ancho del menú expandido */
+  height: 100vh; /* Asegura que ocupe el 100% de la altura de la ventana */
+  overflow: hidden; /* Oculta cualquier overflow adicional */
+  transition: width 0.3s ease;
+}
+
+.menu-section-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #616161;
+  padding-left: 10px;
+  margin-top: 12px;
+  margin-bottom: 15px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.sub-menu {
+  padding-left: 15px; /* Alineación debajo del ícono de Configuración */
+  margin-top: 2px;    /* Un pequeño margen entre el menú principal y el submenú */
+}
+
+.sub-menu li {
+  margin-bottom: -12px; /* Espacio entre los ítems del submenú */
+}
+
+.menu-item {
+  font-size: 15px; /* Tamaño de fuente para los ítems del submenú */
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Contenedor que maneja el scroll */
+.menu-scroll-container {
+  overflow-y: hidden; /* Ocultar el scrollbar por defecto */
+  height: calc(100vh - 60px); /* Ajusta la altura para excluir el header y el footer si los hay */
+  padding-right: 5px; /* Espacio para el scrollbar */
+  transition: overflow-y 0.3s ease; /* Transición suave para el scroll */
+}
+
+/* Mostrar el scrollbar cuando se hace hover sobre el menú colapsado */
+.menu-collapsed .main-menu:hover .menu-scroll-container {
+  overflow-y: auto; /* Mostrar el scrollbar al hacer hover sobre el menú colapsado */
+}
+
+/* Mostrar el scrollbar cuando se hace hover sobre el menú expandido */
+.menu-expanded .main-menu:hover .menu-scroll-container {
+  overflow-y: auto; /* Mostrar el scrollbar al hacer hover sobre el menú expandido */
+}
+
+/* Estilos para el scrollbar */
+.menu-scroll-container::-webkit-scrollbar {
+  width:6px; /* El ancho del scrollbar */
+}
+
+.menu-scroll-container::-webkit-scrollbar-thumb {
+  background-color: #b3afaf; /* Color de la barra de desplazamiento */
+  border-radius: 10px; /* Hace que el thumb sea más redondeado */
+  min-height: 20px; /* Altura mínima para que el thumb sea más pequeño */
+}
+
+.dark-layout .menu-scroll-container::-webkit-scrollbar-track {
+  background-color: #3b4253; /* Fondo oscuro para el track en tema oscuro */
+}
+
+.menu-scroll-container::-webkit-scrollbar-track {
+  background-color: #f9f9f9; /* Fondo claro por defecto */
+}
+
+/* Mostrar el scrollbar cuando el menú está expandido */
+.menu-expanded .menu-scroll-container {
+  overflow-y: hidden; /* Ocultar el scrollbar cuando el menú no está en hover */
+}
+
+/* Cuando el navbar está colapsado, reemplaza los títulos con tres puntos */
+.menu-collapsed .menu-section-title {
+  font-size: 0; /* Oculta el texto del título */
+  text-align: center; /* Centra los tres puntos */
+  position: relative;
+}
+
+.menu-collapsed .menu-section-title::before {
+  content: '...'; /* Mostrar tres puntos cuando está colapsado */
+  font-size: 24px; /* Tamaño de los tres puntos */
+}
+
+/* Solo cuando el cursor está sobre el área del navbar y está colapsado, mostrar el texto */
+.menu-collapsed .main-menu:hover .menu-section-title {
+  font-size: 14px; /* Mostrar el texto original */
+  text-align: left; /* Alinear el texto a la izquierda */
+}
+
+.menu-collapsed .main-menu:hover .menu-section-title::before {
+  content: ''; /* Eliminar los tres puntos al hacer hover */
+}
+
+.menu-expanded .menu-section-title::before {
+  content: ''; /* No mostrar los tres puntos */
+}
+
+.menu-expanded .menu-section-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #616161;
+  padding-left: 15px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}

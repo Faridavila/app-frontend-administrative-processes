@@ -1,0 +1,687 @@
+/*=========================================================================================
+    File Name: vertical-menu.scss
+    Description: A classic vertical modern style menu with expand and collapse support. It supports
+    light & dark version, flipped layout, right side icons, native scroll and borders menu
+    item separation.
+    ----------------------------------------------------------------------------------------
+    Item Name: Vuexy  - Vuejs, HTML & Laravel Admin Dashboard Template
+    Author: PIXINVENT
+    Author URL: http://www.themeforest.net/user/pixinvent
+==========================================================================================*/
+.vertical-layout.vertical-menu-modern .main-menu {
+  transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), background 0s;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+.vertical-layout.vertical-menu-modern .main-menu .navigation li a {
+  align-items: center;
+}
+
+.vertical-layout.vertical-menu-modern .main-menu .navigation > li > a svg,
+.vertical-layout.vertical-menu-modern .main-menu .navigation > li > a i {
+  height: 20px;
+  width: 20px;
+  font-size: 1.45rem;
+  margin-right: 1.1rem;
+  flex-shrink: 0;
+}
+
+.vertical-layout.vertical-menu-modern
+  .main-menu
+  .navigation
+  .menu-content
+  > li
+  > a
+  svg,
+.vertical-layout.vertical-menu-modern
+  .main-menu
+  .navigation
+  .menu-content
+  > li
+  > a
+  i {
+  margin-right: 1.45rem;
+  font-size: 11px;
+  height: 11px;
+  width: 11px;
+}
+
+.vertical-layout.vertical-menu-modern.menu-expanded .main-menu {
+  width: 260px;
+}
+
+.vertical-layout.vertical-menu-modern.menu-expanded
+  .main-menu
+  .navigation
+  .navigation-header
+  .feather-more-horizontal {
+  display: none;
+}
+
+.vertical-layout.vertical-menu-modern.menu-expanded
+  .main-menu
+  .navigation
+  > li
+  > a
+  > i:before,
+.vertical-layout.vertical-menu-modern.menu-expanded
+  .main-menu
+  .navigation
+  > li
+  > a
+  > svg:before {
+  height: 20px;
+  width: 20px;
+  font-size: 1.45rem;
+}
+
+.vertical-layout.vertical-menu-modern.menu-expanded
+  .main-menu
+  .navigation
+  li.has-sub
+  > a:after {
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236e6b7b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-right'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1.1rem;
+  height: 1.1rem;
+  width: 1.1rem;
+  display: inline-block;
+  position: absolute;
+  right: 20px;
+  top: 14px;
+  transform: rotate(0deg);
+  transition: all 0.2s ease-out;
+}
+
+.vertical-layout.vertical-menu-modern.menu-expanded
+  .main-menu
+  .navigation
+  li.has-sub.open:not(.menu-item-closing)
+  > a:after {
+  transform: rotate(90deg);
+}
+
+.vertical-layout.vertical-menu-modern.menu-expanded .footer {
+  margin-left: 260px;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed .navbar .navbar-header {
+  float: left;
+  width: 80px;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .navbar
+  .navbar-header
+  .modern-nav-toggle {
+  display: none;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .navbar
+  .navbar-header.expanded {
+  width: 260px;
+  z-index: 1000;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .navbar
+  .navbar-header.expanded
+  .modern-nav-toggle {
+  display: block;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed .navbar.fixed-top,
+.vertical-layout.vertical-menu-modern.menu-collapsed .navbar.floating-nav {
+  left: 80px;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed .main-menu {
+  width: 80px;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu
+  .navbar-header
+  .brand-text,
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu
+  .modern-nav-toggle {
+  display: none; /* Oculta el texto y el botón de alternancia por defecto */
+}
+
+/* Muestra el título y el botón de alternancia al hacer hover sobre cualquier parte del navbar */
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .navbar-header:hover
+  .brand-text,
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .navbar-header:hover
+  .modern-nav-toggle,
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu:hover
+  .navbar-header
+  .brand-text,
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu:hover
+  .navbar-header
+  .modern-nav-toggle {
+  display: block; /* Muestra el texto y el botón de alternancia */
+  transition: display 0.5s ease; /* Transición suave (aunque display no se puede animar, ayuda en la apariencia) */
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu:not(.expanded)
+  .navigation-header {
+  margin-left: 2.2rem;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu:not(.expanded)
+  .navigation-header
+  span {
+  display: none;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu:not(.expanded)
+  .navigation-header
+  .feather-more-horizontal {
+  display: block;
+  font-size: 1.285rem;
+  width: 18px;
+  height: 18px;
+}
+/* Cuando se hace hover en la navegación, el ícono desaparece */
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu:not(.expanded):hover
+  .navigation-header
+  .feather-more-horizontal {
+  display: block; /* Oculta el ícono al hacer hover */
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu:not(.expanded)
+  .navigation
+  li:last-child {
+  margin-bottom: 1.25rem !important;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu:not(.expanded)
+  .navigation
+  li.active
+  a {
+  background: whitesmoke;
+  box-shadow: none;
+  color: #565656;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed .main-menu.expanded {
+  width: 260px;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu.expanded
+  .navigation
+  > li.navigation-header
+  span {
+  display: block;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu.expanded
+  .navigation
+  > li.navigation-header
+  .feather-more-horizontal {
+  display: none;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu.expanded
+  .navigation
+  li.has-sub
+  > a:after {
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236e6b7b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-right'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1rem;
+  height: 1rem;
+  width: 1rem;
+  display: inline-block;
+  position: absolute;
+  right: 20px;
+  top: 14px;
+  transform: rotate(0deg);
+  transition: all 0.2s ease-out;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu.expanded
+  .navigation
+  li.has-sub.open:not(.menu-item-closing)
+  > a:after {
+  transform: rotate(90deg);
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu.expanded
+  .navbar-header
+  .brand-text {
+  display: inline;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu.expanded
+  .modern-nav-toggle {
+  display: block;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed .main-menu .navigation {
+  overflow: visible;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu
+  .navigation
+  > li.navigation-header
+  span {
+  display: none;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu
+  .navigation
+  > li
+  > a {
+  text-overflow: inherit;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed .app-content,
+.vertical-layout.vertical-menu-modern.menu-collapsed .footer {
+  margin-left: 40px;
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .header-navbar.floating-nav {
+  width: calc(100vw - (100vw - 100%) - 4.4rem - 74px);
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .header-navbar.navbar-static-top {
+  width: calc(100vw - (100vw - 100%) - 74px);
+  left: 74px;
+}
+
+.vertical-layout.vertical-menu-modern .toggle-icon,
+.vertical-layout.vertical-menu-modern .collapse-toggle-icon {
+  margin-right: 0.425rem;
+}
+
+.vertical-layout.vertical-menu-modern .toggle-icon:focus,
+.vertical-layout.vertical-menu-modern .collapse-toggle-icon:focus {
+  outline: none;
+}
+
+@media (min-width: 992px) {
+  .vertical-layout.vertical-menu-modern .main-menu {
+    width: 260px;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .vertical-layout.vertical-menu-modern .main-menu {
+    width: 0;
+  }
+
+  .vertical-layout.vertical-menu-modern .navbar .navbar-header {
+    width: 0;
+  }
+
+  .vertical-layout.vertical-menu-modern .content,
+  .vertical-layout.vertical-menu-modern .footer {
+    margin-left: 0;
+  }
+
+  .vertical-layout.vertical-menu-modern.menu-collapsed .app-content,
+  .vertical-layout.vertical-menu-modern.menu-collapsed .footer {
+    margin-left: 0;
+  }
+
+  .vertical-layout.vertical-menu-modern.menu-collapsed .main-menu {
+    width: 0;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .vertical-layout.vertical-menu-modern .main-menu {
+    width: 0;
+  }
+
+  .vertical-layout.vertical-menu-modern .navbar .navbar-header {
+    width: 0;
+  }
+
+  .vertical-layout.vertical-menu-modern .content,
+  .vertical-layout.vertical-menu-modern .footer {
+    margin-left: 0;
+  }
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .vertical-menu-modern.vertical-layout .main-menu .navigation > li > a > span {
+    animation: none;
+  }
+}
+
+/* Ajustes para el margen del contenido principal cuando el menú está expandido */
+.menu-expanded .app-content {
+  margin-left: 130px; /* Tamaño del menú cuando está expandido */
+  transition: margin-left 0.6s ease; /* Transición suave */
+}
+
+/* Ajustes para el margen del contenido principal cuando el menú está colapsado */
+.menu-collapsed .app-content {
+  margin-left: 65px; /* Tamaño del menú cuando está colapsado */
+  transition: margin-left 0.6s ease; /* Transición suave */
+}
+
+/* Estilos adicionales del menú */
+.main-menu {
+  color: #fff;
+  width: 250px; /* Ancho del menú expandido */
+  height: 100vh; /* Hacer que el menú ocupe toda la altura de la ventana */
+  display: flex;
+  flex-direction: column; /* Asegurar que los hijos se alineen verticalmente */
+  justify-content: space-between; /* Asegura que el contenido ocupe toda la altura disponible */
+  transition: width 0.6s ease;
+  position: fixed; /* Fijar el navbar */
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Asegurar que esté por encima de otros elementos */
+  overflow: hidden;
+}
+
+/* Estilos adicionales cuando está en tema oscuro */
+.dark-layout .main-menu {
+  background: #283046;
+  color: #d0d2d6;
+}
+
+/* Cambiar el color del texto y fondo en tema oscuro */
+.dark-layout .menu-item {
+  color: #d0d2d6; /* Cambiar el color de los textos de los ítems del menú */
+  background-color: transparent; /* Asegurar que no haya fondo blanco */
+}
+
+.dark-layout .menu-section-title {
+  color: #ffffff; /* Mejorar la visibilidad en tema oscuro */
+}
+
+.dark-layout .search-bar input {
+  background-color: #3b4253;
+  color: #d0d2d6;
+  border-color: #3b4253;
+}
+
+/* Ajustes para el ítem seleccionado */
+.menu-selected {
+  display: flex; /* Para alinear correctamente el ícono y el texto */
+  align-items: center; /* Alineación vertical del contenido */
+  justify-content: flex-start; /* Alineación horizontal del contenido */
+  height: 45px; /* Ajusta la altura si es necesario */
+  width: 90%; /* Ajusta el ancho si es necesario */
+  padding: 8px 10px; /* Ajusta el padding para dar más o menos espacio interno */
+  margin-left: -10px; /* Margen desde la izquierda, ajusta el valor según sea necesario */
+  background: linear-gradient(
+    118deg,
+    #7367f0,
+    rgba(115, 103, 240, 0.7)
+  ); /* Aplicar gradiente */
+  box-shadow: 0 0 10px 1px rgba(115, 103, 240, 0.7); /* Sombra más intensa */
+  color: #fff; /* Color del texto */
+  font-weight: 400; /* Peso del texto */
+  border-radius: 4px; /* Bordes redondeados */
+  transition: background-color 0.5s ease, box-shadow 0.5s ease, height 0.3s ease,
+    width 0.3s ease; /* Transiciones suaves para altura, ancho, fondo y sombras */
+}
+
+/* Reducir el padding y tamaño de los ítems del menú */
+.menu-item {
+  padding: 5px 4px; /* Reduce el padding para que los ítems sean más pequeños */
+  margin-bottom: -5px; /* Reduce el espacio entre los ítems */
+}
+
+/* Ajustar el padding de los submenús */
+.sub-menu li {
+  padding: 0px 0px; /* Reducir el padding para que los ítems sean más compactos */
+  margin-bottom: -20px; /* Reduce el margen inferior para ajustar el espacio entre los ítems */
+}
+
+/* Ajustar el tamaño del texto en los ítems del submenú */
+.sub-menu .menu-item {
+  font-size: 16px; /* Reducir el tamaño de la fuente */
+}
+
+.menu-item:hover {
+  color: linear-gradient(
+    118deg,
+    #7367f0,
+    rgba(115, 103, 240, 0.7)
+  ); /* Aplicar gradiente al hacer hover */
+  border-radius: 4px; /* Bordes redondeados */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Transición suave */
+}
+
+/* Hover en los ítems del submenú */
+.sub-menu li:hover {
+  color: linear-gradient(
+    118deg,
+    #7367f0,
+    rgba(115, 103, 240, 0.7)
+  ); /* Aplicar gradiente al hacer hover */
+}
+
+/* Estilo del ítem seleccionado en modo oscuro */
+.dark-layout .menu-selected {
+  color: white;
+  box-shadow: 0px 2px 6px rgba(162, 155, 254, 0.2); /* Sombra en modo oscuro */
+}
+
+/* Ajustar las sombras y el color del ícono seleccionado */
+.menu-selected svg {
+  color: white; /* Asegurarse que los íconos cambien a blanco cuando está seleccionado */
+}
+
+.dark-layout .menu-selected svg {
+  color: #dfe6e9; /* Color claro para los íconos en modo oscuro */
+}
+
+/* Barra de búsqueda */
+.search-bar {
+  padding: 10px 15px;
+  margin-top: 15px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Ajustar el contenedor de la marca para usar flexbox */
+.navbar-brand {
+  display: flex;
+  align-items: center; /* Alinea verticalmente todos los elementos en el centro */
+}
+
+/* Ajustar el estilo del logo */
+.brand-logo img {
+  display: block;
+  height: 35px; /* Asegúrate de que el logo mantenga su altura */
+  margin-right: 0px; /* Añade espacio entre el logo y el texto */
+}
+
+/* Estilizar el texto para alinearlo con el logo */
+.brand-text {
+  font-size: 1.25rem; /* Ajusta el tamaño del texto */
+  line-height: 1; /* Asegura que la altura de línea del texto sea uniforme */
+}
+
+/* Ajustar el ícono del toggle para alinear correctamente */
+.nav-toggle .nav-link {
+  display: flex;
+  align-items: center; /* Alinea el ícono del toggle verticalmente */
+  margin-left: 0px; /* Añadir un margen a la izquierda del ícono */
+}
+
+.toggle-icon {
+  margin: 6px;
+  width: 24px;
+  height: 24px;
+}
+
+/* Ajustes para tema oscuro en la barra de búsqueda */
+.dark-layout .search-bar input {
+  background-color: #3b4253;
+  color: #d0d2d6;
+  border-color: #3b4253;
+}
+
+/* Modo oscuro: Cambiar el color del SVG a morado */
+.dark-layout .toggle-icon {
+  color: #7367f0 !important; /* Color morado en modo oscuro */
+}
+
+.menu-expanded .menu-section-title {
+  font-size: 14px;
+  font-weight: bold;
+  padding-left: 15px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.main-menu {
+  background: #000;
+  color: #fff;
+  width: 250px; /* Ancho del menú expandido */
+  height: 100vh; /* Asegura que ocupe el 100% de la altura de la ventana */
+  overflow: hidden; /* Oculta cualquier overflow adicional */
+  transition: width 0.3s ease;
+}
+
+.menu-section-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #616161;
+  padding-left: 10px;
+  margin-top: 12px;
+  margin-bottom: 15px;
+  font-family: "Montserrat", sans-serif;
+}
+
+.sub-menu {
+  padding-left: 15px; /* Alineación debajo del ícono de Configuración */
+  margin-top: 2px; /* Un pequeño margen entre el menú principal y el submenú */
+}
+
+.sub-menu li {
+  margin-bottom: -12px; /* Espacio entre los ítems del submenú */
+}
+
+.menu-item {
+  font-size: 15px; /* Tamaño de fuente para los ítems del submenú */
+  font-family: "Montserrat", sans-serif;
+}
+
+.menu-scroll-container {
+  overflow-y: hidden; /* Ocultar el scrollbar por defecto */
+  height: calc(100vh - 60px); /* Ajusta la altura */
+  transition: overflow-y 0.3s ease; /* Transición suave */
+}
+
+/* Mostrar el scrollbar cuando se hace hover sobre el menú */
+.main-menu:hover .menu-scroll-container {
+  overflow-y: auto; /* Mostrar el scrollbar al hacer hover */
+}
+
+/* Estilos para el scrollbar */
+.menu-scroll-container::-webkit-scrollbar {
+  width: 6px; /* El ancho del scrollbar */
+}
+
+.menu-scroll-container::-webkit-scrollbar-thumb {
+  background-color: #b3afaf; /* Color de la barra de desplazamiento */
+  border-radius: 10px; /* Hace que el thumb sea más redondeado */
+  min-height: 20px; /* Altura mínima para que el thumb sea más pequeño */
+}
+
+.dark-layout .menu-scroll-container::-webkit-scrollbar-track {
+  background-color: #3b4253; /* Fondo oscuro para el track en tema oscuro */
+}
+
+.menu-scroll-container::-webkit-scrollbar-track {
+  background-color: #f9f9f9; /* Fondo claro por defecto */
+}
+
+/* Mostrar el scrollbar cuando el menú está expandido */
+.menu-expanded .menu-scroll-container {
+  overflow-y: hidden; /* Ocultar el scrollbar cuando el menú no está en hover */
+}
+
+/* Mantener el menú visible al hacer hover 
+.vertical-layout.vertical-menu-modern .navbar-header:hover + .main-menu {
+  width: 260px; /* Mantener el menú expandido al hacer hover 
+  transition: width 0.6s ease; /* Transición suave 
+}
+*/
+
+/* Asegúrate de que el botón de alternancia esté siempre visible */
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .navbar
+  .navbar-header
+  .modern-nav-toggle {
+  display: block; /* Asegúrate de que se muestre siempre */
+}
+
+/* Mantener el menú visible al hacer hover */
+.vertical-layout.vertical-menu-modern .navbar-header:hover + .main-menu {
+  width: 260px; /* Mantener el menú expandido al hacer hover */
+  transition: width 0.6s ease; /* Transición suave */
+}
+
+/* Asegúrate de que el menú esté visible mientras el mouse esté sobre el navbar */
+.vertical-layout.vertical-menu-modern .main-menu:hover {
+  width: 260px; /* Mantener el menú expandido al hacer hover */
+}
+
+.vertical-layout.vertical-menu-modern.menu-collapsed
+  .main-menu
+  .navbar-header
+  .modern-nav-toggle {
+  display: block; /* Asegúrate de que se muestre siempre */
+  padding-top: 0.2px; /* Ajusta el valor según tus necesidades */
+}
