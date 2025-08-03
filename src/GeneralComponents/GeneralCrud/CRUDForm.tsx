@@ -24,8 +24,11 @@ export interface ColumnDefinition<T> {
   minLength?: number;
   maxLength?: number;
   regex?: RegExp;
+  dependentOn?: keyof T;
+  validationMessage?: string;   
   hiddenInCreate?: boolean;
   hiddenInEdit?: boolean;
+
   render?: (item: T) => React.ReactNode;
 }
 
@@ -42,6 +45,7 @@ interface CRUDFormProps<T> {
   customIcons?: CRUDIcon[];
   onRowClick?: (item: T) => void;
   rowClassName?: (row: T) => string; 
+  renderCustomColumn?: (col: ColumnDefinition<T>, item: T) => React.ReactNode;
 }
 
 const CRUDForm = <T extends { id: number }>({
@@ -98,26 +102,29 @@ const CRUDForm = <T extends { id: number }>({
     };
   }, []);
 
-  const fetchAndSetData = async () => {
-    try {
-      const sortFieldParam = sortField !== null ? (sortFieldMap[sortField as string] || String(sortField)) : undefined;
-      const sortOrderParam = sortOrder !== "neutral" ? sortOrder : undefined;
-      const activeFilters: Partial<T> = {};
-      Object.keys(filters).forEach((key) => {
-        if (filters[key as keyof T]) {
-          activeFilters[key as keyof T] = filters[key as keyof T];
-        }
-      });
-      const hasFilters = Object.keys(activeFilters).length > 0;
-      const fetchedItems = hasFilters
-        ? await searchItem!(page - 1, pageSize, activeFilters, sortOrderParam, sortFieldParam as keyof T)
-        : await fetchItems(page - 1, pageSize, {}, sortOrderParam, sortFieldParam as keyof T);
-      setItems(fetchedItems);
-    } catch (error) {
-      console.error('Error al obtener los datos:', error);
-      MySwal.fire('Error', 'Error al obtener los datos', 'error');
-    }
-  };
+const fetchAndSetData = async () => {
+  try {
+    const sortFieldParam = sortField !== null ? (sortFieldMap[sortField as string] || String(sortField)) : undefined;
+    const sortOrderParam = sortOrder !== "neutral" ? sortOrder : undefined;
+    const activeFilters: Partial<T> = {};
+    Object.keys(filters).forEach((key) => {
+      if (filters[key as keyof T]) {
+        activeFilters[key as keyof T] = filters[key as keyof T];
+      }
+    });
+    const hasFilters = Object.keys(activeFilters).length > 0;
+    const fetchedItems = hasFilters
+      ? await searchItem!(page - 1, pageSize, activeFilters, sortOrderParam, sortFieldParam as keyof T)
+      : await fetchItems(page - 1, pageSize, {}, sortOrderParam, sortFieldParam as keyof T);
+
+    // Asegúrate de que `fetchedItems` siempre sea un arreglo
+    setItems(Array.isArray(fetchedItems) ? fetchedItems : []);
+  } catch (error) {
+    console.error('Error al obtener los datos:', error);
+    MySwal.fire('Error', 'Error al obtener los datos', 'error');
+  }
+};
+
 
   const handleShowModal = (operation: 'add' | 'edit', item: T | null = null) => {
     setOperation(operation);
@@ -152,58 +159,87 @@ const CRUDForm = <T extends { id: number }>({
     }
   };
 
-  const validateField = (key: keyof T, value: string): string | null => {
-    const column = columns.find((col) => col.key === key);
-    if (column) {
-      if (column.required && !value) {
-        return `${column.label} es obligatorio.`;
-      }
-      if (column.minLength && value.length < column.minLength) {
-        return `${column.label} debe tener al menos ${column.minLength} caracteres.`;
-      }
-      if (column.maxLength && value.length > column.maxLength) {
-        return `${column.label} no puede exceder los ${column.maxLength} caracteres.`;
-      }
-      if (column.regex && !column.regex.test(value)) {
-        return `${column.label} tiene un formato inválido.`;
-      }
-    }
-    return null;
-  };
+const validateField = (key: keyof T, value: string): string | null => {
+  const column = columns.find((col) => col.key === key);
 
-  const validateAllFields = () => {
-    if (!currentItem) return;
+  if (column) {
+    // Validación dependiente
+    if (column.dependentOn && currentItem) {
+      const dependentColumn = columns.find((col) => col.key === column.dependentOn);
+      if (dependentColumn) {
+        const dependentValue = currentItem[dependentColumn.key];
 
-    const newErrors: Partial<Record<keyof T, string>> = {};
-    let allValid = true;
+        if (dependentValue !== undefined && value !== undefined) {
+          const numericValue = parseFloat(value);
+          const numericDependentValue = parseFloat(dependentValue as string); // Garantizar que sea numérico
 
-    for (const col of columns) {
-      if (!col.hidden) {
-        const error = validateField(col.key, String(currentItem[col.key]));
-        if (error) {
-          allValid = false;
-          newErrors[col.key] = error;
-          break;
+          // Comprobar si los valores son numéricos válidos antes de comparar
+          if (!isNaN(numericValue) && !isNaN(numericDependentValue)) {
+            // Validación para que el valor actual sea mayor que el valor dependiente
+            if (numericValue <= numericDependentValue) {
+              return column.validationMessage || `${column.label} debe ser mayor que ${dependentColumn.label}.`;
+            }
+          } else {
+            return `${column.label} y ${dependentColumn.label} deben ser números válidos.`;
+          }
         }
       }
     }
 
-    setErrors(newErrors);
-    setIsSaveDisabled(!allValid);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (currentItem) {
-      const key = name as keyof T;
-      setCurrentItem({ ...currentItem, [key]: value } as T);
-
-      const error = validateField(key, value);
-      setErrors((prevErrors) => ({ ...prevErrors, [key]: error }));
-
-      validateAllFields();
+    // Validación estándar para otros casos
+    if (column.required && !value) {
+      return `${column.label} es obligatorio.`;
     }
-  };
+    if (column.minLength && value.length < column.minLength) {
+      return `${column.label} debe tener al menos ${column.minLength} caracteres.`;
+    }
+    if (column.maxLength && value.length > column.maxLength) {
+      return `${column.label} no puede exceder los ${column.maxLength} caracteres.`;
+    }
+    if (column.regex && !column.regex.test(value)) {
+      return `${column.label} tiene un formato inválido.`;
+    }
+  }
+  return null;
+};
+
+const validateAllFields = () => {
+  if (!currentItem) return;
+
+  const newErrors: Partial<Record<keyof T, string>> = {};
+  let allValid = true;
+
+  for (const col of columns) {
+    if (!col.hidden) {
+      const error = validateField(col.key, String(currentItem[col.key]));
+      if (error) {
+        allValid = false;
+        newErrors[col.key] = error;
+        break; // Detenemos el ciclo si encontramos un error
+      }
+    }
+  }
+
+  setErrors(newErrors);
+  setIsSaveDisabled(!allValid); // Deshabilitar el botón de guardar si hay errores
+};
+
+
+
+
+const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target;
+  if (currentItem) {
+    const key = name as keyof T;
+    setCurrentItem({ ...currentItem, [key]: value } as T);
+
+    const error = validateField(key, value);
+    setErrors((prevErrors) => ({ ...prevErrors, [key]: error }));
+
+    validateAllFields();
+  }
+};
+
 
   const handleSave = async () => {
     if (!currentItem || isSaveDisabled) return;
@@ -310,14 +346,15 @@ const CRUDForm = <T extends { id: number }>({
           <div className='d-flex justify-content-between align-items-center mb-3'>
             <div className='button-container'>
               <Button
-                className='btn btn-primary btn-small me-2'
+               className='btn btn-primary btn-small2 me-2'
                 onClick={() => handleShowModal('add')}
                 aria-label="Añadir Nuevo Elemento"
+                 
               >
                 <AddIcon />
               </Button>
               <Button
-                className='btn btn-primary btn-small2 me-2'
+                className='btn btn-info btn-small me-2'
                 onClick={() => setShowFilters(!showFilters)}
                 aria-label={showFilters ? 'Ocultar Filtro' : 'Mostrar Filtro'}
               >
@@ -326,7 +363,7 @@ const CRUDForm = <T extends { id: number }>({
               </Button>
 
               <Button
-                className='btn btn-primary btn-small3 me-2'
+                className='btn btn-info btn-small3 me-2'
                 onClick={handleEditSelectedRow}
                 disabled={!selectedItem}
                 aria-label="Editar Elemento Seleccionado"
@@ -401,7 +438,7 @@ const CRUDForm = <T extends { id: number }>({
                     className={rowClassName ? rowClassName(item) : ''} 
                     style={{
                       cursor: 'pointer',
-                      backgroundColor: selectedItem && selectedItem.id === item.id ? '#7367f0' : 'transparent'
+                      backgroundColor: selectedItem && selectedItem.id === item.id ? '#cc322d' : 'transparent'
                     }}
                   >
                     {columns.map((col) => (

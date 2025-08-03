@@ -13,7 +13,6 @@ import "../app-assets/css/components.min.css";
 import "../app-assets/css/plugins/extensions/ext-component-context-menu.min.css";
 
 import Layout from "./Layout.tsx";
-import TreePUC from "./Arbol/Components/NuevoTREE.tsx";
 import DepartmentCRUD from "./Department/Components/Department.tsx";
 import CompanyPresentation from "./Company/Components/InfoCompany.tsx";
 import BranchCRUD from "./Branch/Components/BranchComponents.tsx";
@@ -21,27 +20,18 @@ import EconomicActivityCRUD from "./EconomicActivity/Components/EconomicActivity
 import CategoryCRUD from "./Category/Components/CategoryComponents.tsx";
 import CityCRUD from "./City/Components/City.tsx";
 import CurrencyTipeCRUD from "./CurrencyType/Components/CurrencyType.tsx";
-import FormularioComprobante from "./AccountingVoucher/Components/AccountingVoucher.tsx";
 import ForgotPassword from "./Login/ForgotPassword.tsx";
-import ActionCRUD from "./Action/Components/Action.tsx";
-import ActionStepCRUD from "./ActionStep/Components/ActionStep.tsx";
-import ProcessCRUD from "./Process/Components/Process.tsx";
 import AuthCRUD from "./Auth/Components/Auth.tsx";
-import StepCRUD from "./Step/Components/Step.tsx";
 import LoginPage from "./Login/login.tsx";
 import Home from "./Home/Home.tsx";
 import SolicitudForm from "./RadicarSolicitud/Components/SolicitudForm.tsx";
 import WarehouseForm from "./Warehouse/Components/WarehouseForm.tsx";
 import RegistroProductoWizard from "./RegistrarProducto/Components/RegistrarProducto.tsx";
-import CalendarComponent from "./Calendar/Components/CalendarComponent.tsx";
-import ProcessCompanyCRUD from "./ProcessCompany/Components/ProcessCompany.tsx";
+import CalendarComponent from "./Calendar/CalendarComponent.tsx";
 import UserCRUD from "./User/Components/UserComponents.tsx";
 import ParameterTypeCRUD from "./ParameterType/Components/ParameterType.tsx";
 import ParameterCRUD from "./Parameter/Components/Parameter.tsx";
-import ActionParameterCRUD from "./ActionParameter/Components/ActionParameter.tsx";
 import CompanyCRUD from "./Company/Components/CompanyCRUD.tsx";
-import StepTypeCRUD from "./StepType/Components/StepType.tsx";
-import StepStatusCRUD from "./StepType/Components/StepStatus.tsx";
 import MenuCRUD from "./Menu/Components/Menu.tsx";
 import MenuTypeCRUD from "./Menu/Components/MenuType.tsx";
 import AreaCRUD from "./Area/Components/Area.tsx";
@@ -54,7 +44,6 @@ import FileManagerApp from "./FileManager/Components/FileManagerApp.tsx";
 import FormularioWarehouseCRUD from "./WarehouseType/Components/FormWarehouseTypesCRUD.tsx";
 import NumerationCRUD from "./Numeration/Components/NumerationCRUD.tsx";
 import TaxConfigurationCRUD from "./TaxConfiguration/Components/TaxConfigurationCRUD.tsx";
-import AccountingDocumentTypesCRUD from "./AccountingDocumentTypes/Components/AccountingDocumentTypesCRUD.tsx";
 import CashRegisterCRUD from "./CashRegister/Components/CashRegisterCRUD.tsx";
 import ClientCRUD from "./Client/Components/ClientCRUD.tsx";
 import PaymentMethodCRUD from "./PaymentMethod/Components/PaymentMethodCRUD.tsx";
@@ -81,10 +70,6 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "/arbol",
-        element: <TreePUC />,
-      },
-      {
         path: "/paymentMethod",
         element: <PaymentMethodCRUD />,
       },
@@ -101,7 +86,7 @@ const router = createBrowserRouter([
         element: <CashRegisterCRUD />,
       },  
       {
-        path: "/product",
+        path: "/inventory",
         element: <ProductCRUD />,
       },
       {
@@ -117,21 +102,12 @@ const router = createBrowserRouter([
         element: <DiscountTypeCRUD />,
       },
       {
-        path: "/tree",
-        element: <TreePUC />,
-      },
-      
-      {
         path: "/company",
         element: <CompanyPresentation />,
       },
       {
         path: "/configCompany",
         element: <CompanyCRUD />,
-      },
-      {
-        path: "/comprobante",
-        element: <FormularioComprobante />,
       },
       {
         path: "/economicActivity",
@@ -153,26 +129,13 @@ const router = createBrowserRouter([
         path: "currencyType",
         element: <CurrencyTipeCRUD />,
       },
-      {
-        path: "/action",
-        element: <ActionCRUD />,
-      },
-      {
-        path: "/actionStep",
-        element: <ActionStepCRUD />,
-      },
-      {
-        path: "/process",
-        element: <ProcessCRUD />,
-      },
+   
+      
       {
         path: "/auth",
         element: <AuthCRUD />,
       },
-      {
-        path: "/step",
-        element: <StepCRUD />,
-      },
+
       {
         path: "/Solicitud",
         element: <SolicitudForm />,
@@ -189,10 +152,7 @@ const router = createBrowserRouter([
         path: "/file-manager",
         element: <FileManagerApp />,
       },
-      {
-        path: "/processCompany",
-        element: <ProcessCompanyCRUD />,
-      },
+
       {
         path: "/Solicitud",
         element: <SolicitudForm />,
@@ -221,14 +181,7 @@ const router = createBrowserRouter([
         path: "/taxConfiguration",
         element: <TaxConfigurationCRUD />,
       },
-      {
-        path: "/AccountingDocumentTypes",
-        element: <AccountingDocumentTypesCRUD />,
-      },
-      {
-        path: "/category",
-        element: <CalendarComponent />,
-      },
+
       {
         path: "/user",
         element: <UserCRUD />,
@@ -245,18 +198,7 @@ const router = createBrowserRouter([
         path: "/bodega",
         element: <WarehouseForm />,
       },
-      {
-        path: "/actionParameter",
-        element: <ActionParameterCRUD />,
-      },
-      {
-        path: "/stepType",
-        element: <StepTypeCRUD />,
-      },
-      {
-        path: "/stepStatus",
-        element: <StepStatusCRUD />,
-      },
+
       {
         path: "/menu",
         element: <MenuCRUD />,

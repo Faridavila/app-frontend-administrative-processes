@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Switchs
+              Ladrillera la transversal
             </a>
             <span className="d-none d-sm-inline-block">
               , All rights Reserved

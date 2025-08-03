@@ -99,8 +99,8 @@ const CompanyPresentation: React.FC = () => {
     let error = "";
 
     if (key === "companyName" && !value) {
-      error = "Razón Social es obligatorio.";
-    } else if (key === "nit" && (!value || !/^\d+$/.test(value))) {
+      error = "Nombre es obligatorio.";
+    } else if (key === "nit" && (!value )) {
       error = "NIT es obligatorio y debe ser numérico.";
     } else if (key === "address" && !value) {
       error = "Dirección es obligatorio.";
@@ -217,7 +217,6 @@ const CompanyPresentation: React.FC = () => {
                 <h2 className="content-header-title float-start mb-0">
                   Presentación de la Empresa
                   <FavoritoButton path="/company" label="Presentación" />{" "}
-                  {/* Uso del nuevo componente */}
                 </h2>
                 <div className="breadcrumb-wrapper">
                   <ol className="breadcrumb">
@@ -241,7 +240,7 @@ const CompanyPresentation: React.FC = () => {
               <Row>
                 <Col md={4} className="text-center">
                   <img
-                    src={"/additional-assets/images/ico/R2.png"}
+                    src={"/additional-assets/images/logo/Logo-ladrillera.png"}
                     alt="Company Logo"
                     className="img-fluid mb-3"
                     style={{ maxHeight: "200px" }}
@@ -250,7 +249,7 @@ const CompanyPresentation: React.FC = () => {
                 <Col md={8}>
                   <h4 className="card-title mb-3">Información de la Empresa</h4>
                   <div className="company-detail mb-3">
-                    <strong>Razón Social:</strong> {company.companyName}
+                    <strong>Nombre:</strong> {company.companyName}
                   </div>
                   <div className="company-detail mb-3">
                     <strong>NIT:</strong> {company.nit}
@@ -268,10 +267,10 @@ const CompanyPresentation: React.FC = () => {
                     <strong>Actividad Económica:</strong>
                     {company.ciiuCode
                       ? `${company.ciiuCode} - ${company.description}`
-                      : "No disponible"}
+                      : ""}
                   </div>
                   <Button
-                    className="edit-button"
+                    className="btn edit-button"
                     variant="primary"
                     onClick={handleShow}
                   >
@@ -295,7 +294,7 @@ const CompanyPresentation: React.FC = () => {
                 <Row>
                   <Col md={6}>
                     <Form.Group controlId="formCompanyName" className="mb-3">
-                      <Form.Label>Razón Social</Form.Label>
+                      <Form.Label>Nombre</Form.Label>
                       <Form.Control
                         type="text"
                         name="companyName"

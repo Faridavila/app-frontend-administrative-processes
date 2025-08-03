@@ -2,9 +2,9 @@ export interface ProductTypes {
   id: number;
   productName: string;
   price: string;
-  discountId: number;
-  discountAmount: string;
-  taxConfigurationId: number;
-  taxConfigurationName: string;
+  description: string;
+  categoryId: number;
+  categoryName: string;
+  quantity: number;
   status: string;
 }

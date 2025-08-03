@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import CRUDForm from "../../GeneralComponents/GeneralCrud/CRUDForm";
 import { CategoryTypes } from "./../Types/CategoryTypes";
 import { categorySortFieldMap } from "../Types/MapeoCategory";
@@ -12,56 +11,64 @@ import {
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
 
 const CategoryCRUD = () => {
-  // Definir la plantilla de los elementos (objeto inicial)
   const itemTemplate = (): CategoryTypes => ({
     id: 0,
-    categoryType: "",
-    description: "",
+    nameCategory: "",
+    soldOutValue:"",
+    fewUnits: "",
     status: "ACTIVE",
   });
 
-  // Definir las columnas del formulario CRUD
   const columns: {
-    key: keyof CategoryTypes;
-    label: string;
-    hidden?: boolean;
-    required?: boolean;
-    minLength?: number;
-    maxLength?: number;
-    regex?: RegExp;
-    hiddenInCreate?: boolean; // Ocultar en la creación
-    hiddenInEdit?: boolean; // Ocultar en la edición
-  }[] = [
-    {
-      key: "id",
-      label: "ID",
-      hiddenInCreate: true, // Ocultar el ID en el formulario de creación
-      hiddenInEdit: true,
-    },
-    {
-      key: "categoryType",
-      label: "Tipo de Categoría",
-      required: true,
-      minLength: 2,
-      maxLength: 100,
-    },
-    {
-      key: "description",
-      label: "Descripción",
-      required: true,
-      minLength: 2,
-      maxLength: 100,
-    },
-    {
-      key: "status",
-      label: "Estado",
-      required: true,
-      minLength: 2,
-      maxLength: 50,
-    },
-  ];
+  key: keyof CategoryTypes;
+  label: string;
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  regex?: RegExp;
+  hiddenInCreate?: boolean;
+  hiddenInEdit?: boolean;
+  hidden?: boolean; 
+  dependentOn?: keyof CategoryTypes; 
+  validationMessage?: string;      
+}[] = [
+  {
+    key: "id",
+    label: "ID",
+    hiddenInCreate: true,
+    hiddenInEdit: true,
+  },
+  {
+    key: "nameCategory",
+    label: "Tipo de Categoría",
+    required: true,
+    minLength: 2,
+    maxLength: 100,
+    regex: /^[A-Za-z\s]+$/
+  },
+  {
+    key: "soldOutValue",
+    label: "Rango de unidades agotadas",
+    required: true,
+    regex: /^\d+$/,
+  },
+  {
+    key: "fewUnits",
+    label: "Rango de pocas unidades",
+    required: true,
+    dependentOn: "soldOutValue", 
+    validationMessage: "El valor debe ser mayor que 'Rango de unidades agotadas'.",
+    regex: /^\d+$/
+  },
+  {
+    key: "status",
+    label: "Estado",
+    hiddenInCreate: true,
+    hiddenInEdit: true,
+    hidden: true, 
+  },
+];
 
-  // Renderizar campos personalizados si es necesario (en este caso no hay ninguno)
   const renderCustomFormField = (
     _colKey: keyof CategoryTypes,
     _value: string,

@@ -456,7 +456,7 @@
   margin-left: -10px; /* Margen desde la izquierda, ajusta el valor según sea necesario */
   background: linear-gradient(
     118deg,
-    #7367f0,
+    #cc322d,
     rgba(115, 103, 240, 0.7)
   ); /* Aplicar gradiente */
   box-shadow: 0 0 10px 1px rgba(115, 103, 240, 0.7); /* Sombra más intensa */
@@ -487,7 +487,7 @@
 .menu-item:hover {
   color: linear-gradient(
     118deg,
-    #7367f0,
+    #cc322d,
     rgba(115, 103, 240, 0.7)
   ); /* Aplicar gradiente al hacer hover */
   border-radius: 4px; /* Bordes redondeados */
@@ -498,7 +498,7 @@
 .sub-menu li:hover {
   color: linear-gradient(
     118deg,
-    #7367f0,
+    #cc322d,
     rgba(115, 103, 240, 0.7)
   ); /* Aplicar gradiente al hacer hover */
 }
@@ -573,7 +573,7 @@
 
 /* Modo oscuro: Cambiar el color del SVG a morado */
 .dark-layout .toggle-icon {
-  color: #7367f0 !important; /* Color morado en modo oscuro */
+  color: #cc322d !important; /* Color morado en modo oscuro */
 }
 
 .menu-expanded .menu-section-title {

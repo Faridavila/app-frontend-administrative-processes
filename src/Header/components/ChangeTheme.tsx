@@ -22,7 +22,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body.dark-layout .navbar .nav-link:hover {
-    color: #7367f0;
+    color: #cc322d;
   }
   .dark-layout {
   /********* COMPONENTS *********/
@@ -75,7 +75,7 @@ body.dark-layout {
   border-color: #3b4253 !important; }
 
 .dark-layout a:hover {
-  color: #7367f0; }
+  color: #cc322d; }
 
 .dark-layout label {
   color: #d0d2d6; }
@@ -271,7 +271,7 @@ body.dark-layout {
   background-color: #161d31; }
 
 .dark-layout .main-menu .collapse-toggle-icon {
-  color: #7367f0 !important; }
+  color: #cc322d !important; }
 
 .dark-layout .ps__thumb-x,
 .dark-layout .ps__thumb-y {
@@ -400,7 +400,7 @@ body.dark-layout {
   background: #4b4b4b; }
 
 .dark-layout .btn-group label[class*='btn-outline-'] {
-  color: #7367f0 !important; }
+  color: #cc322d !important; }
 
 .dark-layout .dropdown-menu {
   background-color: #283046;
@@ -414,11 +414,11 @@ body.dark-layout {
 
 .dark-layout .dropdown-menu .dropdown-item:hover, .dark-layout .dropdown-menu .dropdown-item:focus {
   background: rgba(115, 103, 240, 0.12);
-  color: #7367f0; }
+  color: #cc322d; }
 
 .dark-layout .dropdown-menu .dropdown-item:active, .dark-layout .dropdown-menu .dropdown-item.active {
   color: #fff;
-  background-color: #7367f0; }
+  background-color: #cc322d; }
 
 .dark-layout .dropdown-menu .dropdown-item.disabled, .dark-layout .dropdown-menu .dropdown-item:disabled {
   color: #676d7d; }
@@ -454,7 +454,7 @@ body.dark-layout {
   background-color: #242b3d; }
 
 .dark-layout .pagination:not([class*='pagination-']) .page-item.active .page-link {
-  background-color: #7367f0; }
+  background-color: #cc322d; }
 
 .dark-layout .pagination:not([class*='pagination-']) .page-item.active .page-link:hover {
   color: #fff; }
@@ -464,7 +464,7 @@ body.dark-layout {
   color: #b4b7bd; }
 
 .dark-layout .pagination:not([class*='pagination-']) .page-item .page-link:hover {
-  color: #7367f0; }
+  color: #cc322d; }
 
 .dark-layout .pagination:not([class*='pagination-']) .page-item.prev-item .page-link:hover, .dark-layout .pagination:not([class*='pagination-']) .page-item.next-item .page-link:hover {
   color: #fff; }
@@ -505,7 +505,7 @@ body.dark-layout {
 .dark-layout .nav-pills .nav-item .nav-link.active,
 .dark-layout .nav-tabs.nav-justified .nav-item .nav-link.active {
   background-color: #283046;
-  color: #7367f0; }
+  color: #cc322d; }
 
 .dark-layout .nav-tabs .nav-item .nav-link.disabled,
 .dark-layout .nav-pills .nav-item .nav-link.disabled,
@@ -517,7 +517,7 @@ body.dark-layout {
 
 .dark-layout .nav-pills .nav-item .nav-link.active {
   color: #fff;
-  background-color: #7367f0; }
+  background-color: #cc322d; }
 
 .dark-layout .popover.bs-popover-top .popover-arrow:before {
   border-top-color: #3b4253; }
@@ -774,7 +774,7 @@ body.dark-layout {
 
 .dark-layout .input-group:focus-within .form-control,
 .dark-layout .input-group:focus-within .input-group-text {
-  border-color: #7367f0;
+  border-color: #cc322d;
   box-shadow: none; }
 
 .dark-layout .form-label-group > input:not(:focus):not(:placeholder-shown) ~ label,
@@ -871,7 +871,7 @@ body.dark-layout {
 .dark-layout .dataTables_wrapper .dt-buttons .buttons-print:active,
 .dark-layout .dataTables_wrapper .dt-buttons .btn-secondary:active,
 .dark-layout .dataTables_wrapper .dt-buttons .dt-button-collection [class*='buttons-']:active {
-  background-color: #7367f0 !important;
+  background-color: #cc322d !important;
   color: #fff; }
 
 .dark-layout .dataTables_wrapper .dt-button-collection > div[role='menu'] {
@@ -1355,7 +1355,7 @@ body.dark-layout {
   background-color: #283046; }
 
 .dark-layout .app-user-view .plan-card {
-  border-color: #7367f0 !important; }
+  border-color: #cc322d !important; }
 
 .dark-layout .customizer {
   background-color: #283046; }
@@ -1419,7 +1419,7 @@ body.dark-layout {
   color: #b4b7bd; }
 
 .dark-layout .horizontal-layout .main-menu-content .navbar-nav > li.active .dropdown-menu li.active > a:hover {
-  color: #7367f0 !important; }
+  color: #cc322d !important; }
 
 .dark-layout .horizontal-layout .main-menu-content .navbar-nav > li.active .dropdown-menu li.open.active > a {
   color: #b4b7bd !important; }

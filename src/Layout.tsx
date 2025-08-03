@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { FavoritosProvider } from "./FavoritoButton/components/FavoritosContext"; // Ajusta la ruta según sea necesario
-import MainMenu from "./NavBar copy/Components/navBar";
+import MainMenu from "./NavBar/navBar";
 import Header from "./Header/components/Header";
 import Footer from "./Footer/components/Footer";
 import "./vertical-menu.css";

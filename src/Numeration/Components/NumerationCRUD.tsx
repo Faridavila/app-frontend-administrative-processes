@@ -9,7 +9,6 @@ import {
   DeleteNumeration,
   GetSearchNumeration,
 } from "../API/NumerationAPI";
-import AccountingDocumentTypestSelect from "./NumerationSelectAccountingDocumentType";
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -59,16 +58,6 @@ const NumerationCRUD = () => {
     value: string,
     onChange: (newValue: string) => void
   ) => {
-    if (colKey === "accountingDocumentTypeId") {
-      return (
-        <AccountingDocumentTypestSelect
-          selectedValue={parseInt(value, 10)}
-          onChange={(newAccountingDocumentTypestId: number) =>
-            onChange(newAccountingDocumentTypestId.toString())
-          }
-        />
-      );
-    }
   
     if (colKey === "startDate" || colKey === "finishDate") {
       return (
