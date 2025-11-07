@@ -23,7 +23,7 @@ const PositionSelect: React.FC<{ selectedValue: number, onChange: (newValue: num
       onChange={onChange}
       labelKey="description" 
       valueKey="id"             
-      placeholder="Seleccione una opcion del Position"
+      placeholder="Seleccione una cargo"
     />
   );
 };

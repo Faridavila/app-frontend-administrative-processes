@@ -3,5 +3,6 @@ export interface CategoryTypes {
   nameCategory: string;
   soldOutValue: string;
   fewUnits: string;
+  image: string; 
   status: string;
 }

@@ -54,7 +54,7 @@
 }
 
 
-.btn-small {
+.btn-small1 {
   font-size: 0px;
   padding: 0px 0px;
   position: absolute; 
@@ -75,11 +75,11 @@
 .btn-small3 {
   font-size: 0px;
   padding: 0px 0px;
-  position: absolute; 
-  right: 100px; 
+  position: absolute;
+  right: 100px;
   top: 30px;
-  
 }
+
 
 .btn-small4 {
   font-size: 0px;
@@ -90,6 +90,57 @@
   
 }
 
+.btn-small5 {
+  font-size: 0px;
+  padding: 0px 0px;
+  position: absolute; 
+  right: 180px; 
+  top: 30px;
+  
+}
+
+
+.btn-small7 {
+  font-size: 15px;         
+  padding: .30rem .3rem;    
+  position: absolute;
+  right: 100px;
+  top: 30px;
+}
+
+.btn-small8 {
+  font-size: 14px;         
+  padding: .30rem .3rem; 
+  position: absolute; 
+  right: 240px; 
+  top: 30px;
+}
+
+
+.btn-small9 {
+  font-size: 14px;         
+  padding: .30rem .3rem; 
+  position: absolute; 
+  right: 310px; 
+  top: 30px;
+}
+
+.btn-small10 {
+  font-size: 14px;         
+  padding: .30rem .3rem; 
+  position: absolute; 
+  right: 210px; 
+  top: 30px;
+}
+
+.btn-small11 {
+   font-size: 14px;         
+  padding: .30rem .3rem; 
+  position: absolute; 
+  right: 225px; 
+  top: 30px;
+}
+
 
 .table-responsive {
   overflow-x: auto;
@@ -98,12 +149,13 @@
 
 
 .table td {
-  max-width: 150px; 
+  max-width: 250px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
   position: relative;
+  padding: 12px;
 }
 
 .table td:hover::after {
@@ -111,10 +163,10 @@
   position: absolute;
   background-color: rgba(0, 0, 0, 0.50);
   color: #fff;
-  padding: 5px;
+  padding: 8px;
   border-radius: 3px;
   white-space: normal;
-  max-width: 300px;
+  max-width: 300px; 
   z-index: 1000;
   bottom: 100%;
   left: 50%;
@@ -133,9 +185,10 @@
   white-space: nowrap; 
   overflow: hidden;
   text-overflow: ellipsis; 
-  max-width: 150px; 
+  max-width: 300px; 
   vertical-align: middle; 
 }
+
 
 .table-responsive {
   overflow-x: auto; 
@@ -143,13 +196,13 @@
 
 .table {
   width: 100%; 
-  table-layout: fixed;
+  table-layout: auto; 
   word-wrap: break-word; 
 }
 
 .table th, .table td {
   border: 1px solid #ddd; 
-  padding: 8px; 
+  padding: 6px; 
 }
 
 .table th {
@@ -164,8 +217,11 @@
   white-space: normal; 
   overflow: visible; 
   text-overflow: clip; 
-  max-width: 200px; 
+  max-width: 150px;
+  overflow-wrap: break-word; 
 }
+
+
 
 .table td:hover { 
   white-space: normal; 
@@ -173,5 +229,48 @@
   position: relative; 
 }
 
+.th-top {
+  flex-wrap: wrap; 
+  gap: 5px; 
+  min-height: 40px; 
+  align-items: flex-start; 
+}
 
+.th-top span:first-child {
+  white-space: normal;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.2;
+  flex: 1; 
+  min-width: 0; 
+}
 
+.th-sort-icon {
+  flex-shrink: 0; 
+  width: 20px; 
+  text-align: right;
+  opacity: 0.7;
+}
+
+.th-sort-icon:hover {
+  opacity: 1; 
+}
+
+.th-sort-icon svg {
+  display: block; 
+}
+
+.th-flex th {
+  min-width: 200px; 
+  height: auto;
+}
+
+.bi-arrow-down-up.asc {
+  transform: rotate(180deg); 
+  transition: transform 0.2s ease;
+}
+
+.bi-arrow-down-up.desc {
+  transform: rotate(0deg); 
+  transition: transform 0.2s ease;
+}

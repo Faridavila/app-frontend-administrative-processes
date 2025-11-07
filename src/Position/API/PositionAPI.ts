@@ -2,23 +2,8 @@ import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { PositionTypes } from "../Types/PositionTypes";
 import { BASE_URL_APIS_WORKFLOW } from "../../constants";
 
-//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/currency-type';
-const URL: string = `${BASE_URL_APIS_WORKFLOW}/api/v1/back-user-service/position`;
-
-export async function GetPositionId(id: number): Promise<ObjectResponse<PositionTypes> | null> {
-    try {
-        const response = await fetch(`${URL}/get/${id}`);
-        if (response.ok) {
-            const data: ObjectResponse<PositionTypes> = await response.json();
-            return data;
-        } else {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        return null;
-    }
-}
+const URL = 'http://localhost:8081/api/v1/back-user-service/position';
+//const URL: string = `${BASE_URL_APIS_WORKFLOW}/api/v1/back-user-service/position`;
 
 export const GetPosition = async (
   page: number,
@@ -74,6 +59,7 @@ export async function CreatePosition(branchDto: PositionTypes): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
@@ -134,6 +120,7 @@ export async function UpdatePosition(id: number, branchDto: PositionTypes): Prom
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
@@ -148,6 +135,7 @@ export async function DeletePosition(id: number): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 

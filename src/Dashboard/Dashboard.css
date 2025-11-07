@@ -1,0 +1,158 @@
+.home-scope{
+  --home-panel:#ffffff;
+  --home-card-border: rgba(15,23,42,.08);
+  --home-shadow: 0 10px 30px rgba(15,23,42,.08);
+  --home-radius: 16px;
+
+  --home-green-100:#d1fae5;
+  --home-amber-100:#fde68a;
+  --home-rose-100:#fecaca;
+
+  --home-indigo-500:#4f46e5;
+  --home-green-500:#10b981;
+  --home-orange-500:#f97316;
+  --home-violet-500:#8b5cf6;
+  --home-pink-500:#ec4899;
+
+
+  --home-ink-900:#0f172a;  
+  --home-ink-700:#2a3039;  
+  --home-ink-500:#6b7280;   
+}
+
+
+.home-scope .home-card{
+  background: var(--home-panel);
+  border: 1px solid var(--home-card-border);
+  border-radius: var(--home-radius);
+  box-shadow: var(--home-shadow);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.home-scope .home-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(15,23,42,.12);
+  border-color: rgba(15,23,42,.14);
+}
+
+.home-scope .home-metric__title{
+  font-size:.95rem; font-weight:700; color:var(--home-ink-700);
+}
+.home-scope .home-chip{
+  width:38px;height:38px; display:grid; place-items:center;
+  border-radius:12px; color:#0f172a;
+}
+.home-scope .home-metric__value{
+  margin-top:6px;
+  font-size:clamp(1.6rem,3.5vw,2.2rem);
+  font-weight:900; color:var(--home-ink-900);
+  letter-spacing:.2px;
+}
+.home-scope .home-metric__caption{
+  margin-top:6px; font-size:.92rem; color:var(--home-ink-500);
+}
+.home-scope .home-metric__caption.is-up{ color:#16a34a; }  
+.home-scope .home-metric__caption.is-warn{ color:#dc2626; }
+
+
+.home-scope .home-badge{
+  width:42px;height:42px; display:grid; place-items:center;
+  border-radius:12px; color:#fff;
+}
+.home-scope .home-module__title{
+  font-size:1.05rem; font-weight:800; color:var(--home-ink-900);
+}
+.home-scope .home-module__subtitle{
+  font-size:.95rem; color:var(--home-ink-500);
+}
+.home-scope .home-module__kpi{
+  font-size:1.6rem; font-weight:900; color:var(--home-ink-900);
+}
+.home-scope .home-module__kpi-caption{
+  font-size:.92rem; color:var(--home-ink-500);
+}
+.home-scope .home-chevron{ color:var(--home-ink-500); }
+
+
+@media (max-width: 992px){
+  .home-scope .home-card{ border-radius:14px; }
+}
+@media (max-width: 640px){
+  .home-scope .home-card{ border-radius:12px; }
+}
+
+/* ===================================================== */
+/*                   TEMA OSCURO OVERRIDES               */
+/* Cambia .dark-layout si tu app usa otro selector        */
+/* ===================================================== */
+.dark-layout .home-scope{
+  --home-panel: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.02));
+  --home-card-border: rgba(255,255,255,.07);
+  --home-shadow: 0 10px 28px rgba(0,0,0,.40);
+
+  --home-ink-900:#e9eef7;
+  --home-ink-700:#cbd5e1;
+  --home-ink-500:#94a3b8;
+}
+
+.dark-layout .home-scope .home-card{
+  background: var(--home-panel);
+  border: 1px solid var(--home-card-border);
+  box-shadow: var(--home-shadow);
+  backdrop-filter: blur(2px);
+}
+.dark-layout .home-scope .home-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0,0,0,.5);
+  border-color: rgba(255,255,255,.10);
+}
+
+
+.dark-layout .home-scope .home-metric__title,
+.dark-layout .home-scope .home-module__title{ color: var(--home-ink-700); }
+
+.dark-layout .home-scope .home-metric__value,
+.dark-layout .home-scope .home-module__kpi{ color: var(--home-ink-900); }
+
+.dark-layout .home-scope .home-module__subtitle,
+.dark-layout .home-scope .home-module__kpi-caption{ color: var(--home-ink-500); }
+
+.dark-layout .home-scope .home-chip{ color:#0b1220; }
+.dark-layout .home-scope .home-badge{ color:#fff; }
+.dark-layout .home-scope .home-chevron{ color:#9aa6bf; }
+
+.dark-layout .home-scope .home-metric__caption.is-up{ color:#34d399; }
+.dark-layout .home-scope .home-metric__caption.is-warn{ color:#f87171; }
+
+
+.home-scope .home-card .card-body {
+  padding: 6px 10px; 
+}
+
+.home-metric__value {
+  margin-top: 4px; 
+  margin-bottom: 2px;
+}
+
+.home-module__title {
+  font-size: 1rem; 
+  margin-bottom: 2px;
+}
+.home-module__subtitle {
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.home-module__kpi {
+  margin-bottom: 2px;
+}
+.clickable-card {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.clickable-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+

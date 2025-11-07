@@ -1,37 +1,19 @@
-import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
-import { Warehouse } from "../Types/WarehouseTypes"; // Define el tipo de datos para Warehouse
+import { WarehouseTypes } from "../Types/WarehouseTypes"; 
 import { BASE_URL_APIS_CORE } from "../../constants";
 
-// Define la URL base para la API de Warehouse y la URL específica para los tipos de bodega
-const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/warehouse`;
 
-export async function GetWarehouseById(
-  id: number
-): Promise<ObjectResponse<Warehouse> | null> {
-  try {
-    const response = await fetch(`${URL}/get/${id}`);
-    if (response.ok) {
-      const data: ObjectResponse<Warehouse> = await response.json();
-      return data;
-    } else {
-      throw new Error(
-        `La solicitud a la API falló con estado ${response.status}`
-      );
-    }
-  } catch (error) {
-    console.error("Error al llamar a la API:", error);
-    return null;
-  }
-}
+//const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/warehouse`;
+const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/warehouse';
 
-// Obtener warehouses con paginación, orden y filtros
+
+
 export const GetWarehouses = async (
   page: number,
   size: number,
-  filters: Partial<Warehouse>,
+  filters: Partial<WarehouseTypes>,
   sortOrder: string = "ASC",
-  sortBy?: keyof Warehouse
-): Promise<Warehouse[]> => {
+  sortBy?: keyof WarehouseTypes
+): Promise<WarehouseTypes[]> => {
   const queryParams = new URLSearchParams();
 
   queryParams.append("page", String(page));
@@ -46,7 +28,7 @@ export const GetWarehouses = async (
   }
 
   Object.keys(filters).forEach((key) => {
-    const value = filters[key as keyof Warehouse];
+    const value = filters[key as keyof WarehouseTypes];
     if (value !== undefined && value !== null && value !== "") {
       queryParams.append(key, String(value));
     }
@@ -63,8 +45,8 @@ export const GetWarehouses = async (
   }
 };
 
-// Crear un nuevo warehouse
-export async function CreateWarehouse(warehouseDto: Warehouse): Promise<void> {
+
+export async function CreateWarehouse(warehouseDto: WarehouseTypes): Promise<void> {
   try {
     const response = await fetch(`${URL}/create`, {
       method: "POST",
@@ -83,14 +65,14 @@ export async function CreateWarehouse(warehouseDto: Warehouse): Promise<void> {
   }
 }
 
-// Buscar warehouses con filtros avanzados
+
 export const GetSearchWarehouses = async (
   page: number,
   size: number,
-  filters: Partial<Warehouse>,
+  filters: Partial<WarehouseTypes>,
   sortOrder: string = "ASC",
-  sortBy?: keyof Warehouse
-): Promise<Warehouse[]> => {
+  sortBy?: keyof WarehouseTypes
+): Promise<WarehouseTypes[]> => {
   const queryParams = new URLSearchParams();
 
   queryParams.append("page", String(page));
@@ -100,7 +82,7 @@ export const GetSearchWarehouses = async (
   if (sortBy) queryParams.append("sortBy", String(sortBy));
 
   Object.keys(filters).forEach((key) => {
-    const value = filters[key as keyof Warehouse];
+    const value = filters[key as keyof WarehouseTypes];
     if (value !== undefined && value !== null && value !== "") {
       queryParams.append(key, String(value));
     }
@@ -117,14 +99,14 @@ export const GetSearchWarehouses = async (
   }
 };
 
-// Actualizar un warehouse existente
+
 export async function UpdateWarehouse(
   id: number,
-  warehouseDto: Warehouse
+  warehouseDto: WarehouseTypes
 ): Promise<void> {
   try {
     const response = await fetch(`${URL}/update/${id}`, {
-      method: "POST", // Se utiliza POST ya que el endpoint Java se configuró así
+      method: "POST", 
       headers: {
         "Content-Type": "application/json",
       },
@@ -140,7 +122,6 @@ export async function UpdateWarehouse(
   }
 }
 
-// Eliminar (inactivar) un warehouse
 export async function DeleteWarehouse(id: number): Promise<void> {
   try {
     const response = await fetch(`${URL}/delete/${id}`, {
@@ -156,12 +137,12 @@ export async function DeleteWarehouse(id: number): Promise<void> {
   }
 }
 
-// Obtener todos los warehouses sin paginación
-export async function GetAllWarehousesNoPage(): Promise<Warehouse[] | null> {
+
+export async function GetAllWarehousesNoPage(): Promise<WarehouseTypes[] | null> {
   try {
     const response = await fetch(`${URL}/no-page/getAllWarehouses`);
     if (response.ok) {
-      const data: Warehouse[] = await response.json();
+      const data: WarehouseTypes[] = await response.json();
       return data;
     } else {
       throw new Error(

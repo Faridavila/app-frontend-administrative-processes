@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
       <footer className="footer footer-static footer-light vertical-layout vertical-menu-modern">
         <p className="clearfix mb-0">
           <span className="float-end d-block d-md-inline-block mt-25">
-            COPYRIGHT &copy; 2025
+            COPYRIGHT &copy; {new Date().getFullYear()}
             <a
               className="ms-25"
               href="#"

@@ -35,7 +35,8 @@ const AreaCRUD = () => {
       required: true,
       minLength: 2,
       maxLength: 100,
-      regex: /^[A-Za-z\s]+$/,
+      regex: /^[A-Za-záéíóúÁÉÍÓÚ\s]+$/
+,
     },
   ];
 
@@ -70,7 +71,9 @@ const AreaCRUD = () => {
                 deleteItem={DeleteArea}
                 itemTemplate={itemTemplate}
                 columns={columns}
+                filterButtonOrder={1}
                 sortFieldMap={AreaSortFieldMap}
+                pageTitle="Area" 
               />
             </div>
           </div>

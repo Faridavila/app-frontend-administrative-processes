@@ -47,6 +47,7 @@ const UserCRUD = () => {
       required: true,
       minLength: 2,
       maxLength: 100,
+      regex: /^[A-Za-záéíóúÁÉÍÓÚ0-9\s\.,;¡!¿?(){}[\]@#%&*+_\\/-]+$/,
     },
     {
       key: "login",
@@ -54,27 +55,31 @@ const UserCRUD = () => {
       required: true,
       minLength: 2,
       maxLength: 100,
+      regex: /^[A-Za-záéíóúÁÉÍÓÚ0-9\s\.,;¡!¿?(){}[\]@#%&*+_\\/-]+$/,
     },
     {
       key: "password",
       label: "Contraseña",
       required: true,
-      minLength: 2,
+      minLength: 8,
       maxLength: 100,
-      render: (item: UserTypes) => (
-        <span>{"*".repeat(item.password.length)}</span>
-      ),
-    },
+      render: (item: UserTypes) => {
+      const passwordLength = 15; 
+      return <span>{"*".repeat(passwordLength)}</span>; 
+   },
+  },
     {
       key: "email",
       label: "Correo",
       required: true,
       minLength: 2,
       maxLength: 100,
+      regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
     },
     {
       key: "area",
       label: "Area",
+      required: true,
       render: (item: UserTypes) => {
         return item.area?.description || "";
       },
@@ -82,6 +87,7 @@ const UserCRUD = () => {
     {
       key: "rol",
       label: "Rol",
+      required: true,
       render: (item: UserTypes) => {
         return item.rol?.name || "";
       },
@@ -89,6 +95,7 @@ const UserCRUD = () => {
     {
       key: "position",
       label: "Cargo",
+      required: true,
       render: (item: UserTypes) => {
         return item.position?.description || "";
       },
@@ -96,56 +103,58 @@ const UserCRUD = () => {
     {
       key: "company",
       label: "Empresa",
+      required: true,
       render: (item: UserTypes) => {
         return item.company?.companyName || "";
       },
     },
   ];
 
-  const renderCustomFormField = (
-    colKey: keyof UserTypes,
-    value: string,
-    onChange: (newValue: string) => void
-  ) => {
-    if (colKey === "company") {
-      return (
-        <CompanySelect
-          selectedValue={parseInt(value, 10)}
-          onChange={(newDepartmentId: number) =>
-            onChange(newDepartmentId.toString())
-          }
-        />
-      );
-    } else if (colKey === "area") {
-      return (
-        <AreaSelect
-          selectedValue={parseInt(value, 10)}
-          onChange={(newDepartmentId: number) =>
-            onChange(newDepartmentId.toString())
-          }
-        />
-      );
-    } else if (colKey === "rol") {
-      return (
-        <RolSelect
-          selectedValue={parseInt(value, 10)}
-          onChange={(newDepartmentId: number) =>
-            onChange(newDepartmentId.toString())
-          }
-        />
-      );
-    } else if (colKey === "position") {
-      return (
-        <PositionSelect
-          selectedValue={parseInt(value, 10)}
-          onChange={(newDepartmentId: number) =>
-            onChange(newDepartmentId.toString())
-          }
-        />
-      );
-    }
-    return null;
-  };
+const renderCustomFormField = (
+  colKey: keyof UserTypes,
+  value: string,
+  onChange: (newValue: string) => void
+) => {
+  if (colKey === "company") {
+    return (
+      <CompanySelect
+        selectedValue={parseInt(value, 10)}
+        onChange={(newCompanyId: number) =>
+          onChange(newCompanyId.toString())
+        }
+      />
+    );
+  } else if (colKey === "area") {
+    return (
+      <AreaSelect
+        selectedValue={parseInt(value, 10)}
+        onChange={(newAreaId: number) =>
+          onChange(newAreaId.toString())
+        }
+      />
+    );
+  } else if (colKey === "rol") {
+    return (
+      <RolSelect
+        selectedValue={parseInt(value, 10)}
+        onChange={(newRolId: number) =>
+          onChange(newRolId.toString())
+        }
+      />
+    );
+  } else if (colKey === "position") {
+    return (
+      <PositionSelect
+        selectedValue={parseInt(value, 10)}
+        onChange={(newPositionId: number) =>
+          onChange(newPositionId.toString())
+        }
+      />
+    );
+  }
+  return null;
+};
+
   return (
     <div className="app-content content">
       <div className="content-overlay"></div>
@@ -175,8 +184,10 @@ const UserCRUD = () => {
                 deleteItem={DeleteUser}
                 itemTemplate={itemTemplate}
                 columns={columns}
+                filterButtonOrder={1}
                 sortFieldMap={UserSortFieldMap}
                 renderCustomFormField={renderCustomFormField}
+                pageTitle="Usuarios" 
               />
             </div>
           </div>

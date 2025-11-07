@@ -20,10 +20,10 @@ import EconomicActivityCRUD from "./EconomicActivity/Components/EconomicActivity
 import CategoryCRUD from "./Category/Components/CategoryComponents.tsx";
 import CityCRUD from "./City/Components/City.tsx";
 import CurrencyTipeCRUD from "./CurrencyType/Components/CurrencyType.tsx";
-import ForgotPassword from "./Login/ForgotPassword.tsx";
+import ForgotPassword from "./Login/Components/ForgotPassword.tsx";
 import AuthCRUD from "./Auth/Components/Auth.tsx";
-import LoginPage from "./Login/login.tsx";
-import Home from "./Home/Home.tsx";
+import LoginPage from "./Login/Components/login.tsx";
+import Dashboard from "./Dashboard/Dashboard.tsx";
 import SolicitudForm from "./RadicarSolicitud/Components/SolicitudForm.tsx";
 import WarehouseForm from "./Warehouse/Components/WarehouseForm.tsx";
 import RegistroProductoWizard from "./RegistrarProducto/Components/RegistrarProducto.tsx";
@@ -51,6 +51,16 @@ import SellerCRUD from "./Seller/Components/SellerCRUD.tsx";
 import ProductCRUD from "./Product/Components/ProductCRUD.tsx";
 import DiscountTypeCRUD from "./DiscountType/Components/DiscountTypeCRUD.tsx";
 import DiscountCRUD from "./Discount/Components/DiscountCRUD.tsx";
+import SuppliersCRUD from "./Suppliers/Components/Suppliers.tsx";
+import InventoryCRUD from "./Inventory/Components/InventoryCRUD.tsx";
+import InventoryHistory from "./InventoryHistory/Components/InventoryHistory.tsx";
+import ShoppingSuppliers from "./ShoppingSuppliers/Components/ShoppingSuppliers.tsx"
+import SupplierPendingProduct from "./SupplierPendingProducts/Components/SupplierPendingProduct.tsx";
+import EmployeeCRUD from "./Employee/Components/Employee.tsx";
+import EmployeePayment from "./EmployeePayments/Components/EmployeePayment.tsx";
+import EmployeeHistoryCRUD from "./EmployeeHistory/Components/EmployeeHistory.tsx";
+import SupplierRateCRUD from "./SupplierRate/Components/SupplierRate.tsx";
+import NeighborhoodRateCRUD from "./NeighborhoodRate/Components/NeighborhoodRate.tsx";
 
 const router = createBrowserRouter([
   {
@@ -66,8 +76,8 @@ const router = createBrowserRouter([
         element: <Navigate to="/login" />,
       },
       {
-        path: "/home",
-        element: <Home />,
+        path: "/dashboard",
+        element: <Dashboard />,
       },
       {
         path: "/paymentMethod",
@@ -87,8 +97,53 @@ const router = createBrowserRouter([
       },  
       {
         path: "/inventory",
+        element: <InventoryCRUD />,
+      },
+      {
+        path: "/product",
         element: <ProductCRUD />,
       },
+      
+       {
+        path: "/inventoryHistory",
+        element: <InventoryHistory />,
+      },
+        {
+        path: "/supplier",
+        element: <SuppliersCRUD />,
+      },
+      {
+        path: "/purchaseSupplier",
+        element: <ShoppingSuppliers/>,
+      },
+        {
+        path: "/supplierPendingProduct",
+        element: <SupplierPendingProduct/>,
+      },
+      {
+        path: "/employee",
+        element: <EmployeeCRUD/>,
+      },
+      {
+        path: "/employeePayment",
+        element: <EmployeePayment/>,
+      },
+      {
+        path: "/employeeHistory",
+        element: <EmployeeHistoryCRUD/>,
+      },
+      {
+        path: "/supplierRate",
+        element: <SupplierRateCRUD/>,
+      },
+      {
+        path: "/neighborhoodRate",
+        element: <NeighborhoodRateCRUD/>,
+      },
+
+
+
+
       {
         path: "/department",
         element: <DepartmentCRUD />,

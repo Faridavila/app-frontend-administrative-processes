@@ -14,68 +14,126 @@ const CategoryCRUD = () => {
   const itemTemplate = (): CategoryTypes => ({
     id: 0,
     nameCategory: "",
-    soldOutValue:"",
+    soldOutValue: "",
     fewUnits: "",
+    image: "",
     status: "ACTIVE",
   });
 
   const columns: {
-  key: keyof CategoryTypes;
-  label: string;
-  required?: boolean;
-  minLength?: number;
-  maxLength?: number;
-  regex?: RegExp;
-  hiddenInCreate?: boolean;
-  hiddenInEdit?: boolean;
-  hidden?: boolean; 
-  dependentOn?: keyof CategoryTypes; 
-  validationMessage?: string;      
-}[] = [
-  {
-    key: "id",
-    label: "ID",
-    hiddenInCreate: true,
-    hiddenInEdit: true,
-  },
-  {
-    key: "nameCategory",
-    label: "Tipo de Categoría",
-    required: true,
-    minLength: 2,
-    maxLength: 100,
-    regex: /^[A-Za-z\s]+$/
-  },
-  {
-    key: "soldOutValue",
-    label: "Rango de unidades agotadas",
-    required: true,
-    regex: /^\d+$/,
-  },
-  {
-    key: "fewUnits",
-    label: "Rango de pocas unidades",
-    required: true,
-    dependentOn: "soldOutValue", 
-    validationMessage: "El valor debe ser mayor que 'Rango de unidades agotadas'.",
-    regex: /^\d+$/
-  },
-  {
-    key: "status",
-    label: "Estado",
-    hiddenInCreate: true,
-    hiddenInEdit: true,
-    hidden: true, 
-  },
-];
+    key: keyof CategoryTypes;
+    label: string;
+    required?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    regex?: RegExp;
+    hiddenInCreate?: boolean;
+    hiddenInEdit?: boolean;
+    hidden?: boolean;
+    editable?: boolean;
+    dependentOn?: keyof CategoryTypes;
+    validationMessage?: string;
+    render?: (item: CategoryTypes) => React.ReactNode;
+    imageOptions?: {
+      maxSize: number;
+      acceptedFormats: string[];
+    };
+  }[] = [
+      {
+        key: "id",
+        label: "ID",
+        hiddenInCreate: true,
+        hiddenInEdit: true,
+      },
+      {
+        key: "nameCategory",
+        label: "Tipo de Categoría",
+        required: true,
+        minLength: 2,
+        maxLength: 30,
+        regex: /^[A-Za-záéíóúÁÉÍÓÚ0-9\s\.,;¡!¿?(){}[\]@#%&*+_\\/-]+$/,
+      },
+      {
+        key: "soldOutValue",
+        label: "Rango de unidades agotadas",
+        required: true,
+        regex: /^\d+$/,
+      },
+      {
+        key: "fewUnits",
+        label: "Rango de pocas unidades",
+        required: true,
+        dependentOn: "soldOutValue",
+        validationMessage: "El valor debe ser mayor que 'Rango de unidades agotadas'.",
+        regex: /^\d+$/
+      },
+      {
+        key: "image",
+        label: "Imagen",
+        required: true,
+        imageOptions: {
+          maxSize: 2 * 1024 * 1024,
+          acceptedFormats: ["image/jpeg", "image/png", "image/webp"],
+        },
+        render: (item) =>
+          item.image ? (
+            <img
+              src={item.image}
+              alt="Imagen"
+              style={{ width: "80px", height: "80px", objectFit: "cover" }}
+            />
+          ) : (
+            "N/A"
+          ),
+        editable: true,
+      },
+      {
+        key: "status",
+        label: "Estado",
+        hiddenInCreate: true,
+        hiddenInEdit: true,
+        hidden: true,
+      },
+    ];
 
   const renderCustomFormField = (
-    _colKey: keyof CategoryTypes,
-    _value: string,
-    _onChange: (newValue: string) => void
+    colKey: keyof CategoryTypes,
+    value: any,
+    onChange: (newValue: any) => void
   ) => {
+    if (colKey === "image") {
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                onChange(file);
+              }
+            }}
+          />
+          {value instanceof File && (
+            <img
+              src={URL.createObjectURL(value)}
+              alt="Vista previa"
+              style={{
+                width: "80px",
+                height: "80px",
+                objectFit: "cover",
+                borderRadius: "8px",
+                border: "1px solid #ccc",
+              }}
+            />
+          )}
+        </div>
+      );
+    }
+
     return null;
   };
+
 
   return (
     <div className="app-content content">
@@ -107,8 +165,10 @@ const CategoryCRUD = () => {
                 deleteItem={DeleteCategory}
                 itemTemplate={itemTemplate}
                 columns={columns}
+                filterButtonOrder={1}
                 sortFieldMap={categorySortFieldMap}
                 renderCustomFormField={renderCustomFormField}
+                pageTitle="Categorías"
               />
             </div>
           </div>

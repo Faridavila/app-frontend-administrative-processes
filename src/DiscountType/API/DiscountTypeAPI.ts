@@ -1,24 +1,8 @@
-import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import {DiscountTypeTypes } from "../Types/DiscountTypeTypes";
 //import { BASE_URL_APIS_CORE } from "../../constants";
 
 const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/discoutn-type';
 //const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/DiscountType`;
-
-export async function GetDiscountTypeId(id: number): Promise<ObjectResponse<DiscountTypeTypes> | null> {
-    try {
-        const response = await fetch(`${URL}/get/${id}`);
-        if (response.ok) {
-            const data: ObjectResponse<DiscountTypeTypes> = await response.json();
-            return data;
-        } else {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        return null;
-    }
-}
 
 export const GetDiscountType = async (
   page: number,
@@ -74,6 +58,7 @@ export async function CreateDiscountType(branchDto:DiscountTypeTypes): Promise<v
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
@@ -134,6 +119,7 @@ export async function UpdateDiscountType(id: number, branchDto:DiscountTypeTypes
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
@@ -148,6 +134,7 @@ export async function DeleteDiscountType(id: number): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 

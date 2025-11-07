@@ -9,14 +9,17 @@ import {
   GetSearchClient,
 } from "../API/ClientAPI";
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
+import IdentificationTypeSelect from "./IdentificationTypeSelect";
 
 const ClientCRUD = () => {
   const itemTemplate = (): ClientTypes => ({
     id: 0,
     name: "",
+    typeIdentificationId: "",
     identification: "",
     address: "",
     cityName: "",
+    email: "",
     phone: "",
     status: "ACTIVE",
   });
@@ -34,12 +37,30 @@ const ClientCRUD = () => {
   }[] = [
     {key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true },
     {key: "name",label: "Nombre",},
-    {key: "identification",label: "Direccion",},
-    {key: "address",label: "Identificacion",},
+    {key: "typeIdentificationId",label: "Tipo de identificacion",},
+    {key: "identification",label: "Identificacion",},
+    {key: "address",label: "Direccion",},
     {key: "cityName",label: "Ciudad",},
+    {key: "email",label: "Correo",},
     {key: "phone",label: "Celular",},
   ];
 
+    const renderCustomFormField = (
+    colKey: keyof ClientTypes,
+    value: any,
+    onChange: (newValue: any) => void
+  ) => {
+    if (colKey === "typeIdentificationId") {
+      return (
+        <IdentificationTypeSelect
+          selectedValue={parseInt(value, 10)}
+          onChange={(newCategoryId: number) => onChange(newCategoryId.toString())}
+        />
+      );
+    }
+
+    return null;
+  };
 
   return (
     <div className="app-content content">
@@ -70,7 +91,10 @@ const ClientCRUD = () => {
               deleteItem={DeleteClient}
               itemTemplate={itemTemplate}
               columns={columns}
+              filterButtonOrder={1}
               sortFieldMap={ClientSortFieldMap}
+              pageTitle="Clientes"
+              renderCustomFormField={renderCustomFormField}
             />
           </div>
         </div>

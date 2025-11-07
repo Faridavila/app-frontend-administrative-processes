@@ -35,7 +35,7 @@ const PositionCRUD = () => {
       required: true,
       minLength: 2,
       maxLength: 100,
-      regex: /^[A-Za-z\s]+$/,
+      regex: /^[A-Za-záéíóúÁÉÍÓÚ0-9\s\.,;¡!¿?(){}[\]@#%&*+_\\/-]+$/,
     },
   ];
 
@@ -70,7 +70,9 @@ const PositionCRUD = () => {
                 deleteItem={DeletePosition}
                 itemTemplate={itemTemplate}
                 columns={columns}
+                filterButtonOrder={1}
                 sortFieldMap={PositionSortFieldMap}
+                pageTitle="Cargos" 
               />
             </div>
           </div>

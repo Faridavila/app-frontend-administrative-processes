@@ -1,24 +1,9 @@
-import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import {ClientTypes } from "../Types/ClientTypes";
+import {IdentificationTypeTypes} from '../Types/IdentificacionTypeTypes'
 //import { BASE_URL_APIS_CORE } from "../../constants";
 
 const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/client';
 //const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/cash-register`;
-
-export async function GetClientId(id: number): Promise<ObjectResponse<ClientTypes> | null> {
-    try {
-        const response = await fetch(`${URL}/get/${id}`);
-        if (response.ok) {
-            const data: ObjectResponse<ClientTypes> = await response.json();
-            return data;
-        } else {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        return null;
-    }
-}
 
 export const GetClient = async (
   page: number,
@@ -74,6 +59,7 @@ export async function CreateClient(branchDto:ClientTypes): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
@@ -134,6 +120,7 @@ export async function UpdateClient(id: number, branchDto:ClientTypes): Promise<v
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
@@ -148,6 +135,7 @@ export async function DeleteClient(id: number): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
@@ -163,6 +151,21 @@ export async function GetAllClientNoPage(identification: string): Promise<Client
   } catch (error) {
       console.error("Error al llamar a la API:", error);
       return null;
+  }
+}
+
+export async function GetAllIdentificationType(): Promise<IdentificationTypeTypes[]> {
+  try {
+    const response = await fetch(`${URL}/getIdentificationType`);
+    if (response.ok) {
+      const data: IdentificationTypeTypes[] = await response.json();
+      return data;
+    } else {
+      throw new Error(`La solicitud a la API falló ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error al llamar a la API:", error);
+    return [];
   }
 }
 

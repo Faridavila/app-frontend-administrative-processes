@@ -18,6 +18,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ isMenuCollapsed }) => {
   const [username, setUsername] = useState<string | null>("");
+  const [rol, setRol] = useState<string | null>("");
   const [randomImage, setRandomImage] = useState<string>("");
 
   useEffect(() => {
@@ -26,8 +27,6 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed }) => {
 
     const images = [
       "/additional-assets/images/portrait/small/avatar-s-11.jpg",
-      "/additional-assets/images/portrait/small/avatar-s-12.jpg",
-      "/additional-assets/images/portrait/small/avatar-s-10.jpg",
       "/additional-assets/images/portrait/small/avatar-s-13.jpg",
     ];
 
@@ -39,32 +38,25 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed }) => {
 
   const menuOptions = [
     {
-      label: "Email",
-      icon: <FiMail style={{ fontSize: "20px" }} />,
-      link: "/app-email",
-    },
-    {
-      label: "Chat",
-      icon: <FiMessageCircle style={{ fontSize: "20px" }} />,
-      link: "/app-chat",
-    },
-    {
       label: "Calendar",
       icon: <FiCalendar style={{ fontSize: "20px" }} />,
       link: "/CalendarComponent",
-    },
-    {
-      label: "Todo",
-      icon: <FiCheckSquare style={{ fontSize: "20px" }} />,
-      link: "/app-todo",
     },
   ];
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("username");
+    localStorage.removeItem("rol"); 
     navigate("/login");
   };
+
+    useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    const storedRol = localStorage.getItem("rol"); 
+    setUsername(storedUsername);
+    setRol(storedRol);
+  }, []);
 
   return (
     <nav
@@ -100,6 +92,8 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed }) => {
         <ul className="nav navbar-nav align-items-center ms-auto">
           <ThemeToggle />
 
+          {/* 
+
           <li className="nav-item dropdown dropdown-cart me-25">
             <a className="nav-link" href="#" data-bs-toggle="dropdown">
               <FiShoppingCart style={{ fontSize: "20px" }} />{" "}
@@ -130,6 +124,8 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed }) => {
               </li>
             </ul>
           </li>
+
+          */ }
 
           <li className="nav-item dropdown dropdown-notification me-25">
             <a className="nav-link" href="#" data-bs-toggle="dropdown">
@@ -167,14 +163,14 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed }) => {
             >
               <div className="user-nav d-sm-flex d-none">
                 <span className="user-name fw-bolder">
-                  {username || "Guest"}
+                  {username || "Usuario"}
                 </span>
-                <span className="user-status">Admin</span>
+                 <span className="user-status">{rol || "Admin"}</span> 
               </div>
               <span className="avatar">
                 <img
                   className="round"
-                  src={randomImage} // Mostrar imagen aleatoria
+                  src={randomImage} 
                   alt="avatar"
                   height="40"
                   width="40"
@@ -185,7 +181,8 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed }) => {
             <div
               className="dropdown-menu dropdown-menu-end"
               aria-labelledby="dropdown-user"
-            >
+              >
+                {/* 
               <NavLink className="dropdown-item" to="/page-profile">
                 <i
                   className="me-50"
@@ -218,11 +215,13 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed }) => {
                 ></i>{" "}
                 Chats
               </NavLink>
+               */}
               <div className="dropdown-divider"></div>
               <NavLink
                 className="dropdown-item"
-                to="/page-account-settings-account"
+                to="/user"
               >
+                
                 <i
                   className="me-50"
                   data-feather="settings"
@@ -230,6 +229,8 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed }) => {
                 ></i>{" "}
                 Settings
               </NavLink>
+             
+
               <a className="dropdown-item" onClick={handleLogout}>
                 <i
                   className="me-50"

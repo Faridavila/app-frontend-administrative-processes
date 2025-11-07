@@ -16,54 +16,128 @@ const ProductCRUD = () => {
   const itemTemplate = (): ProductTypes => ({
     id: 0,
     productName: "",
-    price: "",
+    price: 0,
     description: "",
     quantity: 0,
     categoryId: 0,
     categoryName: "",
+    image: "",
+    purchasePrice: 0,
     status: "", 
   });
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "agotado":
-        return "red"; 
-      case "pocas unidades":
-        return "yellow";
-      case "disponible":
-        return "green"; 
-      default:
-        return "transparent"; 
-    }
-  };
 
   const columns: {
     key: keyof ProductTypes;
     label: string;
-    hidden?: boolean;
     required?: boolean;
     minLength?: number;
     maxLength?: number;
     regex?: RegExp;
     hiddenInCreate?: boolean;
     hiddenInEdit?: boolean;
+    hidden?: boolean; 
+    editable?: boolean;
+    dependentOn?: keyof ProductTypes; 
+    validationMessage?: string;    
+    render?: (item: ProductTypes) => React.ReactNode;
+    imageOptions?: {
+      maxSize: number;
+      acceptedFormats: string[];
+    };
   }[] = [
     { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true },
-    { key: "productName", label: "Nombre del producto" },
-    { key: "price", label: "Precio" },
-    { key: "description", label: "Descripcion" },
-    { key: "quantity", label: "Cantidad" },
-    { key: "categoryId", label: "Categoria", hidden: true },
-    { key: "categoryName", label: "Categoria", hiddenInCreate: true, hiddenInEdit: true },
-    { key: "status", label: "Estado", hiddenInCreate: true, hiddenInEdit: true },
+    { key: "productName", 
+      label: "Nombre del producto",
+      required: true,
+      minLength: 2,
+      maxLength: 40,
+      regex: /^[A-Za-záéíóúÁÉÍÓÚ0-9\s\.,;¡!¿?(){}[\]@#%&*+_\\/-]+$/, },
+    { key: "price", 
+      label: "Precio de venta",
+      required: true,
+      regex:/^\d+(\.\d+)?$/},
+    { key: "description", 
+      label: "Medidas", 
+      required: true,
+      minLength: 2,
+      maxLength: 80,
+      regex: /^[A-Za-záéíóúÁÉÍÓÚ0-9\s\.,;¡!¿?(){}[\]@#%&*+_\\/-]+$/, },
+    { key: "purchasePrice", 
+      label: "Precio de compra", 
+      required: true,
+      regex:/^\d+(\.\d+)?$/},
+    { key: "quantity", 
+      hidden: true,
+      label: "Cantidad inicial",
+      required: true,
+      regex: /^\d+$/ },
+    { key: "categoryId", 
+      label: "Categoria", 
+      required:true,
+      hidden: true },
+    { key: "categoryName", 
+      label: "Categoria",
+      required:true,
+      hiddenInCreate: true, 
+      hiddenInEdit: true },
+    {
+      key: "image",
+      label: "Imagen",
+      required: true,
+      imageOptions: {
+        maxSize: 2 * 1024 * 1024,  
+        acceptedFormats: ["image/jpeg", "image/png", "image/webp"],
+      },
+      render: (item) =>
+        item.image ? (
+          <img
+            src={item.image}
+            alt="Imagen"
+            style={{ width: "80px", height: "80px", objectFit: "cover" }}
+          />
+        ) : (
+          "N/A"
+        ),
+      editable: true,
+    }
   ];
-
 
   const renderCustomFormField = (
     colKey: keyof ProductTypes,
-    value: string,
-    onChange: (newValue: string) => void
+    value: any,
+    onChange: (newValue: any) => void
   ) => {
+    if (colKey === "image") {
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                onChange(file); 
+              }
+            }}
+          />
+          {value instanceof File && (
+            <img
+              src={URL.createObjectURL(value)}
+              alt="Vista previa"
+              style={{
+                width: "80px",
+                height: "80px",
+                objectFit: "cover",
+                borderRadius: "8px",
+                border: "1px solid #ccc",
+              }}
+            />
+          )}
+        </div>
+      );
+    }
+
     if (colKey === "categoryId") {
       return (
         <CategorySelect
@@ -72,6 +146,7 @@ const ProductCRUD = () => {
         />
       );
     }
+
     return null;
   };
 
@@ -83,9 +158,9 @@ const ProductCRUD = () => {
         <div className="content-header row"></div>
         <div style={{ display: "flex", alignItems: "center" }}>
           <h3 className="content-body" style={{ margin: "0", fontSize: "21px" }}>
-            Gestión de Inventario
+            Gestión de Productos
           </h3>
-          <FavoritoButton path="/inventory" label="Inventario" />
+          <FavoritoButton path="/product" label="Productos" />
         </div>
         <p>
           Administre los productos mediante la creación, edición o eliminación de registros.
@@ -100,25 +175,10 @@ const ProductCRUD = () => {
               deleteItem={DeleteProduct}
               itemTemplate={itemTemplate}
               columns={columns}
+              filterButtonOrder={1}
               sortFieldMap={ProductSortFieldMap}
+              pageTitle="Productos" 
               renderCustomFormField={renderCustomFormField}
-              renderCustomColumn={(col, item) => {
-                if (col.key === 'status') {
-                  return (
-                    <span
-                      style={{
-                        backgroundColor: getStatusColor(item.status), 
-                        padding: '5px',
-                        borderRadius: '5px',
-                        color: '#fff',
-                      }}
-                    >
-                      {item.status}
-                    </span>
-                  );
-                }
-                return item[col.key];
-              }}
             />
           </div>
         </div>

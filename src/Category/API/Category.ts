@@ -47,21 +47,34 @@ export const GetCategory = async (
 
 
 export async function CreateCategory(
-  categoryDto: CategoryTypes
+  categoryDto: CategoryTypes,
+  imageFile: File | null
 ): Promise<void> {
   try {
+    const formData = new FormData();
+    
+    formData.append("nameCategory", categoryDto.nameCategory);
+    formData.append("soldOutValue", categoryDto.soldOutValue);
+    formData.append("fewUnits", categoryDto.fewUnits);
+
+    if (imageFile) {
+      formData.append("image", imageFile); 
+    }
+
     const response = await fetch(`${URL}/create`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(categoryDto),
+      body: formData, 
     });
+
     if (!response.ok) {
       throw new Error(`La solicitud a la API falló ${response.status}`);
     }
+
+    const data = await response.json();
+    console.log("Categoría creada:", data);
   } catch (error) {
     console.error("Error al llamar a la API:", error);
+    throw error;
   }
 }
 
@@ -109,24 +122,36 @@ export const GetSearchCategory = async (
 
 export async function UpdateCategory(
   id: number,
-  categoryDto: CategoryTypes
+  categoryDto: CategoryTypes,
+  imageFile: File | null
 ): Promise<void> {
   try {
+    const formData = new FormData();
+    
+   formData.append("nameCategory", categoryDto.nameCategory);
+   formData.append("soldOutValue", categoryDto.soldOutValue);
+   formData.append("fewUnits", categoryDto.fewUnits);
+
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
+
     const response = await fetch(`${URL}/update/${id}`, {
-      method: "PUT", 
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(categoryDto),
+      method: "PUT",
+      body: formData, 
     });
+
     if (!response.ok) {
       throw new Error(`La solicitud a la API falló ${response.status}`);
     }
+
+    const data = await response.json();
+    console.log("Categoría actualizada:", data);
   } catch (error) {
     console.error("Error al llamar a la API:", error);
+    throw error;
   }
 }
-
 
 export async function DeleteCategory(id: number): Promise<void> {
   try {
@@ -138,6 +163,7 @@ export async function DeleteCategory(id: number): Promise<void> {
     }
   } catch (error) {
     console.error("Error al llamar a la API:", error);
+    throw error;
   }
 }
 

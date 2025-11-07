@@ -7,12 +7,14 @@ import { GetAllEconomicActivityNoPage } from "../../EconomicActivity/API/Economi
 import { EconomicActivityTypes } from "../../EconomicActivity/Types/EconomicActivityTypes";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
-import FavoritoButton from "./../../FavoritoButton/components/FavoritoButton"; 
+import FavoritoButton from "./../../FavoritoButton/components/FavoritoButton";
+import HandLoadingSpinner from "../../Spinner/SpinnerAnimation";
 
 const MySwal = withReactContent(Swal);
 
 const CompanyPresentation: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [company, setCompany] = useState<CompanyType>({
     id: 0,
     companyName: "",
@@ -26,23 +28,22 @@ const CompanyPresentation: React.FC = () => {
     status: "ACTIVE",
   });
 
-  const [originalCompany, setOriginalCompany] = useState<CompanyType | null>(
-    null
-  );
-  const [economicActivities, setEconomicActivities] = useState<
-    EconomicActivityTypes[]
-  >([]);
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof CompanyType, string>>
-  >({});
+  const [originalCompany, setOriginalCompany] = useState<CompanyType | null>(null);
+  const [economicActivities, setEconomicActivities] = useState<EconomicActivityTypes[]>([]);
+  const [errors, setErrors] = useState<Partial<Record<keyof CompanyType, string>>>({});
   const [isSaveDisabled, setIsSaveDisabled] = useState(true);
 
   useEffect(() => {
     const fetchCompanyData = async () => {
-      const data = await GetCompanyById(1);
-      if (data) {
-        setCompany(data);
-        setOriginalCompany(data);
+      setIsLoading(true);
+      try {
+        const data = await GetCompanyById(1);
+        if (data) {
+          setCompany(data);
+          setOriginalCompany(data);
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchCompanyData();
@@ -50,9 +51,14 @@ const CompanyPresentation: React.FC = () => {
 
   useEffect(() => {
     const fetchEconomicActivities = async () => {
-      const activities = await GetAllEconomicActivityNoPage();
-      if (activities) {
-        setEconomicActivities(activities);
+      setIsLoading(true);
+      try {
+        const activities = await GetAllEconomicActivityNoPage();
+        if (activities) {
+          setEconomicActivities(activities);
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchEconomicActivities();
@@ -100,7 +106,7 @@ const CompanyPresentation: React.FC = () => {
 
     if (key === "companyName" && !value) {
       error = "Nombre es obligatorio.";
-    } else if (key === "nit" && (!value )) {
+    } else if (key === "nit" && !value) {
       error = "NIT es obligatorio y debe ser numérico.";
     } else if (key === "address" && !value) {
       error = "Dirección es obligatorio.";
@@ -158,6 +164,7 @@ const CompanyPresentation: React.FC = () => {
       status: company.status,
     };
 
+    setIsLoading(true);
     try {
       const success = await UpdateCompany(updatedCompany);
 
@@ -179,6 +186,8 @@ const CompanyPresentation: React.FC = () => {
     } catch (error) {
       console.error("Error en la solicitud: ", error);
       MySwal.fire("Error", "Error al procesar la solicitud.", "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -190,20 +199,40 @@ const CompanyPresentation: React.FC = () => {
   const customStyles = {
     control: (provided: any, state: any) => ({
       ...provided,
-      backgroundColor: "transparent",
-      borderColor: state.isFocused
-        ? "#ced4da"
-        : errors.economicActivityId
-        ? "#dc3545"
-        : "#ced4da",
+      backgroundColor: state.isFocused
+        ? "var(--select-focus-background)"
+        : "var(--select-background)",
+      borderColor: state.isFocused ? "#ced4da" : "var(--select-border-color)",
+      boxShadow: state.isFocused
+        ? "0 0 0 0.2rem rgba(38, 143, 255, 0.25)"
+        : "none",
     }),
     singleValue: (provided: any) => ({
       ...provided,
-      color: "#495057",
+      color: "var(--select-text-color)",
     }),
     placeholder: (provided: any) => ({
       ...provided,
-      color: "#6c757d",
+      color: "var(--select-placeholder-color)",
+    }),
+    menu: (provided: any, state: any) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? "#f1f1f1" : "#ffffff",
+      borderRadius: "5px",
+      zIndex: 9999,
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    }),
+    option: (provided: any, state: any) => ({
+      ...provided,
+      backgroundColor: state.isSelected
+        ? "#ff0000ff"
+        : state.isFocused
+        ? "#f0f8ff"
+        : "#ffffff",
+      color: state.isSelected ? "white" : "var(--select-text-color)",
+      "&:hover": {
+        backgroundColor: "#f0f8ff",
+      },
     }),
   };
 
@@ -221,7 +250,7 @@ const CompanyPresentation: React.FC = () => {
                 <div className="breadcrumb-wrapper">
                   <ol className="breadcrumb">
                     <li className="breadcrumb-item">
-                      <a href="index.html">Home</a>
+                      <a href="dashboard">Home</a>
                     </li>
                     <li className="breadcrumb-item">
                       <a href="#">Empresas</a>
@@ -240,14 +269,16 @@ const CompanyPresentation: React.FC = () => {
               <Row>
                 <Col md={4} className="text-center">
                   <img
-                    src={"/additional-assets/images/logo/Logo-ladrillera.png"}
+                    src={"/additional-assets/images/logo/Logo nuevo.png"}
                     alt="Company Logo"
                     className="img-fluid mb-3"
-                    style={{ maxHeight: "200px" }}
+                    style={{ maxHeight: "330px" }}
                   />
                 </Col>
                 <Col md={8}>
-                  <h4 className="card-title mb-3">Información de la Empresa</h4>
+                  <h4 className="card-title mb-3">
+                    Información de la Empresa
+                  </h4>
                   <div className="company-detail mb-3">
                     <strong>Nombre:</strong> {company.companyName}
                   </div>
@@ -273,6 +304,7 @@ const CompanyPresentation: React.FC = () => {
                     className="btn edit-button"
                     variant="primary"
                     onClick={handleShow}
+                    disabled={isLoading}
                   >
                     Editar
                   </Button>
@@ -301,6 +333,7 @@ const CompanyPresentation: React.FC = () => {
                         value={company.companyName}
                         onChange={handleChange}
                         isInvalid={!!errors.companyName}
+                        disabled={isLoading}
                       />
                       <Form.Control.Feedback type="invalid">
                         {errors.companyName}
@@ -316,6 +349,7 @@ const CompanyPresentation: React.FC = () => {
                         value={company.nit}
                         onChange={handleChange}
                         isInvalid={!!errors.nit}
+                        disabled={isLoading}
                       />
                       <Form.Control.Feedback type="invalid">
                         {errors.nit}
@@ -333,6 +367,7 @@ const CompanyPresentation: React.FC = () => {
                         value={company.address}
                         onChange={handleChange}
                         isInvalid={!!errors.address}
+                        disabled={isLoading}
                       />
                       <Form.Control.Feedback type="invalid">
                         {errors.address}
@@ -348,6 +383,7 @@ const CompanyPresentation: React.FC = () => {
                         value={company.email}
                         onChange={handleChange}
                         isInvalid={!!errors.email}
+                        disabled={isLoading}
                       />
                       <Form.Control.Feedback type="invalid">
                         {errors.email}
@@ -365,6 +401,7 @@ const CompanyPresentation: React.FC = () => {
                         value={company.phone}
                         onChange={handleChange}
                         isInvalid={!!errors.phone}
+                        disabled={isLoading}
                       />
                       <Form.Control.Feedback type="invalid">
                         {errors.phone}
@@ -393,6 +430,7 @@ const CompanyPresentation: React.FC = () => {
                         className={
                           errors.economicActivityId ? "is-invalid" : ""
                         }
+                        isDisabled={isLoading}
                       />
                       {errors.economicActivityId && (
                         <div className="invalid-feedback d-block">
@@ -406,12 +444,16 @@ const CompanyPresentation: React.FC = () => {
                   <Button
                     variant="success"
                     onClick={handleSave}
-                    disabled={isSaveDisabled}
+                    disabled={isSaveDisabled || isLoading}
                     className="me-1"
                   >
                     Guardar Cambios
                   </Button>
-                  <Button variant="danger" onClick={handleClose}>
+                  <Button
+                    variant="danger"
+                    onClick={handleClose}
+                    disabled={isLoading}
+                  >
                     Cancelar
                   </Button>
                 </div>
@@ -420,6 +462,15 @@ const CompanyPresentation: React.FC = () => {
           </Modal>
         </div>
       </div>
+
+      {isLoading && (
+        <div
+          className="loading-overlay position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+          style={{ zIndex: 9999, backgroundColor: "rgba(255, 255, 255, 0.8)" }}
+        >
+          <HandLoadingSpinner />
+        </div>
+      )}
     </div>
   );
 };

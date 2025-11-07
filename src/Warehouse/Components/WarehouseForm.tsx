@@ -1,4 +1,5 @@
 import CRUDForm from "../../GeneralComponents/GeneralCrud/CRUDForm";
+import { Warehouse } from "../../Warehouse/Types/WarehouseTypes";
 import { WarehouseSortFieldMap } from "../Types/MapeoWarehouse";
 import {
   GetWarehouses,
@@ -8,19 +9,14 @@ import {
   GetSearchWarehouses,
 } from "../API/WarehousesAPI";
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
-import WarehouseTypeSelectWrapper from "./WarehouseSelectWrapper";
-import { Warehouse } from "../../Warehouse/Types/WarehouseTypes";
+
 
 const WarehouseCRUD = () => {
   const itemTemplate = (): Warehouse => ({
     id: 0,
-    warehouseTypeId: 0,
-    warehouseTypeName: "",
     warehouseName: "",
-    status: "ACTIVE",
+    status: "",
     description: "",
-    owner: "",
-    email: "",
     address: "",
   });
 
@@ -37,18 +33,6 @@ const WarehouseCRUD = () => {
   }[] = [
     { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true },
     {
-      key: "warehouseTypeId",
-      label: "Tipo bodega",
-      hidden: true,
-    },
-    {
-      key: "warehouseTypeName",
-      label: "Tipo Nombre bodega",
-      hidden: true,
-      hiddenInCreate: true,
-      hiddenInEdit: true,
-    },
-    {
       key: "warehouseName",
       label: "Nombre de bodega",
     },
@@ -57,34 +41,11 @@ const WarehouseCRUD = () => {
       label: "Descripcion",
     },
     {
-      key: "owner",
-      label: "Dueño",
-    },
-    {
-      key: "email",
-      label: "Correo",
-    },
-    {
       key: "address",
       label: "Direccion",
     },
   ];
 
-  const renderCustomFormField = (
-    colKey: keyof Warehouse,
-    value: string,
-    onChange: (newValue: string) => void
-  ) => {
-    if (colKey === "warehouseTypeId") {
-      return (
-        <WarehouseTypeSelectWrapper
-          selectedValue={parseInt(value, 10)}
-          onChange={(newtypeId: number) => onChange(newtypeId.toString())}
-        />
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="app-content content">
@@ -115,8 +76,9 @@ const WarehouseCRUD = () => {
               deleteItem={DeleteWarehouse}
               itemTemplate={itemTemplate}
               columns={columns}
+              filterButtonOrder={1}
               sortFieldMap={WarehouseSortFieldMap}
-              renderCustomFormField={renderCustomFormField}
+              pageTitle="Bodegas"
             />
           </div>
         </div>

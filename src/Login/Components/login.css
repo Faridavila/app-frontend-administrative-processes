@@ -1,0 +1,256 @@
+.login-shell{
+  --brick-900:#3a0d0b;
+  --brick-800:#5b1a16;
+  --brick-700:#7a2a22;
+  --brick-500:#b74b3c;
+  --sand-100:#f7efe8;
+  --ink-900:#0e1116;
+  --ink-700:#2a3039;
+  --ink-500:#6b7280;
+  --white:#ffffff;
+
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:minmax(280px,420px) 1fr; 
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(183,75,60,.25), transparent 60%),
+    radial-gradient(1200px 600px at 110% 110%, rgba(58,13,11,.4), transparent 60%),
+    linear-gradient(180deg,#0e1116,#151a22 70%);
+}
+
+.login-shell *{ box-sizing:border-box; }
+
+.login-shell .brand-panel{
+  position:relative;
+  background:linear-gradient(180deg, var(--brick-800), var(--brick-900));
+  color:var(--sand-100);
+  padding:48px 32px;
+  overflow:hidden;
+}
+.login-shell .brand-content{
+  z-index:1;
+  position:relative;
+  max-width:360px;
+  margin:auto 0;
+}
+.login-shell .brand-logo{
+  width:64px; height:64px; border-radius:16px;
+  background:
+    conic-gradient(from 45deg, var(--sand-100) 0 25%, transparent 0 100%),
+    conic-gradient(from 225deg, var(--sand-100) 0 25%, transparent 0 100%),
+    var(--brick-500);
+  box-shadow:0 12px 24px rgba(0,0,0,.25), inset 0 2px 6px rgba(255,255,255,.2);
+  margin-bottom:16px;
+}
+.login-shell .brand-title{ font-weight:800; letter-spacing:.5px; margin:0; }
+.login-shell .brand-sub{ margin:6px 0 0; opacity:.9; }
+.login-shell .brick-pattern{ position:absolute; inset:0; mix-blend-mode:overlay; pointer-events:none; }
+
+
+.login-shell .login-main,
+.login-shell .login-container{  
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:32px 16px;
+}
+
+
+.login-shell .login-card{ width:100%; max-width:420px; margin:0 auto; }
+.login-shell .glass{
+  backdrop-filter:blur(10px);
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;
+  padding:28px;
+  box-shadow:0 20px 50px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05);
+  color:var(--sand-100);
+}
+.login-shell .login-card .muted{ color:var(--ink-500); }
+.login-shell .login-card .tiny{ font-size:.82rem; }
+
+
+.login-shell .forgot-link{ text-decoration:none; color:var(--sand-100); opacity:.85; }
+.login-shell .forgot-link:hover{ text-decoration:underline; opacity:1; }
+
+
+.login-shell .input-group-text{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.1);
+  color:var(--sand-100);
+}
+.login-shell .form-control{
+  background:rgba(255,255,255,.04) !important;
+  color:var(--sand-100) !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+}
+.login-shell .form-control::placeholder{ color:rgba(255,255,255,.55) !important; }
+
+
+
+.login-shell .btn-outline-secondary{
+  border-color:rgba(255,255,255,.18);
+  color:var(--sand-100);
+  background:rgba(255,255,255,.04);
+}
+.login-shell .btn-outline-secondary:hover{ background:rgba(255,255,255,.08); }
+
+
+.login-shell .glass.light{
+  background:#ffffff;            
+  color:#111827;                
+  border:1px solid rgba(0,0,0,.06);
+  backdrop-filter:none;          
+}
+
+.login-shell .glass.light .muted{ color:#6b7280; }
+.login-shell .glass.light .forgot-link{
+  color: var(--brick-700);
+}
+.login-shell .glass.light .forgot-link:hover{
+  color: var(--brick-800);
+}
+
+.login-shell .glass.light .input-group-text{
+  background:#f3f4f6;
+  color:#374151;
+  border:1px solid #e5e7eb;
+}
+.login-shell .glass.light .form-control{
+  background:#ffffff !important;
+  color:#111827 !important;
+  border:1px solid #d1d5db !important;
+}
+.login-shell .glass.light .form-control::placeholder{
+  color:#9ca3af !important;
+}
+
+.login-shell .glass.light .btn-outline-secondary{
+  color:#374151;
+  background:#f9fafb;
+  border-color:#e5e7eb;
+}
+.login-shell .glass.light .btn-outline-secondary:hover{
+  background:#f3f4f6;
+}
+
+
+.login-shell.light-page{
+  background:#fff !important;          
+}
+
+
+.login-shell .form-control {
+  border: 1px solid #ccc; 
+  transition: border-color 0.2s ease-in-out;
+}
+
+
+.login-shell .form-control:focus {
+  border-color: #f50000 !important; 
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+.login-shell .forgot-link {
+  color: #f50000 !important;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.login-shell .forgot-link:hover {
+  color: #cc0000 !important;
+  text-decoration: underline;
+}
+
+
+.login-shell .brick-pattern{
+  position:absolute;
+  inset:-2%;
+  pointer-events:none;
+  mix-blend-mode:overlay;   
+  opacity:.55;             
+  filter:contrast(125%) saturate(115%);
+}
+
+
+@keyframes bricksRight{
+  from { transform: translateX(0); }
+  to   { transform: translateX(64px); } 
+}
+
+
+.login-shell .brand-panel{
+  background: linear-gradient(180deg, var(--brick-700), var(--brick-900));
+}
+
+.login-shell .brand-panel{
+  display: flex;
+  flex-direction: column;
+}
+
+.login-shell .brand-content{
+  position: absolute;
+  left: 32px; right: 32px;
+  bottom: 150px;          
+}
+.login-shell .brand-panel{ position: relative; }
+
+/* desvanece el patrón en el tramo inferior para que quede zona libre 
+.login-shell .brick-pattern{
+  mask-image: linear-gradient(to bottom, #000 0 100%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0 80%, transparent 100%);
+}
+*/
+.login-shell .brand-panel .brand-title{ color:#fffefe !important; }
+
+
+.login-shell .brand-panel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--brick-800), var(--brick-900));
+  color: var(--sand-100);
+  padding: 48px 32px;
+  overflow: hidden;
+}
+
+.login-shell .brand-content{
+  margin-top: auto;                       
+  padding-bottom: clamp(24px, 8vh, 80px); 
+  z-index: 2;
+}
+
+.login-shell .brick-pattern{
+  position: absolute; inset: 0;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: .55;
+  filter: contrast(125%) saturate(115%);
+  mask-image: linear-gradient(to bottom, #000 0 66%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0 66%, transparent 100%);
+  z-index: 1;
+}
+
+
+.brand-mascot-img{
+  position: absolute;
+  right: -100px;
+  bottom: -165px;           
+  width: 270px;            
+  height: 250px;
+  z-index: 3;             
+  pointer-events: none;
+  user-select: none;
+}
+
+.login-shell .brand-panel .brand-title { font-size: 1.8rem !important; }
+
+
+@media (max-width: 992px){
+  .login-shell{ grid-template-columns:1fr; }
+  .login-shell .brand-panel{ display:none; }
+  .login-shell .login-container{ padding:24px 12px; }
+}
