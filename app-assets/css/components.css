@@ -97,72 +97,180 @@ html .content .content-wrapper .content-header-right .btn-icon svg {
 
 html .navbar-floating.footer-static .app-content .content-area-wrapper,
 html .navbar-floating.footer-static .app-content .kanban-wrapper {
-  height: calc( 100vh - calc( calc(2rem * 1) + 4.45rem + 3.35rem + 1.3rem + 0rem ));
-  height: calc( var(--vh, 1vh) * 100 - calc( calc(2rem * 1) + 4.45rem + 3.35rem + 1.3rem + 0rem )); }
+  height: calc(
+ 100vh -
+ calc(
+ calc(2rem * 1) + 4.45rem + 3.35rem + 1.3rem + 0rem
+ ));
+  height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(2rem * 1) + 4.45rem + 3.35rem + 1.3rem + 0rem
+ )); }
 
 @media (max-width: 575.98px) {
   html .navbar-floating.footer-static .app-content .content-area-wrapper,
   html .navbar-floating.footer-static .app-content .kanban-wrapper {
-    height: calc( 100vh - calc( calc(calc(2rem * 1) - calc(0.8rem * 1)) + 4.45rem + 3.35rem + 1.3rem + 0rem ));
-    height: calc( var(--vh, 1vh) * 100 - calc( calc(calc(2rem * 1) - calc(0.8rem * 1)) + 4.45rem + 3.35rem + 1.3rem + 0rem )); } }
+    height: calc(
+ 100vh -
+ calc(
+ calc(calc(2rem * 1) - calc(0.8rem * 1)) + 4.45rem + 3.35rem +
+ 1.3rem + 0rem
+ ));
+    height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(calc(2rem * 1) - calc(0.8rem * 1)) + 4.45rem + 3.35rem +
+ 1.3rem + 0rem
+ )); } }
 
 html .navbar-floating.footer-hidden .app-content .content-area-wrapper,
 html .navbar-floating.footer-hidden .app-content .kanban-wrapper {
-  height: calc( 100vh - calc( calc(2rem * 2) + 4.45rem + 0rem + 1.3rem + 0rem ));
-  height: calc( var(--vh, 1vh) * 100 - calc( calc(2rem * 2) + 4.45rem + 0rem + 1.3rem + 0rem )); }
+  height: calc(
+ 100vh -
+ calc(
+ calc(2rem * 2) + 4.45rem + 0rem + 1.3rem + 0rem
+ ));
+  height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(2rem * 2) + 4.45rem + 0rem + 1.3rem + 0rem
+ )); }
 
 @media (max-width: 575.98px) {
   html .navbar-floating.footer-hidden .app-content .content-area-wrapper,
   html .navbar-floating.footer-hidden .app-content .kanban-wrapper {
-    height: calc( 100vh - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 0rem + 1.3rem + 0rem ));
-    height: calc( var(--vh, 1vh) * 100 - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 0rem + 1.3rem + 0rem )); } }
+    height: calc(
+ 100vh -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 0rem +
+ 1.3rem + 0rem
+ ));
+    height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 0rem +
+ 1.3rem + 0rem
+ )); } }
 
 html .navbar-floating.footer-fixed .app-content .content-area-wrapper,
 html .navbar-floating.footer-fixed .app-content .kanban-wrapper {
-  height: calc( 100vh - calc( calc(2rem * 2) + 4.45rem + 3.35rem + 1.3rem + 0rem ));
-  height: calc( var(--vh, 1vh) * 100 - calc( calc(2rem * 2) + 4.45rem + 3.35rem + 1.3rem + 0rem )); }
+  height: calc(
+ 100vh -
+ calc(
+ calc(2rem * 2) + 4.45rem + 3.35rem + 1.3rem + 0rem
+ ));
+  height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(2rem * 2) + 4.45rem + 3.35rem + 1.3rem + 0rem
+ )); }
 
 @media (max-width: 575.98px) {
   html .navbar-floating.footer-fixed .app-content .content-area-wrapper,
   html .navbar-floating.footer-fixed .app-content .kanban-wrapper {
-    height: calc( 100vh - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 3.35rem + 1.3rem + 0rem ));
-    height: calc( var(--vh, 1vh) * 100 - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 3.35rem + 1.3rem + 0rem )); } }
+    height: calc(
+ 100vh -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 3.35rem +
+ 1.3rem + 0rem
+ ));
+    height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 3.35rem +
+ 1.3rem + 0rem
+ )); } }
 
 html .navbar-hidden .app-content {
   padding: 2rem 2rem 0 2rem !important; }
 
 html .navbar-hidden.footer-static .app-content .content-area-wrapper,
 html .navbar-hidden.footer-static .app-content .kanban-wrapper {
-  height: calc( 100vh - calc( calc(2rem * 1) + 0rem + 3.35rem + 0rem + 0rem ));
-  height: calc( var(--vh, 1vh) * 100 - calc( calc(2rem * 1) + 0rem + 3.35rem + 0rem + 0rem )); }
+  height: calc(
+ 100vh -
+ calc(
+ calc(2rem * 1) + 0rem + 3.35rem + 0rem + 0rem
+ ));
+  height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(2rem * 1) + 0rem + 3.35rem + 0rem + 0rem
+ )); }
 
 @media (max-width: 575.98px) {
   html .navbar-hidden.footer-static .app-content .content-area-wrapper,
   html .navbar-hidden.footer-static .app-content .kanban-wrapper {
-    height: calc( 100vh - calc( calc(calc(2rem * 1) - calc(0.8rem * 1)) + 0rem + 3.35rem + 0rem + 0rem ));
-    height: calc( var(--vh, 1vh) * 100 - calc( calc(calc(2rem * 1) - calc(0.8rem * 1)) + 0rem + 3.35rem + 0rem + 0rem )); } }
+    height: calc(
+ 100vh -
+ calc(
+ calc(calc(2rem * 1) - calc(0.8rem * 1)) + 0rem + 3.35rem +
+ 0rem + 0rem
+ ));
+    height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(calc(2rem * 1) - calc(0.8rem * 1)) + 0rem + 3.35rem +
+ 0rem + 0rem
+ )); } }
 
 html .navbar-hidden.footer-hidden .app-content .content-area-wrapper,
 html .navbar-hidden.footer-hidden .app-content .kanban-wrapper {
-  height: calc( 100vh - calc( calc(2rem * 2) + 0rem + 0rem + 0rem + 0rem ));
-  height: calc( var(--vh, 1vh) * 100 - calc( calc(2rem * 2) + 0rem + 0rem + 0rem + 0rem )); }
+  height: calc(
+ 100vh -
+ calc(
+ calc(2rem * 2) + 0rem + 0rem + 0rem + 0rem
+ ));
+  height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(2rem * 2) + 0rem + 0rem + 0rem + 0rem
+ )); }
 
 @media (max-width: 575.98px) {
   html .navbar-hidden.footer-hidden .app-content .content-area-wrapper,
   html .navbar-hidden.footer-hidden .app-content .kanban-wrapper {
-    height: calc( 100vh - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 0rem + 0rem + 0rem + 0rem ));
-    height: calc( var(--vh, 1vh) * 100 - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 0rem + 0rem + 0rem + 0rem )); } }
+    height: calc(
+ 100vh -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 0rem + 0rem +
+ 0rem + 0rem
+ ));
+    height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 0rem + 0rem +
+ 0rem + 0rem
+ )); } }
 
 html .navbar-hidden.footer-fixed .app-content .content-area-wrapper,
 html .navbar-hidden.footer-fixed .app-content .kanban-wrapper {
-  height: calc( 100vh - calc( calc(2rem * 2) + 0rem + 3.35rem + 0rem + 0rem ));
-  height: calc( var(--vh, 1vh) * 100 - calc( calc(2rem * 2) + 0rem + 3.35rem + 0rem + 0rem )); }
+  height: calc(
+ 100vh -
+ calc(
+ calc(2rem * 2) + 0rem + 3.35rem + 0rem + 0rem
+ ));
+  height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(2rem * 2) + 0rem + 3.35rem + 0rem + 0rem
+ )); }
 
 @media (max-width: 575.98px) {
   html .navbar-hidden.footer-fixed .app-content .content-area-wrapper,
   html .navbar-hidden.footer-fixed .app-content .kanban-wrapper {
-    height: calc( 100vh - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 0rem + 3.35rem + 0rem + 0rem ));
-    height: calc( var(--vh, 1vh) * 100 - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 0rem + 3.35rem + 0rem + 0rem )); } }
+    height: calc(
+ 100vh -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 0rem + 3.35rem +
+ 0rem + 0rem
+ ));
+    height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 0rem + 3.35rem +
+ 0rem + 0rem
+ )); } }
 
 html .navbar-static .main-menu {
   top: 0; }
@@ -175,72 +283,180 @@ html .navbar-static .app-content {
 
 html .navbar-static.footer-static .app-content .content-area-wrapper,
 html .navbar-static.footer-static .app-content .kanban-wrapper {
-  height: calc( 100vh - calc( calc(2rem * 1) + 4.45rem + 3.35rem + 0rem + 0rem ));
-  height: calc( var(--vh, 1vh) * 100 - calc( calc(2rem * 1) + 4.45rem + 3.35rem + 0rem + 0rem )); }
+  height: calc(
+ 100vh -
+ calc(
+ calc(2rem * 1) + 4.45rem + 3.35rem + 0rem + 0rem
+ ));
+  height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(2rem * 1) + 4.45rem + 3.35rem + 0rem + 0rem
+ )); }
 
 @media (max-width: 575.98px) {
   html .navbar-static.footer-static .app-content .content-area-wrapper,
   html .navbar-static.footer-static .app-content .kanban-wrapper {
-    height: calc( 100vh - calc( calc(calc(2rem * 1) - calc(0.8rem * 1)) + 4.45rem + 3.35rem + 0rem + 0rem ));
-    height: calc( var(--vh, 1vh) * 100 - calc( calc(calc(2rem * 1) - calc(0.8rem * 1)) + 4.45rem + 3.35rem + 0rem + 0rem )); } }
+    height: calc(
+ 100vh -#cc322d
+ calc(
+ calc(calc(2rem * 1) - calc(0.8rem * 1)) + 4.45rem + 3.35rem +
+ 0rem + 0rem
+ ));
+    height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(calc(2rem * 1) - calc(0.8rem * 1)) + 4.45rem + 3.35rem +
+ 0rem + 0rem
+ )); } }
 
 html .navbar-static.footer-hidden .app-content .content-area-wrapper,
 html .navbar-static.footer-hidden .app-content .kanban-wrapper {
-  height: calc( 100vh - calc( calc(2rem * 2) + 4.45rem + 0rem + 0rem + 0rem ));
-  height: calc( var(--vh, 1vh) * 100 - calc( calc(2rem * 2) + 4.45rem + 0rem + 0rem + 0rem )); }
+  height: calc(
+ 100vh -
+ calc(
+ calc(2rem * 2) + 4.45rem + 0rem + 0rem + 0rem
+ ));
+  height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(2rem * 2) + 4.45rem + 0rem + 0rem + 0rem
+ )); }
 
 @media (max-width: 575.98px) {
   html .navbar-static.footer-hidden .app-content .content-area-wrapper,
   html .navbar-static.footer-hidden .app-content .kanban-wrapper {
-    height: calc( 100vh - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 0rem + 0rem + 0rem ));
-    height: calc( var(--vh, 1vh) * 100 - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 0rem + 0rem + 0rem )); } }
+    height: calc(
+ 100vh -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 0rem +
+ 0rem + 0rem
+ ));
+    height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 0rem +
+ 0rem + 0rem
+ )); } }
 
 html .navbar-static.footer-fixed .app-content .content-area-wrapper,
 html .navbar-static.footer-fixed .app-content .kanban-wrapper {
-  height: calc( 100vh - calc( calc(2rem * 2) + 4.45rem + 3.35rem + 0rem + 0rem ));
-  height: calc( var(--vh, 1vh) * 100 - calc( calc(2rem * 2) + 4.45rem + 3.35rem + 0rem + 0rem )); }
+  height: calc(
+ 100vh -
+ calc(
+ calc(2rem * 2) + 4.45rem + 3.35rem + 0rem + 0rem
+ ));
+  height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(2rem * 2) + 4.45rem + 3.35rem + 0rem + 0rem
+ )); }
 
 @media (max-width: 575.98px) {
   html .navbar-static.footer-fixed .app-content .content-area-wrapper,
   html .navbar-static.footer-fixed .app-content .kanban-wrapper {
-    height: calc( 100vh - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 3.35rem + 0rem + 0rem ));
-    height: calc( var(--vh, 1vh) * 100 - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 3.35rem + 0rem + 0rem )); } }
+    height: calc(
+ 100vh -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 3.35rem +
+ 0rem + 0rem
+ ));
+    height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 3.35rem +
+ 0rem + 0rem
+ )); } }
 
 html .navbar-sticky .app-content {
   padding: calc(2rem + 4.45rem) 2rem 0 2rem; }
 
 html .navbar-sticky.footer-static .app-content .content-area-wrapper,
 html .navbar-sticky.footer-static .app-content .kanban-wrapper {
-  height: calc( 100vh - calc( calc(2rem * 1) + 4.45rem + 3.35rem + 0rem + 0rem ));
-  height: calc( var(--vh, 1vh) * 100 - calc( calc(2rem * 1) + 4.45rem + 3.35rem + 0rem + 0rem )); }
+  height: calc(
+ 100vh -
+ calc(
+ calc(2rem * 1) + 4.45rem + 3.35rem + 0rem + 0rem
+ ));
+  height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(2rem * 1) + 4.45rem + 3.35rem + 0rem + 0rem
+ )); }
 
 @media (max-width: 575.98px) {
   html .navbar-sticky.footer-static .app-content .content-area-wrapper,
   html .navbar-sticky.footer-static .app-content .kanban-wrapper {
-    height: calc( 100vh - calc( calc(calc(2rem * 1) - calc(0.8rem * 1)) + 4.45rem + 3.35rem + 0rem + 0rem ));
-    height: calc( var(--vh, 1vh) * 100 - calc( calc(calc(2rem * 1) - calc(0.8rem * 1)) + 4.45rem + 3.35rem + 0rem + 0rem )); } }
+    height: calc(
+ 100vh -
+ calc(
+ calc(calc(2rem * 1) - calc(0.8rem * 1)) + 4.45rem + 3.35rem +
+ 0rem + 0rem
+ ));
+    height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(calc(2rem * 1) - calc(0.8rem * 1)) + 4.45rem + 3.35rem +
+ 0rem + 0rem
+ )); } }
 
 html .navbar-sticky.footer-hidden .app-content .content-area-wrapper,
 html .navbar-sticky.footer-hidden .app-content .kanban-wrapper {
-  height: calc( 100vh - calc( calc(2rem * 2) + 4.45rem + 0rem + 0rem + 0rem ));
-  height: calc( var(--vh, 1vh) * 100 - calc( calc(2rem * 2) + 4.45rem + 0rem + 0rem + 0rem )); }
+  height: calc(
+ 100vh -
+ calc(
+ calc(2rem * 2) + 4.45rem + 0rem + 0rem + 0rem
+ ));
+  height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(2rem * 2) + 4.45rem + 0rem + 0rem + 0rem
+ )); }
 
 @media (max-width: 575.98px) {
   html .navbar-sticky.footer-hidden .app-content .content-area-wrapper,
   html .navbar-sticky.footer-hidden .app-content .kanban-wrapper {
-    height: calc( 100vh - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 0rem + 0rem + 0rem ));
-    height: calc( var(--vh, 1vh) * 100 - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 0rem + 0rem + 0rem )); } }
+    height: calc(
+ 100vh -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 0rem +
+ 0rem + 0rem
+ ));
+    height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 0rem +
+ 0rem + 0rem
+ )); } }
 
 html .navbar-sticky.footer-fixed .app-content .content-area-wrapper,
 html .navbar-sticky.footer-fixed .app-content .kanban-wrapper {
-  height: calc( 100vh - calc( calc(2rem * 2) + 4.45rem + 3.35rem + 0rem + 0rem ));
-  height: calc( var(--vh, 1vh) * 100 - calc( calc(2rem * 2) + 4.45rem + 3.35rem + 0rem + 0rem )); }
+  height: calc(
+ 100vh -
+ calc(
+ calc(2rem * 2) + 4.45rem + 3.35rem + 0rem + 0rem
+ ));
+  height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(2rem * 2) + 4.45rem + 3.35rem + 0rem + 0rem
+ )); }
 
 @media (max-width: 575.98px) {
   html .navbar-sticky.footer-fixed .app-content .content-area-wrapper,
   html .navbar-sticky.footer-fixed .app-content .kanban-wrapper {
-    height: calc( 100vh - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 3.35rem + 0rem + 0rem ));
-    height: calc( var(--vh, 1vh) * 100 - calc( calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 3.35rem + 0rem + 0rem )); } }
+    height: calc(
+ 100vh -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 3.35rem +
+ 0rem + 0rem
+ ));
+    height: calc(
+ var(--vh, 1vh) * 100 -
+ calc(
+ calc(calc(2rem * 2) - calc(0.8rem * 2)) + 4.45rem + 3.35rem +
+ 0rem + 0rem
+ )); } }
 
 html .navbar-static .nav.header-navbar .navbar-container,
 html .navbar-sticky .nav.header-navbar .navbar-container {
@@ -260,7 +476,8 @@ html [data-col='1-column'] .header-navbar {
   left: 0 !important; }
 
 html [data-col='1-column'] .header-navbar.floating-nav {
-  width: calc( 100vw - (100vw - 100%) - calc(2rem * 2)) !important; }
+  width: calc(
+ 100vw - (100vw - 100%) - calc(2rem * 2)) !important; }
 
 html [data-col='1-column'] .content,
 html [data-col='1-column'] .footer {
@@ -350,7 +567,7 @@ html .pace .pace-progress {
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
   html.full-screen {
     width: 100%; }
-  html.full-screen .content.app-content {
+  html.fuen .content.app-content {
     height: 100%;
     overflow: scroll;
     overflow-x: hidden; } }
@@ -483,7 +700,7 @@ footer.footer-border {
   background: #fff; }
 
 .main-menu.menu-light .navigation {
-  background: #fff; }
+  background: #fff; }#cc322d
 
 .main-menu.menu-light .navigation .navigation-header {
   color: #a6a4b0;
@@ -493,7 +710,7 @@ footer.footer-border {
   letter-spacing: 0.01rem; }
 
 .main-menu.menu-light .navigation .navigation-header span {
-  font-weight: 500; }
+  font-weight: bold;
 
 .main-menu.menu-light .navigation li.has-sub > a {
   transition: all 0.5s ease, background 0s, color 0s; }
@@ -539,7 +756,7 @@ footer.footer-border {
   margin: 0 15px; }
 
 .main-menu.menu-light .navigation > li > ul li.has-sub > ul > li {
-  margin: 0 15px; }
+  margin: 0 15px; }#cc322d
 
 .main-menu.menu-light .navigation > li.open:not(.menu-item-closing) > a, .main-menu.menu-light .navigation > li.sidebar-group-active > a {
   color: #565360;
@@ -598,7 +815,7 @@ footer.footer-border {
 .main-menu.menu-light .navigation > li ul .open > a,
 .main-menu.menu-light .navigation > li ul .sidebar-group-active > a {
   color: #6e6b7b;
-  background: whitesmoke;
+  background-color: #cc322d;
   border-radius: 6px; }
 
 .main-menu.menu-light .navigation > li ul .open > ul,
@@ -1004,7 +1221,7 @@ footer.footer-border {
   font-size: 1.714rem; }
 
 .avatar.avatar-lg .avatar-content .avatar-icon,
-.avatar.avatar-lg .avatar-content i,
+.avatar.avatar-lg .a#cc322dontent i,
 .avatar.avatar-lg .avatar-content svg {
   height: 2rem;
   width: 2rem;
@@ -2232,7 +2449,7 @@ footer.footer-border {
   color: #448abe;
   border: 1px solid #448abe !important; }
 
-.btn-outline-vimeo:hover {
+.btn-outline-v#cc322dver {
   color: #1592bb;
   border: 1px solid #1592bb !important; }
 
@@ -2257,7 +2474,7 @@ footer.footer-border {
   background-color: #3b5998; }
 
 .bg-flickr {
-  background-color: #ff0084; }
+  background-color: #cc322d; }
 
 .bg-foursquare {
   background-color: #f94877; }
@@ -2383,7 +2600,7 @@ footer.footer-border {
   padding: 1px;
   border-radius: 0.357rem; }
 
-#breadcrumb-alignment .breadcrumb-wrapper .breadcrumb {
+#breadcru#cc322dnment .breadcrumb-wrapper .breadcrumb {
   margin-top: 0.8rem;
   margin-bottom: 0.8rem; }
 
@@ -2424,12 +2641,12 @@ footer.footer-border {
   transition: right 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
   backface-visibility: hidden;
   border-left: 1px solid rgba(34, 41, 47, 0.05); }
-
+#cc322d
 .customizer.open {
-  box-shadow: 0 15px 30px 0 rgba(34, 41, 47, 0.11), 0 5px 15px 0 rgba(34, 41, 47, 0.08);
+  box-shadow: 0px 0 rgba(34, 41, 47, 0.11), 0 5px 15px 0 rgba(34, 41, 47, 0.08);
   right: 0; }
 
-.customizer .customizer-content {
+.customiz#cc322dtomizer-content {
   position: relative;
   height: 100%; }
 
@@ -2499,7 +2716,7 @@ footer.footer-border {
   font-size: 0.9375rem;
   padding: 0 1rem; }
 
-.divider .divider-text i,
+.divider .divide#cc322di,
 .divider .divider-text svg {
   height: 1rem;
   width: 1rem;
@@ -2538,7 +2755,7 @@ footer.footer-border {
 .divider.divider-end-center .divider-text {
   right: -25%; }
 
-.divider.divider-dotted .divider-text:before, .divider.divider-dotted .divider-text:after {
+.divider.divider#cc322d .divider-text:before, .divider.divider-dotted .divider-text:after {
   border-style: dotted;
   border-width: 1px;
   border-top-width: 0;
@@ -2631,7 +2848,7 @@ footer.footer-border {
   border-radius: 0.42rem;
   color: #82868b;
   background-color: rgba(130, 134, 139, 0.06);
-  border: 1px solid #ebe9f1; }
+  border: 1px solid #cc322d; }
 
 .custom-options-checkable .custom-option-item .custom-option-item-title {
   color: #82868b; }
@@ -2646,7 +2863,7 @@ footer.footer-border {
   border-color: #7367f0; }
 
 .custom-option-item-check:checked + .custom-option-item .custom-option-item-title {
-  color: #7367f0; }
+  color: #cc322d; }
 
 @media screen and (min-width: 0px) {
   head {
@@ -2749,11 +2966,11 @@ body:after {
   border-color: #7367f0 !important;
   outline: 0; }
 
-.select2-container--classic.select2-container--focus,
+.select2-#cc322der--classic.select2-container--focus,
 .select2-container--default.select2-container--focus {
   outline: 0; }
 
-.select2-container--classic.select2-container--focus .select2-selection--multiple,
+.select2-#cc322der--classic.select2-container--focus .select2-selection--multiple,
 .select2-container--default.select2-container--focus .select2-selection--multiple {
   border-color: #7367f0 !important;
   outline: 0; }
@@ -3217,3 +3434,4 @@ tr.group {
 .dark-layout .bootstrap-touchspin .bootstrap-touchspin-injected .disabled-max-min {
   background-color: #b8c2cc !important;
   opacity: 1; }
+}

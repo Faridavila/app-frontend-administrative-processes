@@ -35,7 +35,7 @@ const RolCRUD = () => {
       required: true,
       minLength: 2,
       maxLength: 100,
-      regex: /^[A-Za-z\s]+$/,
+      regex: /^[A-Za-záéíóúÁÉÍÓÚ\s]+$/
     },
   ];
 
@@ -43,7 +43,7 @@ const RolCRUD = () => {
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid p-0">
         <div className="content-header row"></div>
         <div className="content-body">
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -70,7 +70,9 @@ const RolCRUD = () => {
                 deleteItem={DeleteRol}
                 itemTemplate={itemTemplate}
                 columns={columns}
+                filterButtonOrder={1}
                 sortFieldMap={RolSortFieldMap}
+                pageTitle="Rol" 
               />
             </div>
           </div>

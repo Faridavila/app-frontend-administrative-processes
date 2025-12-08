@@ -1,9 +1,9 @@
 import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { NumerationTypes } from "../Types/NumerationTypes";
-//import { BASE_URL_APIS_CORE } from "../../constants";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/numeration';
-//const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/Numeration`;
+//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/numeration';
+const URL: string = `${BASE_URL_APIS_CORE}/numeration`;
 
 export async function GetNumerationId(id: number): Promise<ObjectResponse<NumerationTypes> | null> {
     try {

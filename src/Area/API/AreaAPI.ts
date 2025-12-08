@@ -1,24 +1,8 @@
-import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { AreaTypes } from "../Types/AreaTypes";
-import { BASE_URL_APIS_WORKFLOW } from "../../constants";
+import { BASE_URL_APIS_USER } from "../../constants";
 
-//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/currency-type';
-const URL: string = `${BASE_URL_APIS_WORKFLOW}/api/v1/back-user-service/area`;
-
-export async function GetAreaId(id: number): Promise<ObjectResponse<AreaTypes> | null> {
-    try {
-        const response = await fetch(`${URL}/get/${id}`);
-        if (response.ok) {
-            const data: ObjectResponse<AreaTypes> = await response.json();
-            return data;
-        } else {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        return null;
-    }
-}
+//const URL = 'http://localhost:8081/api/v1/back-user-service/area';
+const URL: string = `${BASE_URL_APIS_USER}/area`;
 
 export const GetArea = async (
   page: number,
@@ -74,6 +58,7 @@ export async function CreateArea(branchDto: AreaTypes): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
@@ -134,6 +119,7 @@ export async function UpdateArea(id: number, branchDto: AreaTypes): Promise<void
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
@@ -148,6 +134,7 @@ export async function DeleteArea(id: number): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 

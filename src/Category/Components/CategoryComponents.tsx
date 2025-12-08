@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import CRUDForm from "../../GeneralComponents/GeneralCrud/CRUDForm";
 import { CategoryTypes } from "./../Types/CategoryTypes";
 import { categorySortFieldMap } from "../Types/MapeoCategory";
@@ -12,69 +11,135 @@ import {
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
 
 const CategoryCRUD = () => {
-  // Definir la plantilla de los elementos (objeto inicial)
   const itemTemplate = (): CategoryTypes => ({
     id: 0,
-    categoryType: "",
-    description: "",
+    nameCategory: "",
+    soldOutValue: "",
+    fewUnits: "",
+    image: "",
     status: "ACTIVE",
   });
 
-  // Definir las columnas del formulario CRUD
   const columns: {
     key: keyof CategoryTypes;
     label: string;
-    hidden?: boolean;
     required?: boolean;
     minLength?: number;
     maxLength?: number;
     regex?: RegExp;
-    hiddenInCreate?: boolean; // Ocultar en la creación
-    hiddenInEdit?: boolean; // Ocultar en la edición
+    hiddenInCreate?: boolean;
+    hiddenInEdit?: boolean;
+    hidden?: boolean;
+    editable?: boolean;
+    dependentOn?: keyof CategoryTypes;
+    validationMessage?: string;
+    render?: (item: CategoryTypes) => React.ReactNode;
+    imageOptions?: {
+      maxSize: number;
+      acceptedFormats: string[];
+    };
   }[] = [
-    {
-      key: "id",
-      label: "ID",
-      hiddenInCreate: true, // Ocultar el ID en el formulario de creación
-      hiddenInEdit: true,
-    },
-    {
-      key: "categoryType",
-      label: "Tipo de Categoría",
-      required: true,
-      minLength: 2,
-      maxLength: 100,
-    },
-    {
-      key: "description",
-      label: "Descripción",
-      required: true,
-      minLength: 2,
-      maxLength: 100,
-    },
-    {
-      key: "status",
-      label: "Estado",
-      required: true,
-      minLength: 2,
-      maxLength: 50,
-    },
-  ];
+      {
+        key: "id",
+        label: "ID",
+        hiddenInCreate: true,
+        hiddenInEdit: true,
+      },
+      {
+        key: "nameCategory",
+        label: "Tipo de Categoría",
+        required: true,
+        minLength: 2,
+        maxLength: 30,
+        regex: /^[A-Za-záéíóúÁÉÍÓÚ0-9\s\.,;¡!¿?(){}[\]@#%&*+_\\/-]+$/,
+      },
+      {
+        key: "soldOutValue",
+        label: "Rango de unidades agotadas",
+        required: true,
+        regex: /^\d+$/,
+      },
+      {
+        key: "fewUnits",
+        label: "Rango de pocas unidades",
+        required: true,
+        dependentOn: "soldOutValue",
+        validationMessage: "El valor debe ser mayor que 'Rango de unidades agotadas'.",
+        regex: /^\d+$/
+      },
+      {
+        key: "image",
+        label: "Imagen",
+        required: true,
+        imageOptions: {
+          maxSize: 2 * 1024 * 1024,
+          acceptedFormats: ["image/jpeg", "image/png", "image/webp"],
+        },
+        render: (item) =>
+          item.image ? (
+            <img
+              src={item.image}
+              alt="Imagen"
+              style={{ width: "80px", height: "80px", objectFit: "cover" }}
+            />
+          ) : (
+            "N/A"
+          ),
+        editable: true,
+      },
+      {
+        key: "status",
+        label: "Estado",
+        hiddenInCreate: true,
+        hiddenInEdit: true,
+        hidden: true,
+      },
+    ];
 
-  // Renderizar campos personalizados si es necesario (en este caso no hay ninguno)
   const renderCustomFormField = (
-    _colKey: keyof CategoryTypes,
-    _value: string,
-    _onChange: (newValue: string) => void
+    colKey: keyof CategoryTypes,
+    value: any,
+    onChange: (newValue: any) => void
   ) => {
+    if (colKey === "image") {
+      return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                onChange(file);
+              }
+            }}
+          />
+          {value instanceof File && (
+            <img
+              src={URL.createObjectURL(value)}
+              alt="Vista previa"
+              style={{
+                width: "80px",
+                height: "80px",
+                objectFit: "cover",
+                borderRadius: "8px",
+                border: "1px solid #ccc",
+              }}
+            />
+          )}
+        </div>
+      );
+    }
+
     return null;
   };
+
 
   return (
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid p-0">
         <div className="content-header row"></div>
         <div className="content-body">
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -100,8 +165,10 @@ const CategoryCRUD = () => {
                 deleteItem={DeleteCategory}
                 itemTemplate={itemTemplate}
                 columns={columns}
+                filterButtonOrder={1}
                 sortFieldMap={categorySortFieldMap}
                 renderCustomFormField={renderCustomFormField}
+                pageTitle="Categorías"
               />
             </div>
           </div>

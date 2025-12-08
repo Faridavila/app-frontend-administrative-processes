@@ -1,24 +1,8 @@
-import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { RolTypes } from "../Types/RolTypes";
 import { BASE_URL_APIS_USER } from "../../constants";
 
-//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/currency-type';
-const URL: string = `${BASE_URL_APIS_USER}/api/v1/back-user-service/rol`;
-
-export async function GetRolId(id: number): Promise<ObjectResponse<RolTypes> | null> {
-    try {
-        const response = await fetch(`${URL}/get/${id}`);
-        if (response.ok) {
-            const data: ObjectResponse<RolTypes> = await response.json();
-            return data;
-        } else {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        return null;
-    }
-}
+//const URL = 'http://localhost:8081/api/v1/back-user-service/rol';
+const URL: string = `${BASE_URL_APIS_USER}/rol`;
 
 export const GetRol = async (
   page: number,
@@ -74,6 +58,7 @@ export async function CreateRol(branchDto: RolTypes): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
@@ -134,6 +119,7 @@ export async function UpdateRol(id: number, branchDto: RolTypes): Promise<void> 
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
@@ -148,6 +134,7 @@ export async function DeleteRol(id: number): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 

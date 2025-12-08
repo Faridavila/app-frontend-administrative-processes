@@ -1,6 +1,8 @@
 export interface CategoryTypes {
   id: number;
-  categoryType: string;
-  description: string;
+  nameCategory: string;
+  soldOutValue: string;
+  fewUnits: string;
+  image: string; 
   status: string;
 }

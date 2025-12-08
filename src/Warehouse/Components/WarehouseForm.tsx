@@ -1,4 +1,5 @@
 import CRUDForm from "../../GeneralComponents/GeneralCrud/CRUDForm";
+import { WarehouseTypes } from "../../Warehouse/Types/WarehouseTypes";
 import { WarehouseSortFieldMap } from "../Types/MapeoWarehouse";
 import {
   GetWarehouses,
@@ -8,24 +9,19 @@ import {
   GetSearchWarehouses,
 } from "../API/WarehousesAPI";
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
-import WarehouseTypeSelectWrapper from "./WarehouseSelectWrapper";
-import { Warehouse } from "../../Warehouse/Types/WarehouseTypes";
+
 
 const WarehouseCRUD = () => {
-  const itemTemplate = (): Warehouse => ({
+  const itemTemplate = (): WarehouseTypes => ({
     id: 0,
-    warehouseTypeId: 0,
-    warehouseTypeName: "",
     warehouseName: "",
-    status: "ACTIVE",
+    status: "",
     description: "",
-    owner: "",
-    email: "",
     address: "",
   });
 
   const columns: {
-    key: keyof Warehouse;
+    key: keyof WarehouseTypes;
     label: string;
     hidden?: boolean;
     required?: boolean;
@@ -37,60 +33,31 @@ const WarehouseCRUD = () => {
   }[] = [
     { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true },
     {
-      key: "warehouseTypeId",
-      label: "Tipo bodega",
-      hidden: true,
-    },
-    {
-      key: "warehouseTypeName",
-      label: "Tipo Nombre bodega",
-      hidden: true,
-      hiddenInCreate: true,
-      hiddenInEdit: true,
-    },
-    {
       key: "warehouseName",
       label: "Nombre de bodega",
+      required: true,
+      minLength: 2,
+      maxLength: 100,
     },
     {
       key: "description",
       label: "Descripcion",
     },
     {
-      key: "owner",
-      label: "Dueño",
-    },
-    {
-      key: "email",
-      label: "Correo",
-    },
-    {
       key: "address",
       label: "Direccion",
+      required: true,
+      minLength: 2,
+      maxLength: 100,
     },
   ];
 
-  const renderCustomFormField = (
-    colKey: keyof Warehouse,
-    value: string,
-    onChange: (newValue: string) => void
-  ) => {
-    if (colKey === "warehouseTypeId") {
-      return (
-        <WarehouseTypeSelectWrapper
-          selectedValue={parseInt(value, 10)}
-          onChange={(newtypeId: number) => onChange(newtypeId.toString())}
-        />
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid p-0">
         <div className="content-header row"></div>
         <div style={{ display: "flex", alignItems: "center" }}>
           <h3
@@ -107,7 +74,7 @@ const WarehouseCRUD = () => {
         </p>
         <div className="card">
           <div className="card-datatable table-responsive">
-            <CRUDForm<Warehouse>
+            <CRUDForm<WarehouseTypes>
               fetchItems={GetWarehouses}
               searchItem={GetSearchWarehouses}
               createItem={CreateWarehouse}
@@ -115,8 +82,9 @@ const WarehouseCRUD = () => {
               deleteItem={DeleteWarehouse}
               itemTemplate={itemTemplate}
               columns={columns}
+              filterButtonOrder={1}
               sortFieldMap={WarehouseSortFieldMap}
-              renderCustomFormField={renderCustomFormField}
+              pageTitle="Bodegas"
             />
           </div>
         </div>

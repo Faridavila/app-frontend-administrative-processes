@@ -28,16 +28,16 @@ const PaymentMethodCRUD = () => {
     hiddenInCreate?: boolean;
     hiddenInEdit?: boolean;
   }[] = [
-    {key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true },
-    {key: "description",label: "Nombre",},
-  ];
+      { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true },
+      { key: "description", label: "Nombre", },
+    ];
 
 
   return (
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid p-0">
         <div className="content-header row"></div>
         <div style={{ display: "flex", alignItems: "center" }}>
           <h3
@@ -61,7 +61,13 @@ const PaymentMethodCRUD = () => {
               updateItem={UpdatePaymentMethod}
               deleteItem={DeletePaymentMethod}
               itemTemplate={itemTemplate}
+              filterButtonOrder={2}
+              addButtonOrder={1}
+              editButtonOrder={3}
+              deleteButtonOrder={4}
+              hiddenDownloadButton={false}
               columns={columns}
+              pageTitle="Medio de pago"
               sortFieldMap={PaymentMethodSortFieldMap}
             />
           </div>

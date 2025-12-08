@@ -20,5 +20,5 @@ export interface UserTypes {
     id: number;
     description: string;
   };
-  status: 'ACTIVE' | 'INACTIVE';
+  status: string; 
 }

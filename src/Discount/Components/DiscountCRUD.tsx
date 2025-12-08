@@ -85,6 +85,7 @@ const DiscountCRUD = () => {
               deleteItem={DeleteDiscount}
               itemTemplate={itemTemplate}
               columns={columns}
+              filterButtonOrder={1}
               sortFieldMap={DiscountSortFieldMap}
               renderCustomFormField={renderCustomFormField}
             />

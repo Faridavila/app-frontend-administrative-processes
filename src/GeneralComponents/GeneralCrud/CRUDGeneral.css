@@ -54,7 +54,7 @@
 }
 
 
-.btn-small {
+.btn-small1 {
   font-size: 0px;
   padding: 0px 0px;
   position: absolute; 
@@ -75,11 +75,11 @@
 .btn-small3 {
   font-size: 0px;
   padding: 0px 0px;
-  position: absolute; 
-  right: 100px; 
+  position: absolute;
+  right: 100px;
   top: 30px;
-  
 }
+
 
 .btn-small4 {
   font-size: 0px;
@@ -90,6 +90,57 @@
   
 }
 
+.btn-small5 {
+  font-size: 0px;
+  padding: 0px 0px;
+  position: absolute; 
+  right: 180px; 
+  top: 30px;
+  
+}
+
+
+.btn-small7 {
+  font-size: 15px;         
+  padding: .30rem .3rem;    
+  position: absolute;
+  right: 100px;
+  top: 30px;
+}
+
+.btn-small8 {
+  font-size: 14px;         
+  padding: .30rem .3rem; 
+  position: absolute; 
+  right: 240px; 
+  top: 30px;
+}
+
+
+.btn-small9 {
+  font-size: 14px;         
+  padding: .30rem .3rem; 
+  position: absolute; 
+  right: 310px; 
+  top: 30px;
+}
+
+.btn-small10 {
+  font-size: 14px;         
+  padding: .30rem .3rem; 
+  position: absolute; 
+  right: 210px; 
+  top: 30px;
+}
+
+.btn-small11 {
+   font-size: 14px;         
+  padding: .30rem .3rem; 
+  position: absolute; 
+  right: 225px; 
+  top: 30px;
+}
+
 
 .table-responsive {
   overflow-x: auto;
@@ -98,12 +149,13 @@
 
 
 .table td {
-  max-width: 150px; 
+  max-width: 250px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
   position: relative;
+  padding: 12px;
 }
 
 .table td:hover::after {
@@ -111,10 +163,10 @@
   position: absolute;
   background-color: rgba(0, 0, 0, 0.50);
   color: #fff;
-  padding: 5px;
+  padding: 8px;
   border-radius: 3px;
   white-space: normal;
-  max-width: 300px;
+  max-width: 300px; 
   z-index: 1000;
   bottom: 100%;
   left: 50%;
@@ -133,27 +185,32 @@
   white-space: nowrap; 
   overflow: hidden;
   text-overflow: ellipsis; 
-  max-width: 150px; 
+  max-width: 300px; 
   vertical-align: middle; 
 }
 
+
+
 .table-responsive {
-  overflow-x: auto; 
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
 }
 
 .table {
   width: 100%; 
-  table-layout: fixed;
-  word-wrap: break-word; 
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
+
 
 .table th, .table td {
   border: 1px solid #ddd; 
-  padding: 8px; 
+  padding: 6px; 
 }
 
 .table th {
-  background-color: #f8f9fa; 
   font-weight: bold; 
   text-align: center; 
 }
@@ -164,8 +221,11 @@
   white-space: normal; 
   overflow: visible; 
   text-overflow: clip; 
-  max-width: 200px; 
+  max-width: 150px;
+  overflow-wrap: break-word; 
 }
+
+
 
 .table td:hover { 
   white-space: normal; 
@@ -173,4 +233,197 @@
   position: relative; 
 }
 
+.th-top {
+  flex-wrap: wrap; 
+  gap: 5px; 
+  min-height: 40px; 
+  align-items: flex-start; 
+}
+
+.th-top span:first-child {
+  white-space: normal;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.2;
+  flex: 1; 
+  min-width: 0; 
+}
+
+.th-sort-icon {
+  flex-shrink: 0; 
+  width: 20px; 
+  text-align: right;
+  opacity: 0.7;
+}
+
+.th-sort-icon:hover {
+  opacity: 1; 
+}
+
+.th-sort-icon svg {
+  display: block; 
+}
+
+.th-flex th {
+  min-width: 200px; 
+  height: auto;
+}
+
+.bi-arrow-down-up.asc {
+  transform: rotate(180deg); 
+  transition: transform 0.2s ease;
+}
+
+.bi-arrow-down-up.desc {
+  transform: rotate(0deg); 
+  transition: transform 0.2s ease;
+}
+
+/* Custom modal size between lg and xl */
+.custom-modal-size .modal-dialog {
+  max-width: 1200px;  /* Intermediate width; adjust between 800px-1140px as needed */
+  margin: 1.75rem auto;  /* Maintain Bootstrap's vertical centering */
+}
+
+/* Ensure responsiveness on smaller screens */
+@media (max-width: 1200px) {
+  .custom-modal-size .modal-dialog {
+    max-width: 90%;  /* Fallback for very wide screens */
+  }
+}
+
+@media (max-width: 576px) {
+  .custom-modal-size .modal-dialog {
+    max-width: 95%;  /* Full-width on mobile */
+    margin: 0.5rem;
+  }
+}
+
+
+
+
+/* Responsive buttons - Texto más pequeño en móvil */
+@media (max-width: 768px) {
+  /* Hacer el texto más pequeño pero visible */
+  .button-container .btn {
+    font-size: 1rem !important;
+  }
+  
+
+  /* Ajustar espaciado entre botones en móvil - más cercanos */
+  .button-container {
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+  
+  .button-container .btn {
+    margin-right: 0.3rem !important;
+  }
+}
+
+
+
+@media (max-width: 768px) {
+  .pdf-button-wrapper {
+    right: 320px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .pdf-button-wrapper {
+    right: 320px !important;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .pdf-button-wrapper2 {
+    right: 65px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .pdf-button-wrapper2 {
+    right: 65px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .pdf-button-wrapper3 {
+    right: 230px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .pdf-button-wrapper3 {
+    right: 230px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .pdf-button-wrapper4 {
+    right: 185px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .pdf-button-wrapper4 {
+    right: 185px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .add-invoice-button-wrapper{
+    right: 105px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .add-invoice-button-wrapper{
+    right: 105px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .see-invoice-button-wrapper{
+    right: 187px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .see-invoice-button-wrapper{
+    right: 187px !important;
+  }
+}
+
+
+
+/* Título de detalles del producto responsive */
+.product-details-title {
+  font-weight: bold;
+  font-size: 22px;
+  padding: 1rem;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .product-details-title {
+    font-size: 18px !important;
+    padding: 0.75rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .product-details-title {
+    font-size: 16px !important;
+    padding: 0.5rem !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .product-details-title {
+    font-size: 14px !important;
+    padding: 0.5rem !important;
+  }
+}
 

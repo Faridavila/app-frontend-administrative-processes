@@ -2,23 +2,8 @@ import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { UserTypes } from "../Types/UserTypes";
 import { BASE_URL_APIS_USER } from "../../constants";
 
-//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/User';
-const URL: string = `${BASE_URL_APIS_USER}/api/v1/back-user-service/user`;
-
-export async function GetUserById(id: number): Promise<ObjectResponse<UserTypes> | null> {
-    try {
-        const response = await fetch(`${URL}/get/${id}`);
-        if (response.ok) {
-            const data: ObjectResponse<UserTypes> = await response.json();
-            return data;
-        } else {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        return null;
-    }
-}
+//const URL = 'http://localhost:8081/api/v1/back-user-service/user';
+const URL: string = `${BASE_URL_APIS_USER}/user`;
 
 export const GetUser = async (
   page: number,
@@ -74,6 +59,7 @@ export async function CreateUser(UserDto: UserTypes): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
@@ -119,9 +105,6 @@ export const GetSearchUser = async (
 };
 
 
-
-
-
 export async function UpdateUser(id: number, UserDto: UserTypes): Promise<void> {
     try {
         const response = await fetch(`${URL}/update/${id}`, {
@@ -136,6 +119,7 @@ export async function UpdateUser(id: number, UserDto: UserTypes): Promise<void> 
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
@@ -150,13 +134,14 @@ export async function DeleteUser(id: number): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
 
 export async function GetAllUseresNoPage(): Promise<ObjectResponse<UserTypes[]> | null> {
     try {
-        const response = await fetch(`${URL}/no-page/getAllUseres`);
+        const response = await fetch(`${URL}/get-all`);
         if (response.ok) {
             const data: ObjectResponse<UserTypes[]> = await response.json();
             return data;

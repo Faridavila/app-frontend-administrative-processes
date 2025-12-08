@@ -62,6 +62,7 @@ const DiscountTypeCRUD = () => {
               deleteItem={DeleteDiscountType}
               itemTemplate={itemTemplate}
               columns={columns}
+              filterButtonOrder={1}
               sortFieldMap={DiscountTypeSortFieldMap}
             />
           </div>

@@ -1,11 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
-import { GetAllDepartmentNoPage } from '../../Department/API/DepartmentAPI';  
-
-export interface DepartmentOption {
-  value: number;
-  label: string;
-}
+import React from 'react';
+import GenericSelect from '../../GeneralComponents/GeneralCrud/SelectGeneral';
+import { GetAllDepartmentNoPage } from '../../Department/API/DepartmentAPI';
 
 interface DepartmentSelectProps {
   selectedValue: number;
@@ -13,46 +8,34 @@ interface DepartmentSelectProps {
 }
 
 const DepartmentSelect: React.FC<DepartmentSelectProps> = ({ selectedValue, onChange }) => {
-  const [departments, setDepartments] = useState<DepartmentOption[]>([]);
-  const [selectedDepartment, setSelectedDepartment] = useState<DepartmentOption | null>(null);
-
-  useEffect(() => {
-    const fetchDepartments = async () => {
-      try {
-        const departmentData = await GetAllDepartmentNoPage();
-        if (departmentData) {
-          const departmentOptions = departmentData.map(dep => ({
-            value: dep.id,
-            label: `${dep.departmentCode}-${dep.departmentName}`,
-          }));
-
-          setDepartments(departmentOptions);
-          setSelectedDepartment(departmentOptions.find(dep => dep.value === selectedValue) || null);
-        } else {
-          console.warn('No department data returned.');
-        }
-      } catch (error) {
-        console.error('Error fetching departments:', error);
+  // Función que formatea los datos del departamento
+  const fetchDepartments = async () => {
+    try {
+      const departmentData = await GetAllDepartmentNoPage();
+      
+      if (departmentData && Array.isArray(departmentData)) {
+        // Transformamos los datos para que tengan el formato correcto
+        return departmentData.map(dep => ({
+          id: dep.id,
+          displayLabel: `${dep.departmentCode}-${dep.departmentName}`,
+        }));
       }
-    };
-  
-    fetchDepartments();
-  }, [selectedValue]);
-  
-  const handleDepartmentChange = (option: any) => {
-    setSelectedDepartment(option);
-    onChange(option?.value);  
+      return null;
+    } catch (error) {
+      console.error('Error fetching departments:', error);
+      return null;
+    }
   };
 
   return (
-    <div>
-      <Select
-        options={departments}
-        value={selectedDepartment}
-        onChange={handleDepartmentChange}
-        placeholder="Seleccione un departamento"
-      />
-    </div>
+    <GenericSelect
+      fetchData={fetchDepartments}
+      selectedValue={selectedValue}
+      onChange={onChange}
+      labelKey="displayLabel"
+      valueKey="id"
+      placeholder="Seleccione un departamento"
+    />
   );
 };
 

@@ -13,7 +13,6 @@ import "../app-assets/css/components.min.css";
 import "../app-assets/css/plugins/extensions/ext-component-context-menu.min.css";
 
 import Layout from "./Layout.tsx";
-import TreePUC from "./Arbol/Components/NuevoTREE.tsx";
 import DepartmentCRUD from "./Department/Components/Department.tsx";
 import CompanyPresentation from "./Company/Components/InfoCompany.tsx";
 import BranchCRUD from "./Branch/Components/BranchComponents.tsx";
@@ -21,40 +20,29 @@ import EconomicActivityCRUD from "./EconomicActivity/Components/EconomicActivity
 import CategoryCRUD from "./Category/Components/CategoryComponents.tsx";
 import CityCRUD from "./City/Components/City.tsx";
 import CurrencyTipeCRUD from "./CurrencyType/Components/CurrencyType.tsx";
-import FormularioComprobante from "./AccountingVoucher/Components/AccountingVoucher.tsx";
-import ForgotPassword from "./Login/ForgotPassword.tsx";
-import ActionCRUD from "./Action/Components/Action.tsx";
-import ActionStepCRUD from "./ActionStep/Components/ActionStep.tsx";
-import ProcessCRUD from "./Process/Components/Process.tsx";
+import ForgotPassword from "./Login/Components/ForgotPassword.tsx";
 import AuthCRUD from "./Auth/Components/Auth.tsx";
-import StepCRUD from "./Step/Components/Step.tsx";
-import LoginPage from "./Login/login.tsx";
-import Home from "./Home/Home.tsx";
+import LoginPage from "./Login/Components/login.tsx";
+import Dashboard from "./Dashboard/Dashboard.tsx";
 import SolicitudForm from "./RadicarSolicitud/Components/SolicitudForm.tsx";
 import WarehouseForm from "./Warehouse/Components/WarehouseForm.tsx";
 import RegistroProductoWizard from "./RegistrarProducto/Components/RegistrarProducto.tsx";
-import CalendarComponent from "./Calendar/Components/CalendarComponent.tsx";
-import ProcessCompanyCRUD from "./ProcessCompany/Components/ProcessCompany.tsx";
+import CalendarComponent from "./Calendar/CalendarComponent.tsx";
 import UserCRUD from "./User/Components/UserComponents.tsx";
 import ParameterTypeCRUD from "./ParameterType/Components/ParameterType.tsx";
 import ParameterCRUD from "./Parameter/Components/Parameter.tsx";
-import ActionParameterCRUD from "./ActionParameter/Components/ActionParameter.tsx";
 import CompanyCRUD from "./Company/Components/CompanyCRUD.tsx";
-import StepTypeCRUD from "./StepType/Components/StepType.tsx";
-import StepStatusCRUD from "./StepType/Components/StepStatus.tsx";
 import MenuCRUD from "./Menu/Components/Menu.tsx";
 import MenuTypeCRUD from "./Menu/Components/MenuType.tsx";
 import AreaCRUD from "./Area/Components/Area.tsx";
 import RolCRUD from "./Rol/Components/Rol.tsx";
 import PositionCRUD from "./Position/Components/Position.tsx";
 import InvoicePOS from "./InvoicePOS/Components/InvoicePOS.tsx";
-import FacturacionPOSModal from "./InvoicePOS/Components/generate-invoice.tsx";
 import FormularioInventoryAdjustmentCRUD from "./InventoryAdjustmentTypes/Components/InventoryAdjustmentCRUD.tsx";
 import FileManagerApp from "./FileManager/Components/FileManagerApp.tsx";
 import FormularioWarehouseCRUD from "./WarehouseType/Components/FormWarehouseTypesCRUD.tsx";
 import NumerationCRUD from "./Numeration/Components/NumerationCRUD.tsx";
 import TaxConfigurationCRUD from "./TaxConfiguration/Components/TaxConfigurationCRUD.tsx";
-import AccountingDocumentTypesCRUD from "./AccountingDocumentTypes/Components/AccountingDocumentTypesCRUD.tsx";
 import CashRegisterCRUD from "./CashRegister/Components/CashRegisterCRUD.tsx";
 import ClientCRUD from "./Client/Components/ClientCRUD.tsx";
 import PaymentMethodCRUD from "./PaymentMethod/Components/PaymentMethodCRUD.tsx";
@@ -62,6 +50,23 @@ import SellerCRUD from "./Seller/Components/SellerCRUD.tsx";
 import ProductCRUD from "./Product/Components/ProductCRUD.tsx";
 import DiscountTypeCRUD from "./DiscountType/Components/DiscountTypeCRUD.tsx";
 import DiscountCRUD from "./Discount/Components/DiscountCRUD.tsx";
+import SuppliersCRUD from "./Suppliers/Components/Suppliers.tsx";
+import InventoryCRUD from "./Inventory/Components/InventoryCRUD.tsx";
+import InventoryHistory from "./InventoryHistory/Components/InventoryHistory.tsx";
+import ShoppingSuppliers from "./ShoppingSuppliers/Components/ShoppingSuppliers.tsx"
+import SupplierPendingProduct from "./SupplierPendingProducts/Components/SupplierPendingProduct.tsx";
+import EmployeeCRUD from "./Employee/Components/Employee.tsx";
+import EmployeePayment from "./EmployeePayments/Components/EmployeePayment.tsx";
+import EmployeeHistoryCRUD from "./EmployeeHistory/Components/EmployeeHistory.tsx";
+import SupplierRateCRUD from "./SupplierRate/Components/SupplierRate.tsx";
+import NeighborhoodRateCRUD from "./NeighborhoodRate/Components/NeighborhoodRate.tsx";
+import PendingOrder from "./PendingOrder/Components/PendingOrder.tsx";
+import CompleteOrderHistory from "./CompleteOrderHistory/Components/CompleteOrderHistory.tsx";
+import AssignOrder from "./AssignOrder/Components/AssignOrder.tsx";
+import InvoiceCrud from "./InvoiceCrud/Components/InvoiceCrud.tsx";
+import Calculator from "./Calculator/Calculator.tsx";
+import InvoiceDetail from "./InvoicePOS/Components/InvoiceDetail.tsx";
+import TerminalCRUD from "./Terminal/Components/Terminal.tsx";
 
 const router = createBrowserRouter([
   {
@@ -77,12 +82,8 @@ const router = createBrowserRouter([
         element: <Navigate to="/login" />,
       },
       {
-        path: "/home",
-        element: <Home />,
-      },
-      {
-        path: "/arbol",
-        element: <TreePUC />,
+        path: "/dashboard",
+        element: <Dashboard />,
       },
       {
         path: "/paymentMethod",
@@ -99,11 +100,75 @@ const router = createBrowserRouter([
       {
         path: "/cashRegister",
         element: <CashRegisterCRUD />,
-      },  
+      },
+      {
+        path: "/inventory",
+        element: <InventoryCRUD />,
+      },
       {
         path: "/product",
         element: <ProductCRUD />,
       },
+
+      {
+        path: "/inventoryHistory",
+        element: <InventoryHistory />,
+      },
+      {
+        path: "/supplier",
+        element: <SuppliersCRUD />,
+      },
+      {
+        path: "/purchaseSupplier",
+        element: <ShoppingSuppliers />,
+      },
+      {
+        path: "/supplierPendingProduct",
+        element: <SupplierPendingProduct />,
+      },
+      {
+        path: "/employee",
+        element: <EmployeeCRUD />,
+      },
+      {
+        path: "/employeePayment",
+        element: <EmployeePayment />,
+      },
+      {
+        path: "/employeeHistory",
+        element: <EmployeeHistoryCRUD />,
+      },
+      {
+        path: "/supplierRate",
+        element: <SupplierRateCRUD />,
+      },
+      {
+        path: "/neighborhoodRate",
+        element: <NeighborhoodRateCRUD />,
+      },
+      {
+        path: "/assignOrder",
+        element: <AssignOrder />,
+      },
+      {
+        path: "/pendingOrder",
+        element: <PendingOrder />,
+      },
+      {
+        path: "/completeOrderHistory",
+        element: <CompleteOrderHistory />,
+      },
+      {
+        path: "/invoice",
+        element: <InvoiceCrud />,
+      },
+
+
+
+
+
+
+
       {
         path: "/department",
         element: <DepartmentCRUD />,
@@ -117,21 +182,12 @@ const router = createBrowserRouter([
         element: <DiscountTypeCRUD />,
       },
       {
-        path: "/tree",
-        element: <TreePUC />,
-      },
-      
-      {
         path: "/company",
         element: <CompanyPresentation />,
       },
       {
         path: "/configCompany",
         element: <CompanyCRUD />,
-      },
-      {
-        path: "/comprobante",
-        element: <FormularioComprobante />,
       },
       {
         path: "/economicActivity",
@@ -153,26 +209,13 @@ const router = createBrowserRouter([
         path: "currencyType",
         element: <CurrencyTipeCRUD />,
       },
-      {
-        path: "/action",
-        element: <ActionCRUD />,
-      },
-      {
-        path: "/actionStep",
-        element: <ActionStepCRUD />,
-      },
-      {
-        path: "/process",
-        element: <ProcessCRUD />,
-      },
+
+
       {
         path: "/auth",
         element: <AuthCRUD />,
       },
-      {
-        path: "/step",
-        element: <StepCRUD />,
-      },
+
       {
         path: "/Solicitud",
         element: <SolicitudForm />,
@@ -189,10 +232,7 @@ const router = createBrowserRouter([
         path: "/file-manager",
         element: <FileManagerApp />,
       },
-      {
-        path: "/processCompany",
-        element: <ProcessCompanyCRUD />,
-      },
+
       {
         path: "/Solicitud",
         element: <SolicitudForm />,
@@ -206,13 +246,18 @@ const router = createBrowserRouter([
         element: <CalendarComponent />,
       },
       {
-        path: "/FacturaComponent",
+        path: "/calculator",
+        element: <Calculator />,
+      },
+      {
+        path: "/new-invoice",
         element: <InvoicePOS />,
       },
       {
-        path: "/FacturaPoputComponent",
-        element: <FacturacionPOSModal />,
+        path: "/invoice-detail/:id",
+        element: <InvoiceDetail />,  
       },
+
       {
         path: "/numeration",
         element: <NumerationCRUD />,
@@ -221,14 +266,7 @@ const router = createBrowserRouter([
         path: "/taxConfiguration",
         element: <TaxConfigurationCRUD />,
       },
-      {
-        path: "/AccountingDocumentTypes",
-        element: <AccountingDocumentTypesCRUD />,
-      },
-      {
-        path: "/category",
-        element: <CalendarComponent />,
-      },
+
       {
         path: "/user",
         element: <UserCRUD />,
@@ -242,21 +280,15 @@ const router = createBrowserRouter([
         element: <ParameterCRUD />,
       },
       {
-        path: "/bodega",
+        path: "/warehouse",
         element: <WarehouseForm />,
       },
+
       {
-        path: "/actionParameter",
-        element: <ActionParameterCRUD />,
+        path: "/terminal",
+        element: <TerminalCRUD />,
       },
-      {
-        path: "/stepType",
-        element: <StepTypeCRUD />,
-      },
-      {
-        path: "/stepStatus",
-        element: <StepStatusCRUD />,
-      },
+
       {
         path: "/menu",
         element: <MenuCRUD />,

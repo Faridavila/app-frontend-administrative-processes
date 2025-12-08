@@ -1,0 +1,91 @@
+export interface Producto {
+  id: number;
+  productId: number;
+  nombre: string;
+  precio: number;
+  cantidad: number;
+  discountPercent: number;
+  discountFixed: number;
+  quantity: number;
+  price: number;
+  discountAmount: number;
+  priceDiscount: number;
+  totalDiscount: number;
+  total: number;
+}
+
+export interface Client {
+  id: number;
+  name: string;
+  phone: string;
+  identification: number;
+  address: string;
+  cityName: string;
+}
+
+export interface NewClientData {
+  id: number;
+  name : string;
+  typeIdentificationId: number;
+  identificationType: string;
+  identification: number;
+  departmentId: number;
+  departmentName: string;
+  municipalityId: number;
+  municipality: string;
+  neighborhoodName: string;
+  address: string;
+  phone: string;
+  email:string;
+  verificationDigit: number;
+  personTypeId: number;
+  personType: string;
+  taxLiabilityId: number;
+  taxLiability: string;
+  status: string;
+}
+
+
+export interface InvoiceDetail {
+  productId: number;
+  nombre: string;
+  quantity: number;
+  price: number;
+  discountPercent: number;
+  discountFixed: number;
+  totalDiscount: number;
+  total: number;
+}
+
+export interface InvoiceViewOnlyProps {
+  invoice: {
+    invoiceNumber: string;
+    fecha: string;
+    cliente: string;
+    identificacion: string;
+    celular: string;
+    direccion: string;
+    ciudad: string;
+    cajero: string;
+
+    productos: InvoiceDetail[];
+
+    valorBruto: number;
+    descuentoTotal: number;
+    costoTransporte: number;
+    total: number;
+
+    entrega: "recoger" | "llevar";
+    metodoPago: string;
+    tipoPago: "contado" | "credito" | "abono";
+    fechaVencimiento?: string;
+    abono?: number;
+    restante?: number;
+    observacion?: string;
+
+    companyName?: string;
+    nit?: string;
+    companyAddress?: string;
+    companyPhone?: string;
+  };
+}

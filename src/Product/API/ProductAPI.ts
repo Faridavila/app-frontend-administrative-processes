@@ -1,24 +1,8 @@
-import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import {ProductTypes } from "../Types/ProductTypes";
-//import { BASE_URL_APIS_CORE } from "../../constants";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/product';
-//const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/cash-register`;
-
-export async function GetProductId(id: number): Promise<ObjectResponse<ProductTypes> | null> {
-    try {
-        const response = await fetch(`${URL}/get/${id}`);
-        if (response.ok) {
-            const data: ObjectResponse<ProductTypes> = await response.json();
-            return data;
-        } else {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        return null;
-    }
-}
+//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/product';
+const URL: string = `${BASE_URL_APIS_CORE}/product`;
 
 export const GetProduct = async (
   page: number,
@@ -60,21 +44,39 @@ export const GetProduct = async (
 };
 
 
-export async function CreateProduct(branchDto:ProductTypes): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/create`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(branchDto),
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
+export async function CreateProduct(
+  ProductDto: ProductTypes,
+  imageFile: File | null
+): Promise<void> {
+  try {
+    const formData = new FormData();
+    formData.append("productName", ProductDto.productName);
+    formData.append("price", String(Number(ProductDto.price)));
+    formData.append("description", ProductDto.description); 
+    formData.append("categoryId", String(Number(ProductDto.categoryId))); 
+    formData.append("quantity", String(Number(ProductDto.quantity)));
+    formData.append("purchasePrice", String(Number(ProductDto.purchasePrice)));
+
+    if (imageFile) {
+      formData.append("image", imageFile); 
     }
+
+    console.log("Data:", ProductDto);
+    const response = await fetch(`${URL}/create`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`La solicitud a la API falló ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Producto creado:", data);
+  } catch (error) {
+    console.error("Error al llamar a la API:", error);
+    throw error;
+  }
 }
 
 export const GetSearchProduct = async (
@@ -119,24 +121,43 @@ export const GetSearchProduct = async (
 };
 
 
+export async function UpdateProduct(
+  id: number,
+  ProductDto: ProductTypes,
+  imageFile: File | null
+): Promise<void> {
+  try {
+    const formData = new FormData();
+    
+    formData.append("productName", ProductDto.productName);
+    formData.append("price", String(Number(ProductDto.price)));
+    formData.append("description", ProductDto.description); 
+    formData.append("categoryId", String(Number(ProductDto.categoryId))); 
+    formData.append("quantity", String(Number(ProductDto.quantity)));
+    formData.append("purchasePrice", String(Number(ProductDto.purchasePrice)));
 
-export async function UpdateProduct(id: number, branchDto:ProductTypes): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/update/${id}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(branchDto),
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
+    if (imageFile) {
+      formData.append("image", imageFile); 
     }
-}
 
+    console.log("Data:", ProductDto);
+
+    const response = await fetch(`${URL}/update/${id}`, {
+      method: "PUT",
+      body: formData, 
+    });
+
+    if (!response.ok) {
+      throw new Error(`La solicitud a la API falló ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Categoría actualizada:", data);
+  } catch (error) {
+    console.error("Error al llamar a la API:", error);
+    throw error;  
+  }
+}
 
 export async function DeleteProduct(id: number): Promise<void> {
     try {
@@ -148,6 +169,7 @@ export async function DeleteProduct(id: number): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 

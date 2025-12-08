@@ -3,7 +3,7 @@ import { EconomicActivityTypes } from "../Types/EconomicActivityTypes";
 import { BASE_URL_APIS_CORE } from "../../constants";
 
 //const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/economic-activity';
-const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/economic-activity`;
+const URL: string = `${BASE_URL_APIS_CORE}/economic-activity`;
 
 export async function GetEconomicActivityId(id: number): Promise<ObjectResponse<EconomicActivityTypes> | null> {
     try {

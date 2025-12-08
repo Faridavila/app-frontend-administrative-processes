@@ -23,7 +23,7 @@ const AreaSelect: React.FC<{ selectedValue: number, onChange: (newValue: number)
       onChange={onChange}
       labelKey="description" 
       valueKey="id"             
-      placeholder="Seleccione una opcion del Area"
+      placeholder="Seleccione una area"
     />
   );
 };

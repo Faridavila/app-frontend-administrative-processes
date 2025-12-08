@@ -1,9 +1,9 @@
 import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { TaxConfigurationTypes } from "../Types/TaxConfigurationTypes";
-//import { BASE_URL_APIS_CORE } from "../../constants";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/tax';
-//const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/TaxConfiguration`;
+//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/tax';
+const URL: string = `${BASE_URL_APIS_CORE}/tax`;
 
 export async function GetTaxConfigurationId(id: number): Promise<ObjectResponse<TaxConfigurationTypes> | null> {
     try {

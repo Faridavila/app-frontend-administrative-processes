@@ -294,3 +294,31 @@
 }
 // Import vertical-overlay-menu.scss for small screen support
 @import 'vertical-overlay-menu.scss';
+
+// ...existing code...
+
+/* FIX SCSS: evitar desplazamiento del contenido en pantallas pequeñas */
+@include media-breakpoint-down(xl) {
+  .vertical-layout.vertical-menu-modern {
+    main.app-content,
+    .app-content.content {
+      margin-left: 0 !important;
+      padding-left: 0.75rem !important;
+      padding-right: 0.75rem !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      transform: none !important;
+      box-sizing: border-box !important;
+      left: 0 !important;
+    }
+
+    .layout-wrapper, .layout-body {
+      left: 0 !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      width: 100% !important;
+    }
+  }
+}
+
+// ...existing code...

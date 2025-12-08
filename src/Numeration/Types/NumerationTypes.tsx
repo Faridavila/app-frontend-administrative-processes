@@ -7,8 +7,6 @@ export interface NumerationTypes {
   initialNumber: number;
   finalNumber: number;
   currentNumber: number;
-  technicalKey: string;
-  descriptionAccountingDocumentType: string;
-  accountingDocumentTypeId: number;    
+  resolutionNumber: number;
   status: string;
 }

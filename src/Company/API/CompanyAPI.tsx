@@ -2,7 +2,7 @@ import { CompanyType } from "../Types/Company";
 import {BASE_URL_APIS_CORE} from "../../constants/index";
 
 //const API_URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/company';
-const API_URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/company`;
+const API_URL: string = `${BASE_URL_APIS_CORE}/company`;
 
 export const GetCompany = async (): Promise<CompanyType> => {
   const response = await fetch(`${API_URL}/all`);
@@ -49,8 +49,6 @@ export const UpdateCompany = async (company: CompanyType): Promise<boolean> => {
   }
 };
 
-
-/*API CRUD*/
 
 
 export const GetCompanyCRUD= async (
