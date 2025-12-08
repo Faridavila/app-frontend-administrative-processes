@@ -43,7 +43,7 @@ const RolCRUD = () => {
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid p-0">
         <div className="content-header row"></div>
         <div className="content-body">
           <div style={{ display: "flex", alignItems: "center" }}>

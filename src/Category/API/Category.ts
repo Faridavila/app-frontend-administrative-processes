@@ -1,10 +1,8 @@
 import { CategoryTypes } from "../Types/CategoryTypes";
 import { BASE_URL_APIS_CORE } from "../../constants";
 
-
-//const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/category`;
-const URL: string = `http://localhost:8080/api/v1/back-app-catalog-core-service/category`;
-
+//const URL: string = `http://localhost:8080/api/v1/back-app-catalog-core-service/category`;
+const URL: string = `${BASE_URL_APIS_CORE}/category`;
 
 export const GetCategory = async (
   page: number,

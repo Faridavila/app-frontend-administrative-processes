@@ -1,8 +1,8 @@
 import {ProductTypes } from "../Types/ProductTypes";
-//import { BASE_URL_APIS_CORE } from "../../constants";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/product';
-//const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/cash-register`;
+//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/product';
+const URL: string = `${BASE_URL_APIS_CORE}/product`;
 
 export const GetProduct = async (
   page: number,

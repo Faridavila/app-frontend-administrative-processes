@@ -1,8 +1,8 @@
-import {ShoppingSuppliersTypes } from "../Types/ShoppingSuppliersTypes";
-//import { BASE_URL_APIS_CORE } from "../../constants";
+import {ShoppingSuppliersTypes,CreatePurchaseDto } from "../Types/ShoppingSuppliersTypes";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/supplier';
-//const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/cash-register`;
+//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/supplier';
+const URL: string = `${BASE_URL_APIS_CORE}/supplier`;
 
 export const GetShoppingSuppliers = async (
   page: number,
@@ -31,7 +31,7 @@ export const GetShoppingSuppliers = async (
   });
 
   try {
-    const response = await fetch(`${URL}?${queryParams.toString()}`);
+    const response = await fetch(`${URL}/get-all-puchase-supplier?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }
@@ -45,70 +45,28 @@ export const GetShoppingSuppliers = async (
 
 
 export async function CreateShoppingSuppliers(
-  ShoppingSuppliersDto: ShoppingSuppliersTypes,
-  imageFile: File | null
+  purchaseDto: CreatePurchaseDto
 ): Promise<void> {
   try {
-    const formData = new FormData();
-    formData.append("ShoppingSuppliersName", ShoppingSuppliersDto.productName);
-    formData.append("quantity", String(Number(ShoppingSuppliersDto.quantity)));
-
-    if (imageFile) {
-      formData.append("image", imageFile); 
-    }
-
-    console.log("Data:", ShoppingSuppliersDto);
-    const response = await fetch(`${URL}/create`, {
+    const response = await fetch(`${URL}/create-purchase`, {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json", 
+      },
+      body: JSON.stringify(purchaseDto), 
     });
 
     if (!response.ok) {
-      throw new Error(`La solicitud a la API falló ${response.status}`);
+      const errorText = await response.text();
+      throw new Error(`Error ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
-    console.log("ShoppingSupplierso creado:", data);
+    console.log("Compra creada:", data);
   } catch (error) {
-    console.error("Error al llamar a la API:", error);
-    throw error;
+    console.error("Error al crear la compra:", error);
+    throw error; 
   }
-}
-
-export async function UpdateIntorySubtract( branchDto: ShoppingSuppliersTypes): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/subtract-quantity`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(branchDto),
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        throw error;  
-    }
-}
-
-export async function UpdateIntoryAdd( branchDto: ShoppingSuppliersTypes): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/add-quantity`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(branchDto),
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        throw error;  
-    }
 }
 
 export const GetSearchShoppingSuppliers = async (
@@ -153,40 +111,10 @@ export const GetSearchShoppingSuppliers = async (
 };
 
 
-export async function UpdateShoppingSuppliers(
-  id: number,
-  ShoppingSuppliersDto: ShoppingSuppliersTypes,
-  imageFile: File | null
-): Promise<void> {
-  try {
-    const formData = new FormData();
-    
-    formData.append("ShoppingSuppliersName", ShoppingSuppliersDto.productName);
-    formData.append("quantity", String(Number(ShoppingSuppliersDto.quantity)));
-
-    if (imageFile) {
-      formData.append("image", imageFile); 
-    }
-    const response = await fetch(`${URL}/update/${id}`, {
-      method: "PUT",
-      body: formData, 
-    });
-
-    if (!response.ok) {
-      throw new Error(`La solicitud a la API falló ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log("Categoría actualizada:", data);
-  } catch (error) {
-    console.error("Error al llamar a la API:", error);
-    throw error;  
-  }
-}
 
 export async function DeleteShoppingSuppliers(id: number): Promise<void> {
     try {
-        const response = await fetch(`${URL}/delete/${id}`, {
+        const response = await fetch(`${URL}/purchase/delete/${id}`, {
             method: "DELETE",
         });
         if (!response.ok) {

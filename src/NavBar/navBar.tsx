@@ -4,9 +4,7 @@ import {
   FiSearch,
   FiCircle,
   FiStar,
-  FiSettings,
-  FiPlus,
-  FiShoppingBag,
+  FiFileText,
   FiShield,
   FiDatabase,
   FiX,
@@ -25,7 +23,6 @@ import "../../app-assets/css/components.min.css";
 import "../../app-assets/css/colors.css";
 import "../../app-assets/css/colors.min.css";
 import "../../app-assets/css/bootstrap-extended.css";
-import "../../app-assets/css/core/menu/menu-types/vertical-menu.css";
 
 interface MainMenuProps {
   isMenuCollapsed: boolean;
@@ -35,7 +32,6 @@ interface MainMenuProps {
 const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
   const { favoritos } = useContext(FavoritosContext) || { favoritos: [] };
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
-
   const [lastOpenSubMenu, setLastOpenSubMenu] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -78,7 +74,6 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
         { id: 3.4, title: "Cargo ", route: "/position" },
         { id: 3.1, title: "Roles", route: "/rol" },
         { id: 3.2, title: "Usuarios", route: "/user" },
-        
       ],
     },
     {
@@ -97,7 +92,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
       title: "Proveedores",
       icon: <FiUser />,
       subItems: [
-        { id: 5.1, title: "Bodegas ", route: "/bodega" },
+        { id: 5.1, title: "Bodegas ", route: "/warehouse" },
         { id: 5.2, title: "Proveedor ", route: "/supplier" },
         { id: 5.3, title: "Compra a proveedores", route: "/purchaseSupplier" },
         { id: 5.4, title: "Productos pendiente", route: "/supplierPendingProduct" },
@@ -106,7 +101,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
     {
       id: 6,
       title: "Nomina",
-      icon: <FiDollarSign     />,
+      icon: <FiDollarSign />,
       subItems: [
         { id: 6.1, title: "Empleados ", route: "/employee" },
         { id: 6.2, title: "Nomina", route: "/employeePayment" },
@@ -116,47 +111,45 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
     {
       id: 7,
       title: "Transportes",
-      icon: <FiTruck     />,
+      icon: <FiTruck />,
       subItems: [
-        { id: 7.1, title: "Tarifa por proveedor", route: "/supplierRate" },
+        { id: 7.1, title: "Tarifa por bodega", route: "/supplierRate" },
         { id: 7.2, title: "Tarifa por barrio", route: "/neighborhoodRate" },
-        { id: 7.3, title: "Pedidos pendientes", route: "/branch" },
+        { id: 7.3, title: "Pedidos pendiente", route: "/pendingOrder" },
+        { id: 7.4, title: "Asignar pedidos", route: "/assignOrder" },
+        { id: 7.5, title: "Pedidos completos", route: "/completeOrderHistory" },
       ],
     },
     {
       id: 8,
-      title: "Presentación",
-      icon: < FiGrid/>,
-      route: "/company",
+      title: "Facturacion",
+      icon: <FiFileText />,
+      subItems: [
+        { id: 8.1, title: "Facturas", route: "/invoice" },
+        { id: 8.2, title: "Medio de pago", route: "/paymentMethod" },
+        { id: 8.3, title: "Rango de numerracion", route: "/numeration" },
+        { id: 8.4, title: "Terminal", route: "/terminal" },
+      ],
     },
     {
       id: 9,
+      title: "Presentación",
+      icon: <FiGrid />,
+      route: "/company",
+    },
+    {
+      id: 10,
       title: "Dashboard ",
       icon: <FiBarChart2 />,
       route: "/dashboard",
     },
-
     {
-      id: 21,
+      id: 11,
       title: "Cliente",
       icon: <FiUsers />,
       route: "/client",
     },
-
-    {
-      id: 24,
-      title: "Tipo descuentos",
-      icon: <FiShoppingBag />,
-      route: "/discountType",
-    },
-    {
-      id: 25,
-      title: "Descuento",
-      icon: <FiShoppingBag />,
-      route: "/discount",
-    },
   ];
-
 
   const filteredMenuItems = menuItems.filter((item) => {
     if (item.title.toLowerCase().includes(searchTerm.toLowerCase())) {
@@ -173,7 +166,6 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
     return false;
   });
 
-
   useEffect(() => {
     if (searchTerm) {
       const visibleSubMenus = filteredMenuItems.map((item) => item.title);
@@ -185,14 +177,15 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
     }
   }, [searchTerm, filteredMenuItems]);
 
-
   const clearSearch = () => {
     setSearchTerm("");
   };
 
   return (
     <div
-      className={`main-menu ${isMenuCollapsed && !isHovered ? "menu-collapsed" : "menu-expanded"} menu-fixed menu-light menu-accordion menu-shadow`}
+      className={`main-menu ${
+        isMenuCollapsed && !isHovered ? "menu-collapsed" : "menu-expanded"
+      } menu-fixed menu-light menu-accordion menu-shadow`}
       data-scroll-to-active="true"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
@@ -204,14 +197,14 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
         <ul className="nav navbar-nav flex-row">
           <li className="nav-item me-auto">
             <Link className="navbar-brand" to="/dashboard">
-              <span >
+              <span>
                 <img
                   src="/additional-assets/images/logo/Logo nuevo.png"
                   alt="Logo"
                   height="35"
                 />
               </span>
-              <h3 className="brand-text" style={{ color: "#e33131ff" }}>
+              <h3 className="brand-text" style={{ color: "#cc322d" }}>
                 Ladrillera
               </h3>
             </Link>
@@ -251,17 +244,20 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
           <FiSearch size={24} />
         ) : (
           <div className="input-group position-relative">
+            <span className="position-absolute start-0 top-50 translate-middle-y ms-2" style={{ zIndex: 10 }}>
+            </span>
             <input
               type="text"
               className="form-control"
               placeholder="Buscar..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ paddingRight: "30px" }}
+              style={{ paddingLeft: "35px", paddingRight: "35px" }}
             />
             <button
-              className="position-absolute end-0 top-50 translate-middle-y border-0 bg-transparent"
+              className="position-absolute end-0 top-50 translate-middle-y border-0 bg-transparent me-2"
               onClick={clearSearch}
+              style={{ zIndex: 10 }}
             >
               <FiX size={16} color="red" />
             </button>
@@ -276,12 +272,21 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
           data-menu="menu-navigation"
         >
           {filteredMenuItems
-            .filter((item) => item.id === 8 || item.id === 9)
+            .filter((item) => item.id === 9 || item.id === 10)
             .map((item) => (
               <li key={item.id} className="nav-item">
                 <Link className="d-flex align-items-center" to={item.route || "#"}>
                   {item.icon}
-                  <span className="menu-title text-truncate">{item.title}</span>
+                  <span
+                    className="menu-title"
+                    style={{
+                      whiteSpace: "normal",
+                      wordWrap: "break-word",
+                      lineHeight: "1.2",
+                    }}
+                  >
+                    {item.title}
+                  </span>
                 </Link>
               </li>
             ))}
@@ -296,14 +301,25 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
                 <a
                   className="d-flex align-items-center"
                   onClick={() => toggleSubMenu(item.title)}
+                  style={{ cursor: "pointer" }}
                 >
                   {item.icon}
-                  <span className="menu-title text-truncate">{item.title}</span>
+                  <span
+                    className="menu-title"
+                    style={{
+                      whiteSpace: "normal",
+                      wordWrap: "break-word",
+                      lineHeight: "1.2",
+                    }}
+                  >
+                    {item.title}
+                  </span>
                 </a>
                 {item.subItems && (
                   <ul
-                    className={`menu-content ${openSubMenu === item.title ? "menu-open" : "menu-close"
-                      }`}
+                    className={`menu-content ${
+                      openSubMenu === item.title ? "menu-open" : "menu-close"
+                    }`}
                   >
                     {item.subItems
                       .filter((subItem) =>
@@ -318,7 +334,14 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
                             to={subItem.route}
                           >
                             <FiCircle />
-                            <span className="menu-item text-truncate">
+                            <span
+                              className="menu-item"
+                              style={{
+                                whiteSpace: "normal",
+                                wordWrap: "break-word",
+                                lineHeight: "1.2",
+                              }}
+                            >
                               {subItem.title}
                             </span>
                           </Link>
@@ -330,7 +353,15 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
             ))}
 
           {filteredMenuItems
-            .filter((item) => item.id === 3 || item.id === 4 || item.id === 5 || item.id === 6 || item.id === 7)
+            .filter(
+              (item) =>
+                item.id === 3 ||
+                item.id === 4 ||
+                item.id === 5 ||
+                item.id === 6 ||
+                item.id === 7 ||
+                item.id === 8
+            )
             .map((item) => (
               <li
                 key={item.id}
@@ -339,14 +370,25 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
                 <a
                   className="d-flex align-items-center"
                   onClick={() => toggleSubMenu(item.title)}
+                  style={{ cursor: "pointer" }}
                 >
                   {item.icon}
-                  <span className="menu-title text-truncate">{item.title}</span>
+                  <span
+                    className="menu-title"
+                    style={{
+                      whiteSpace: "normal",
+                      wordWrap: "break-word",
+                      lineHeight: "1.2",
+                    }}
+                  >
+                    {item.title}
+                  </span>
                 </a>
                 {item.subItems && (
                   <ul
-                    className={`menu-content ${openSubMenu === item.title ? "menu-open" : "menu-close"
-                      }`}
+                    className={`menu-content ${
+                      openSubMenu === item.title ? "menu-open" : "menu-close"
+                    }`}
                   >
                     {item.subItems
                       .filter((subItem) =>
@@ -361,7 +403,14 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
                             to={subItem.route}
                           >
                             <FiCircle />
-                            <span className="menu-item text-truncate">
+                            <span
+                              className="menu-item"
+                              style={{
+                                whiteSpace: "normal",
+                                wordWrap: "break-word",
+                                lineHeight: "1.2",
+                              }}
+                            >
                               {subItem.title}
                             </span>
                           </Link>
@@ -373,7 +422,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
             ))}
 
           {filteredMenuItems
-            .filter((item) => item.id >= 10)
+            .filter((item) => item.id >= 11)
             .map((item) => (
               <li key={item.id} className="nav-item">
                 <Link
@@ -381,7 +430,16 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
                   to={item.route || "#"}
                 >
                   {item.icon}
-                  <span className="menu-title text-truncate">{item.title}</span>
+                  <span
+                    className="menu-title"
+                    style={{
+                      whiteSpace: "normal",
+                      wordWrap: "break-word",
+                      lineHeight: "1.2",
+                    }}
+                  >
+                    {item.title}
+                  </span>
                 </Link>
               </li>
             ))}

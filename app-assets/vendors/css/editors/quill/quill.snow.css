@@ -676,7 +676,7 @@
   cursor: pointer;
   display: block;
   padding-bottom: 5px;
-  padding-top: 5px;
+  padding-top: 3px;
 }
 .ql-snow .ql-picker.ql-expanded .ql-picker-label {
   color: #ccc;

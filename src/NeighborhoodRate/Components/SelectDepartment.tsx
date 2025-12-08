@@ -8,13 +8,11 @@ interface DepartmentSelectProps {
 }
 
 const DepartmentSelect: React.FC<DepartmentSelectProps> = ({ selectedValue, onChange }) => {
-  // Función que formatea los datos del departamento
   const fetchDepartments = async () => {
     try {
       const departmentData = await GetAllDepartmentNoPage();
       
       if (departmentData && Array.isArray(departmentData)) {
-        // Transformamos los datos para que tengan el formato correcto
         return departmentData.map(dep => ({
           id: dep.id,
           displayLabel: `${dep.departmentCode}-${dep.departmentName}`,

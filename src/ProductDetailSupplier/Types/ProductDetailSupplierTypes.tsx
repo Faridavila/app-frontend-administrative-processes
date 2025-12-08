@@ -9,5 +9,5 @@ export interface ProductDetailSupplierTypes {
 }
 
 export interface GetProductParams {
-  supplierId: number;
+  shoppingSupplierId: number;
 } 

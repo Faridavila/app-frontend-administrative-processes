@@ -1,14 +1,14 @@
-import { ProductPendingDetailSupplierTypes,GetProductParams } from "../Types/ProductPendingDetailSupplierTypes";
-import { BASE_URL_APIS_WORKFLOW } from "../../constants";
+import { ProductPendingDetailSupplierTypes,GetProductParams} from "../Types/ProductPendingDetailSupplierTypes";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/supplier';
-//const URL: string = `${BASE_URL_APIS_WORKFLOW}/api/v1/back-user-service/supplier`;
+const URL: string = `${BASE_URL_APIS_CORE}/supplier`;
+
 
 export const GetProductPendingDetailSupplier = async (
   page: number,
   size: number,
   filters: Partial<ProductPendingDetailSupplierTypes>,
-  sortOrder: string = '',
+  sortOrder: string = 'ASC',
   sortBy?: keyof ProductPendingDetailSupplierTypes,
   extraParams?: GetProductParams
 ): Promise<ProductPendingDetailSupplierTypes[]> => {
@@ -31,70 +31,44 @@ export const GetProductPendingDetailSupplier = async (
   });
 
   try {
-    const supplierId = extraParams?.supplierId;
+    const pendingDetailSupplierId = extraParams?.pendingDetailSupplierId;
   
-    if (!supplierId || supplierId === 0) {
-      console.error("supplierId no está definido o es inválido. Verifica extraParams");
+
+    if (!pendingDetailSupplierId || pendingDetailSupplierId === 0) {
+      console.warn("⚠️ pendingDetailSupplierId no está definido o es 0. No se realizará la petición.");
       return [];
     }
 
-    const apiUrl = `${URL}/getAllProductsBySupplier/${supplierId}?${queryParams.toString()}`;
-    console.log("URL de la API:", apiUrl);
+    const apiUrl = `${URL}/get-all/amountThatSupplierOwes/${pendingDetailSupplierId}?${queryParams.toString()}`;
+    console.log("🌐 URL de la API:", apiUrl);
+    
     const response = await fetch(apiUrl);
 
     if (!response.ok) {
-      throw new Error(`Error en la respuesta del servidor: ${response.statusText}`);
+      throw new Error(`Error en la respuesta del servidor: ${response.status} - ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('Respuesta de la API:', data); 
-    if (data && data.content) {
+    console.log('✅ Respuesta de la API:', data); 
+
+    if (data && Array.isArray(data)) {
+      return data;
+    } else if (data && data.content && Array.isArray(data.content)) {
       return data.content;
-    } else if (data && data.page && data.page.content) {
+    } else if (data && data.page && data.page.content && Array.isArray(data.page.content)) {
       return data.page.content;
     } else {
-      console.error('No se encontraron datos en la respuesta de la API');
+      console.error('❌ No se encontraron datos en la respuesta de la API');
       return [];
     }
   } catch (error) {
-    console.error('Error al obtener los elementos:', error);
+    console.error('❌ Error al obtener los elementos:', error);
     return []; 
   }
 };
 
 
-export async function CreateProductPendingDetailSupplier(
-  branchDto: ProductPendingDetailSupplierTypes, 
-  imageFile: File | null,
-  extraParams?: GetProductParams
-): Promise<void> {
-  const supplierId = extraParams?.supplierId;
-  if (!supplierId || supplierId <= 0) {
-    console.error("supplierId no está definido o es inválido. Verifica extraParams");
-    throw new Error("supplierId es requerido para crear el producto del proveedor");
-  }
-  try {
-    const requestBody = {
-      productId: branchDto.productId,
-    };
-    const response = await fetch(`${URL}/addProductsBySupplier/${supplierId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error response:', errorText);
-      throw new Error(`La solicitud a la API falló ${response.status}: ${errorText}`);
-    }
-  } catch (error) {
-    console.error("Error al llamar a la API:", error);
-    throw error;
-  }
-}
-export const GetSearchProductPendingDetailSupplier = async (
+export const GetSearchProductPendingDetailSupplier  = async (
   page: number,
   size: number,
   filters: Partial<ProductPendingDetailSupplierTypes>,
@@ -134,71 +108,3 @@ export const GetSearchProductPendingDetailSupplier = async (
     return [];
   }
 };
-
-
-export async function UpdateProductPendingDetailSupplier(
-  id: number,
-  branchDto: ProductPendingDetailSupplierTypes,
-  imageFile: File | null,
-  extraParams?: GetProductParams
-): Promise<void> {
-  const supplierId = extraParams?.supplierId;
-  if (!supplierId || supplierId <= 0) {
-    console.error("supplierId no está definido o es inválido. Verifica extraParams");
-    throw new Error("supplierId es requerido para actualizar el producto del proveedor");
-  }
-  try {
-    const requestBody = {
-      productId: branchDto.productId,
-    };
-    const response = await fetch(`${URL}/updateProductsBySupplier/${supplierId}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error response:', errorText);
-      throw new Error(`La solicitud a la API falló ${response.status}: ${errorText}`);
-    }
-  } catch (error) {
-    console.error("Error al llamar a la API:", error);
-    throw error;
-  }
-}
-
-
-export async function DeleteProductPendingDetailSupplier(id: number): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/delete/${id}`, {
-            method: "DELETE",
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        throw error;
-    }
-}
-
-
-export async function GetAllProductPendingDetailSupplierNoPage(): Promise<ProductPendingDetailSupplierTypes[] | null> {
-  try {
-      const response = await fetch(`${URL}/get-all-without-page`);
-      if (response.ok) {
-          const data: ProductPendingDetailSupplierTypes[] = await response.json();
-          return data;
-      } else {
-          throw new Error(`La solicitud a la API falló ${response.status}`);
-      }
-  } catch (error) {
-      console.error("Error al llamar a la API:", error);
-      return null;
-  }
-}
-
-
-

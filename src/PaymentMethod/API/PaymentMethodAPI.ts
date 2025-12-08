@@ -1,9 +1,9 @@
 import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import {PaymentMethodTypes } from "../Types/PaymentMethodTypes";
-//import { BASE_URL_APIS_CORE } from "../../constants";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/payment-method';
-//const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/payment-method`;
+//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/payment-method';
+const URL: string = `${BASE_URL_APIS_CORE}/payment-method`;
 
 export async function GetPaymentMethodId(id: number): Promise<ObjectResponse<PaymentMethodTypes> | null> {
     try {

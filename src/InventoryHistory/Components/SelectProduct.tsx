@@ -1,7 +1,7 @@
 import React from 'react';
 import GenericSelect from '../../GeneralComponents/GeneralCrud/SelectGeneral';
-import { ProductTypes } from '../Types/InventoryHistoryTypes';
-import { GetAllProductNoPage } from '../API/InventoryHistoryAPI';
+import { ProductTypes } from '../../Product/Types/ProductTypes';
+import { GetAllProductNoPage } from '../../Product/API/ProductAPI';
 
 const fetchProducts = async (): Promise<ProductTypes[]> => {
   const ProductData = await GetAllProductNoPage();

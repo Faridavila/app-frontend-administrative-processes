@@ -1,9 +1,15 @@
 import {ClientTypes } from "../Types/ClientTypes";
 import {IdentificationTypeTypes} from '../Types/IdentificacionTypeTypes'
-//import { BASE_URL_APIS_CORE } from "../../constants";
+import { TypePersonTypes } from "../Types/TypePersonType";
+import { TaxLiabilityTypes } from "../Types/TaxLiabilityTypes";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/client';
-//const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/cash-register`;
+//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/client';
+const URL: string = `${BASE_URL_APIS_CORE}/client`;
+const URL_TAX: string = `${BASE_URL_APIS_CORE}/tax-liability`;
+const URL_TYPE_PERSON: string = `${BASE_URL_APIS_CORE}/type-person`;
+const URL_IDENTIFICATION: string = `${BASE_URL_APIS_CORE}/identification-type`;
+
 
 export const GetClient = async (
   page: number,
@@ -139,9 +145,9 @@ export async function DeleteClient(id: number): Promise<void> {
     }
 }
 
-export async function GetAllClientNoPage(identification: string): Promise<ClientTypes[] | null> {
+export async function GetAllClientNoPage(): Promise<ClientTypes[] | null> {
   try {
-      const response = await fetch(`${URL}/no-page/getAllClient?identification=${identification}`);
+      const response = await fetch(`${URL}/no-page/getAllClient`);
       if (response.ok) {
           const data: ClientTypes[] = await response.json();
           return data;
@@ -156,7 +162,7 @@ export async function GetAllClientNoPage(identification: string): Promise<Client
 
 export async function GetAllIdentificationType(): Promise<IdentificationTypeTypes[]> {
   try {
-    const response = await fetch(`${URL}/getIdentificationType`);
+    const response = await fetch(`${URL_IDENTIFICATION}/no-page/getAll`);
     if (response.ok) {
       const data: IdentificationTypeTypes[] = await response.json();
       return data;
@@ -168,6 +174,41 @@ export async function GetAllIdentificationType(): Promise<IdentificationTypeType
     return [];
   }
 }
+
+
+
+export async function GetAllTypePerson(): Promise<TypePersonTypes[]> {
+  try {
+    const response = await fetch(`${URL_TYPE_PERSON}/no-page/getAll`);
+    if (response.ok) {
+      const data: TypePersonTypes[] = await response.json();
+      return data;
+    } else {
+      throw new Error(`La solicitud a la API falló ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error al llamar a la API:", error);
+    return [];
+  }
+}
+
+
+export async function GetAllTaxLiability(): Promise<TaxLiabilityTypes[]> {
+  try {
+    const response = await fetch(`${URL_TAX}/no-page/getAll`);
+    if (response.ok) {
+      const data: TaxLiabilityTypes[] = await response.json();
+      return data;
+    } else {
+      throw new Error(`La solicitud a la API falló ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error al llamar a la API:", error);
+    return [];
+  }
+}
+
+
 
 
 

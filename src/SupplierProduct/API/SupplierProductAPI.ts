@@ -1,8 +1,8 @@
 import { SupplierProductTypes,GetProductParams } from "../Types/SupplierProductTypes";
-import { BASE_URL_APIS_WORKFLOW } from "../../constants";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/supplier';
-//const URL: string = `${BASE_URL_APIS_WORKFLOW}/api/v1/back-user-service/supplier`;
+//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/supplier';
+const URL: string = `${BASE_URL_APIS_CORE}/supplier`;
 
 export const GetSupplierProducts = async (
   page: number,
@@ -63,38 +63,6 @@ export const GetSupplierProducts = async (
 };
 
 
-export async function CreateSupplierProducts(
-  branchDto: SupplierProductTypes, 
-  imageFile: File | null,
-  extraParams?: GetProductParams
-): Promise<void> {
-  const supplierId = extraParams?.supplierId;
-  if (!supplierId || supplierId <= 0) {
-    console.error("supplierId no está definido o es inválido. Verifica extraParams");
-    throw new Error("supplierId es requerido para crear el producto del proveedor");
-  }
-  try {
-    const requestBody = {
-      productId: branchDto.productId,
-      purchasePrice: branchDto.purchasePrice
-    };
-    const response = await fetch(`${URL}/addProductsBySupplier/${supplierId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error response:', errorText);
-      throw new Error(`La solicitud a la API falló ${response.status}: ${errorText}`);
-    }
-  } catch (error) {
-    console.error("Error al llamar a la API:", error);
-    throw error;
-  }
-}
 export const GetSearchSupplierProducts = async (
   page: number,
   size: number,
@@ -137,41 +105,6 @@ export const GetSearchSupplierProducts = async (
 };
 
 
-export async function UpdateSupplierProducts(
-  id: number,
-  branchDto: SupplierProductTypes,
-  imageFile: File | null,
-  extraParams?: GetProductParams
-): Promise<void> {
-  const supplierId = extraParams?.supplierId;
-  if (!supplierId || supplierId <= 0) {
-    console.error("supplierId no está definido o es inválido. Verifica extraParams");
-    throw new Error("supplierId es requerido para actualizar el producto del proveedor");
-  }
-  try {
-    const requestBody = {
-      productId: branchDto.productId,
-      purchasePrice: branchDto.purchasePrice
-    };
-    const response = await fetch(`${URL}/updateProductsBySupplier/${supplierId}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error response:', errorText);
-      throw new Error(`La solicitud a la API falló ${response.status}: ${errorText}`);
-    }
-  } catch (error) {
-    console.error("Error al llamar a la API:", error);
-    throw error;
-  }
-}
-
-
 export async function DeleteSupplierProducts(id: number): Promise<void> {
     try {
         const response = await fetch(`${URL}/products/delete/${id}`, {
@@ -186,21 +119,6 @@ export async function DeleteSupplierProducts(id: number): Promise<void> {
     }
 }
 
-
-export async function GetAllSupplierProductsNoPage(): Promise<SupplierProductTypes[] | null> {
-  try {
-      const response = await fetch(`${URL}/get-all-without-page`);
-      if (response.ok) {
-          const data: SupplierProductTypes[] = await response.json();
-          return data;
-      } else {
-          throw new Error(`La solicitud a la API falló ${response.status}`);
-      }
-  } catch (error) {
-      console.error("Error al llamar a la API:", error);
-      return null;
-  }
-}
 
 
 

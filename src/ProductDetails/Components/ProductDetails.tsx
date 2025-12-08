@@ -3,15 +3,7 @@ import React, { useState } from 'react';
 import { Card, Container, Row, Col} from 'react-bootstrap';
 import { ProductDetailsTypes } from "../Types/ProductDetailsTypes";
 import { ProductDetailsSortFieldMap } from "../Types/MapeoProductDetails";
-import {
-  GetProductDetails,
-  CreateProductDetails,
-  UpdateProductDetails,
-  DeleteProductDetails,
-  GetSearchProductDetails,
-} from "../API/ProductDetailsAPI";
-
-
+import { GetProductDetails,GetSearchProductDetails,} from "../API/ProductDetailsAPI";
 
 interface ProductDetailsCRUDProps {
   extraParams: { inventoryId: number };
@@ -19,7 +11,7 @@ interface ProductDetailsCRUDProps {
   setSelectedInventory: (id: number) => void;
 }
 
-const ProductDetailsCRUD: React.FC<ProductDetailsCRUDProps> = ({ extraParams, onRowClick, setSelectedInventory }) => {
+const ProductDetailsCRUD: React.FC<ProductDetailsCRUDProps> = ({ extraParams, onRowClick }) => {
   const [selectedhistoryInventory, setSelectedHistoryInventory] = useState<ProductDetailsTypes | null>(null);
 
   const itemTemplate = (): ProductDetailsTypes => ({
@@ -69,14 +61,14 @@ const ProductDetailsCRUD: React.FC<ProductDetailsCRUDProps> = ({ extraParams, on
       <Row className="mt-3">
         <Col md={12}>
           <Card className="w-100" style={{ margin: '0' }}>
-            <Card.Body className="table-responsive" style={{ maxHeight: '600px', padding: '0' }}>
-              <h2 style={{ fontWeight: 'bold', fontSize: '22px' }}>Detalles del productos</h2>
+            <Card.Body className="table-responsive" style={{padding: '0' }}>
+              <h2 className="product-details-title" style={{ fontWeight: 'bold', fontSize: '22px' }}>Detalles del productos</h2>
               <CRUDForm<ProductDetailsTypes>
-                fetchItems={GetProductDetails}
+                fetchItems={GetProductDetails as any}
                 searchItem={GetSearchProductDetails}
-                createItem={CreateProductDetails}
-                updateItem={UpdateProductDetails}
-                deleteItem={DeleteProductDetails}
+                createItem={async () => {}}
+                updateItem={async () => {}}
+                deleteItem={async () => {}}
                 itemTemplate={itemTemplate}
                 columns={columns}
                 filterButtonOrder={2}

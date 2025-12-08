@@ -2,8 +2,8 @@ import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { UserTypes } from "../Types/UserTypes";
 import { BASE_URL_APIS_USER } from "../../constants";
 
-const URL = 'http://localhost:8081/api/v1/back-user-service/user';
-//const URL: string = `${BASE_URL_APIS_USER}/api/v1/back-user-service/user`;
+//const URL = 'http://localhost:8081/api/v1/back-user-service/user';
+const URL: string = `${BASE_URL_APIS_USER}/user`;
 
 export const GetUser = async (
   page: number,
@@ -141,7 +141,7 @@ export async function DeleteUser(id: number): Promise<void> {
 
 export async function GetAllUseresNoPage(): Promise<ObjectResponse<UserTypes[]> | null> {
     try {
-        const response = await fetch(`${URL}/no-page/getAllUseres`);
+        const response = await fetch(`${URL}/get-all`);
         if (response.ok) {
             const data: ObjectResponse<UserTypes[]> = await response.json();
             return data;

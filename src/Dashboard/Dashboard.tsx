@@ -27,7 +27,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="app-content content">
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid  p-0">
         <div className="content-header row">
           <div className="content-header-left col-md-9 col-12 mb-2">
             <div className="row breadcrumbs-top">

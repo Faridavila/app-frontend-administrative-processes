@@ -112,8 +112,8 @@ const UserCRUD = () => {
 
 const renderCustomFormField = (
   colKey: keyof UserTypes,
-  value: string,
-  onChange: (newValue: string) => void
+  value: any,
+  onChange: (newValue: any) => void
 ) => {
   if (colKey === "company") {
     return (
@@ -158,7 +158,7 @@ const renderCustomFormField = (
   return (
     <div className="app-content content">
       <div className="content-overlay"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid  p-0">
         <div className="content-header row"></div>
         <div className="content-body">
           <div style={{ display: "flex", alignItems: "center" }}>

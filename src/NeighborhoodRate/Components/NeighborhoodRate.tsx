@@ -82,17 +82,8 @@ const NeighborhoodRateCRUD = () => {
       hiddenInEdit: true
     },
     {
-      key: "neighborhoodId",
-      label: "Barrio",
-      hidden: true,
-      required: true,
-      type: "number",  
-    },
-    {
       key: "neighborhoodName",
       label: "Barrio",
-      hiddenInCreate: true,
-      hiddenInEdit: true
     },
     {
       key: "priceRate",
@@ -333,12 +324,12 @@ const NeighborhoodRateCRUD = () => {
               className="content-body"
               style={{ margin: "0", fontSize: "21px" }}
             >
-              Gestión de tarifa de proveedores
+              Gestión de tarifa por barrio
             </h3>
             <FavoritoButton path="/NeighborhoodRate" label="NeighborhoodRate" />
           </div>
           <p>
-            Administre las tarifa de proveedores mediante la creación, edición o eliminación de registros.
+            Administre las tarifa por barrio mediante la creación, edición o eliminación de registros.
           </p>
 
           <div className="card">
@@ -360,7 +351,7 @@ const NeighborhoodRateCRUD = () => {
                 renderCustomFormField={renderCustomFormField}
                 renderCustomActionModal={renderCustomActionModal}
                 customSubtractActionButton={{
-                  label: 'Tarifas Generales',
+                  label: 'Tarifa General',
                   color: 'warning',
                   icon: <PriceIcon />,
                   order: 6,

@@ -49,13 +49,7 @@ const EconomicActivityCRUD = () => {
     },
   ];
 
-  const renderCustomFormField = (
-    _colKey: keyof EconomicActivityTypes,
-    _value: string,
-    _onChange: (newValue: string) => void
-  ) => {
-    return null;
-  };
+
 
   return (
     <div className="app-content content">
@@ -81,7 +75,6 @@ const EconomicActivityCRUD = () => {
             o eliminación de registros.
           </p>
 
-          {/* CRUD Form Section */}
           <div className="card">
             <div className="card-datatable table-responsive">
               <CRUDForm<EconomicActivityTypes>
@@ -92,8 +85,9 @@ const EconomicActivityCRUD = () => {
                 deleteItem={DeleteEconomicActivity}
                 itemTemplate={itemTemplate}
                 columns={columns}
+                filterButtonOrder={1}
                 sortFieldMap={EconomicActivitySortFieldMap}
-                renderCustomFormField={renderCustomFormField}
+                pageTitle="Actividad Económica" 
               />
             </div>
           </div>

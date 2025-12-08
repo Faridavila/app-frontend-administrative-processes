@@ -38,7 +38,6 @@ import AreaCRUD from "./Area/Components/Area.tsx";
 import RolCRUD from "./Rol/Components/Rol.tsx";
 import PositionCRUD from "./Position/Components/Position.tsx";
 import InvoicePOS from "./InvoicePOS/Components/InvoicePOS.tsx";
-import FacturacionPOSModal from "./InvoicePOS/Components/generate-invoice.tsx";
 import FormularioInventoryAdjustmentCRUD from "./InventoryAdjustmentTypes/Components/InventoryAdjustmentCRUD.tsx";
 import FileManagerApp from "./FileManager/Components/FileManagerApp.tsx";
 import FormularioWarehouseCRUD from "./WarehouseType/Components/FormWarehouseTypesCRUD.tsx";
@@ -61,6 +60,13 @@ import EmployeePayment from "./EmployeePayments/Components/EmployeePayment.tsx";
 import EmployeeHistoryCRUD from "./EmployeeHistory/Components/EmployeeHistory.tsx";
 import SupplierRateCRUD from "./SupplierRate/Components/SupplierRate.tsx";
 import NeighborhoodRateCRUD from "./NeighborhoodRate/Components/NeighborhoodRate.tsx";
+import PendingOrder from "./PendingOrder/Components/PendingOrder.tsx";
+import CompleteOrderHistory from "./CompleteOrderHistory/Components/CompleteOrderHistory.tsx";
+import AssignOrder from "./AssignOrder/Components/AssignOrder.tsx";
+import InvoiceCrud from "./InvoiceCrud/Components/InvoiceCrud.tsx";
+import Calculator from "./Calculator/Calculator.tsx";
+import InvoiceDetail from "./InvoicePOS/Components/InvoiceDetail.tsx";
+import TerminalCRUD from "./Terminal/Components/Terminal.tsx";
 
 const router = createBrowserRouter([
   {
@@ -94,7 +100,7 @@ const router = createBrowserRouter([
       {
         path: "/cashRegister",
         element: <CashRegisterCRUD />,
-      },  
+      },
       {
         path: "/inventory",
         element: <InventoryCRUD />,
@@ -103,43 +109,62 @@ const router = createBrowserRouter([
         path: "/product",
         element: <ProductCRUD />,
       },
-      
-       {
+
+      {
         path: "/inventoryHistory",
         element: <InventoryHistory />,
       },
-        {
+      {
         path: "/supplier",
         element: <SuppliersCRUD />,
       },
       {
         path: "/purchaseSupplier",
-        element: <ShoppingSuppliers/>,
+        element: <ShoppingSuppliers />,
       },
-        {
+      {
         path: "/supplierPendingProduct",
-        element: <SupplierPendingProduct/>,
+        element: <SupplierPendingProduct />,
       },
       {
         path: "/employee",
-        element: <EmployeeCRUD/>,
+        element: <EmployeeCRUD />,
       },
       {
         path: "/employeePayment",
-        element: <EmployeePayment/>,
+        element: <EmployeePayment />,
       },
       {
         path: "/employeeHistory",
-        element: <EmployeeHistoryCRUD/>,
+        element: <EmployeeHistoryCRUD />,
       },
       {
         path: "/supplierRate",
-        element: <SupplierRateCRUD/>,
+        element: <SupplierRateCRUD />,
       },
       {
         path: "/neighborhoodRate",
-        element: <NeighborhoodRateCRUD/>,
+        element: <NeighborhoodRateCRUD />,
       },
+      {
+        path: "/assignOrder",
+        element: <AssignOrder />,
+      },
+      {
+        path: "/pendingOrder",
+        element: <PendingOrder />,
+      },
+      {
+        path: "/completeOrderHistory",
+        element: <CompleteOrderHistory />,
+      },
+      {
+        path: "/invoice",
+        element: <InvoiceCrud />,
+      },
+
+
+
 
 
 
@@ -184,8 +209,8 @@ const router = createBrowserRouter([
         path: "currencyType",
         element: <CurrencyTipeCRUD />,
       },
-   
-      
+
+
       {
         path: "/auth",
         element: <AuthCRUD />,
@@ -221,13 +246,18 @@ const router = createBrowserRouter([
         element: <CalendarComponent />,
       },
       {
-        path: "/FacturaComponent",
+        path: "/calculator",
+        element: <Calculator />,
+      },
+      {
+        path: "/new-invoice",
         element: <InvoicePOS />,
       },
       {
-        path: "/FacturaPoputComponent",
-        element: <FacturacionPOSModal />,
+        path: "/invoice-detail/:id",
+        element: <InvoiceDetail />,  
       },
+
       {
         path: "/numeration",
         element: <NumerationCRUD />,
@@ -250,8 +280,13 @@ const router = createBrowserRouter([
         element: <ParameterCRUD />,
       },
       {
-        path: "/bodega",
+        path: "/warehouse",
         element: <WarehouseForm />,
+      },
+
+      {
+        path: "/terminal",
+        element: <TerminalCRUD />,
       },
 
       {

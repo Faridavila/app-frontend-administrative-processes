@@ -1,5 +1,5 @@
 .fc-toolbar {
-  height: 40px; /* Ajusta la altura de la barra de herramientas */
+  height: 40px;
 }
 .fc .fc-toolbar .fc-prev-button,
 .fc .fc-toolbar .fc-next-button {
@@ -35,31 +35,31 @@
 }
 
 .fc-toolbar .fc-button {
-  font-size: 1rem; /* Tamaño del texto del botón */
-  padding: 0.5rem 1rem; /* Tamaño del botón */
+  font-size: 1rem; 
+  padding: 0.5rem 1rem; 
 }
 
 .fc .fc-toolbar .fc-button:active,
 .fc .fc-toolbar .fc-button:focus {
   box-shadow: none;
 }
-/* Ajustes para el botón "HOY" */
+
 .fc .fc-toolbar .fc-button-group .fc-button {
-  font-size: 1rem; /* Ajusta el tamaño del texto */
-  padding: 0.5rem 1rem; /* Aumenta el tamaño del botón */
+  font-size: 1rem; 
+  padding: 0.5rem 1rem; 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 .fc .fc-toolbar .fc-button.fc-button-primary {
-  min-width: 80px; /* Asegura que el botón "HOY" tenga un tamaño adecuado */
+  min-width: 80px; 
   text-align: center;
 }
 
 .fc .fc-toolbar .fc-button.fc-button-primary.fc-button-active,
 .fc .fc-toolbar .fc-button.fc-button-primary:hover {
-  background-color: #cc322d; /* Color al pasar el mouse */
+  background-color: #cc322d; 
   border-color: #cc322d;
 }
 
@@ -74,7 +74,7 @@
 }
 .fc .fc-day-today {
   background-color: #cc322d !important; /* Color de fondo del día actual */
-  color: #fff !important; /* Cambia el color del texto (número) de la fecha de hoy */
+  color: #ffffff !important; /* Cambia el color del texto (número) de la fecha de hoy */
 }
 
 

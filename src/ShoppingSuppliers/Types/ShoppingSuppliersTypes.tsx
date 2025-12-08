@@ -10,14 +10,31 @@ export interface ShoppingSuppliersTypes {
   purchaseStatus: string;
   remainingAmount: number;
   quantity: number;
-  observation: string,
+  observation: string;
   date: string;
-  total:number;
-  transactionTotal: number;
+  total: number;
+  transactionTotal: number; 
+  userId: number;
   status: string;
+  products: PurchaseProductDto[];
 }
 
+export interface PurchaseProductDto {
+  productId: number;
+  purchasePrice: number;
+  quantity: number;
+  total: number;
+}
 
+export interface CreatePurchaseDto {
+  supplierId: number;
+  userId: number;
+  date: string; 
+  observation: string;
+  transactionTotal: number;
+  purchaseStatus: string; 
+  products: PurchaseProductDto[];
+}
 
 
 

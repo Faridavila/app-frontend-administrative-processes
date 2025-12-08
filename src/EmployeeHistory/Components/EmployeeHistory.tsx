@@ -55,7 +55,7 @@ const EmployeeHistoryCRUD = () => {
               className="content-body"
               style={{ margin: "0", fontSize: "21px" }}
             >
-              Conuslta de pago de empleados
+            Consulta de pago de empleados
             </h3>
             <FavoritoButton path="/EmployeeHistory" label="EmployeeHistoryes" />
           </div>

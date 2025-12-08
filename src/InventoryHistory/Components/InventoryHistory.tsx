@@ -1,15 +1,9 @@
 import CRUDForm from "../../GeneralComponents/GeneralCrud/CRUDForm";
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { InventoryHistoryTypes } from "../Types/InventoryHistoryTypes";
 import { InventoryHistorySortFieldMap } from "../Types/MapeoInventoryHistoryTypes";
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
-import {
-  GetInventoryHistory,
-  DeleteInventoryHistory,
-  GetSearchInventoryHistory,
-  CreateInventoryHistory,
-  UpdateInventoryHistory,
-} from "../API/InventoryHistoryAPI";
+import { GetInventoryHistory, GetSearchInventoryHistory } from "../API/InventoryHistoryAPI";
 import ProductDetailsCRUD from "../../ProductDetails/Components/ProductDetails";
 import { GetProductDetails } from "../../ProductDetails/API/ProductDetailsAPI";
 import { Button } from 'react-bootstrap';
@@ -43,12 +37,79 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({ onRowClick }) =
     status: "",
   });
 
-  const externalFilters = useMemo(() => {
-    const f: any = {};
-    if (fromDate) f.fromDate = fromDate;
-    if (toDate) f.toDate = toDate;
-    return f;
-  }, [fromDate, toDate]);
+
+  const columns: {
+    key: keyof InventoryHistoryTypes;
+    label: string;
+    required?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    regex?: RegExp;
+    hiddenInCreate?: boolean;
+    hiddenInEdit?: boolean;
+    hidden?: boolean;
+    editable?: boolean;
+    dependentOn?: keyof InventoryHistoryTypes;
+    validationMessage?: string;
+    render?: (item: InventoryHistoryTypes) => React.ReactNode;
+    imageOptions?: {
+      maxSize: number;
+      acceptedFormats: string[];
+    };
+  }[] = [
+      { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
+      { key: "productName", label: "Nombre del producto", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
+      { key: "typeUser", label: "Tipo de usuario", hiddenInCreate: true, hiddenInEdit: true },
+      { key: "userName", label: "Nombre de usuario", hiddenInCreate: true, hiddenInEdit: true },
+      { key: "date", label: "Fecha", hiddenInCreate: true, hiddenInEdit: true },
+      {
+        key: "transactionType",
+        label: "Tipo de transacción",
+        hiddenInCreate: true,
+        hiddenInEdit: true,
+        render: (item) => {
+          const statusColor = getTransactionTypeColor(item.transactionType);
+          return (
+            <span
+              style={{
+                backgroundColor: statusColor,
+                padding: '5px',
+                borderRadius: '5px',
+                color: '#fff',
+              }}
+            >
+              {item.transactionType}
+            </span>
+          );
+        }
+      },
+      { key: "quantity", label: "Cantidad", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
+      { key: "value", label: "Valor", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
+      {
+        key: "observation",
+        label: "Observación",
+        hiddenInCreate: true,
+        hiddenInEdit: true,
+        render: (item) => {
+          const observation = item.observation || "Sin observación";
+          return <span>{observation}</span>;
+        }
+      }
+    ];
+
+  const getTransactionTypeColor = (transactionType: string) => {
+    switch (transactionType) {
+      case "SALIDA":
+      case "PERDIDA":
+        return "red";
+      case "ENTRADA":
+      case "ENTRADA PROVEEDOR":
+        return "green";
+      default:
+        return "transparent";
+    }
+  };
+
 
   useEffect(() => {
     const fetchCompanyData = async () => {
@@ -74,14 +135,7 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({ onRowClick }) =
 
   const loadProductDetails = async (inventoryId: number) => {
     try {
-      const details = await GetProductDetails(
-        0,        
-        100000,   
-        {},       
-        'ASC',    
-        undefined, 
-        { inventoryId } 
-      );
+      const details = await GetProductDetails(0, 100000, {}, 'ASC', undefined, { inventoryId });
       setProductDetails(details || []);
     } catch (error) {
       console.error('Error al cargar detalles de productos:', error);
@@ -158,19 +212,6 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({ onRowClick }) =
     generatePDF(pdfConfig);
   };
 
-  const getTransactionTypeColor = (transactionType: string) => {
-    switch (transactionType) {
-      case "SALIDA":
-        return "red";
-      case "PERDIDA":
-        return "red";
-      case "ENTRADA":
-        return "green";
-      default:
-        return "transparent";
-    }
-  };
-
   const handleRowSelection = (inventoryHistory: InventoryHistoryTypes) => {
     setSelectedHistoryInventory(inventoryHistory);
     setSelectedInventoryId(inventoryHistory.id);
@@ -179,76 +220,18 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({ onRowClick }) =
     }
   };
 
-  const columns: {
-    key: keyof InventoryHistoryTypes;
-    label: string;
-    required?: boolean;
-    minLength?: number;
-    maxLength?: number;
-    regex?: RegExp;
-    hiddenInCreate?: boolean;
-    hiddenInEdit?: boolean;
-    hidden?: boolean;
-    editable?: boolean;
-    dependentOn?: keyof InventoryHistoryTypes;
-    validationMessage?: string;
-    render?: (item: InventoryHistoryTypes) => React.ReactNode;
-    imageOptions?: {
-      maxSize: number;
-      acceptedFormats: string[];
-    };
-  }[] = [
-    { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
-    { key: "productName", label: "Nombre del producto", hiddenInCreate: true, hiddenInEdit: true, hidden: true},
-    { key: "typeUser", label: "Tipo de usuario", hiddenInCreate: true, hiddenInEdit: true },
-    { key: "userName", label: "Nombre de usuario", hiddenInCreate: true, hiddenInEdit: true },
-    { key: "date", label: "Fecha", hiddenInCreate: true, hiddenInEdit: true },
-    {
-      key: "transactionType",
-      label: "Tipo de transacción",
-      hiddenInCreate: true,
-      hiddenInEdit: true,
-      render: (item) => {
-        const statusColor = getTransactionTypeColor(item.transactionType);
-        return (
-          <span
-            style={{
-              backgroundColor: statusColor,
-              padding: '5px',
-              borderRadius: '5px',
-              color: '#fff',
-            }}
-          >
-            {item.transactionType}
-          </span>
-        );
-      }
-    },
-    { key: "quantity", label: "Cantidad", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
-    { key: "value", label: "Valor", hiddenInCreate: true, hiddenInEdit: true, hidden: true},
-    {
-      key: "observation",
-      label: "Observación",
-      hiddenInCreate: true,
-      hiddenInEdit: true,
-      render: (item) => {
-        const observation = item.observation || "Sin observación";
-        return <span>{observation}</span>;
-      }
-    }
-  ];
 
   return (
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid p-0">
         <div className="content-header row"></div>
         <div style={{ display: "flex", alignItems: "center" }}>
           <h3 className="content-body" style={{ margin: "0", fontSize: "21px" }}>
             Historial de Inventarios
           </h3>
-          <FavoritoButton path="/InventoryHistory" label="InventoryHistoryos" />
+          <FavoritoButton path="/inventoryHistory" label="Historial de inventario" />
         </div>
         <p>
           Consulte el historial de movimientos de inventario filtrados por rango de fechas.
@@ -256,19 +239,17 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({ onRowClick }) =
         <div className="mb-1">
           <label className="form-label d-block mb-1">Rango de Fechas</label>
 
-          <div className="d-flex gap-2 flex-nowrap">
+          <div className="date-range-container d-flex gap-2">
             <input
               type="date"
-              className="form-control w-auto"
-              style={{ minWidth: 200 }}
+              className="form-control date-input-responsive"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
               aria-label="Fecha desde"
             />
             <input
               type="date"
-              className="form-control w-auto"
-              style={{ minWidth: 200 }}
+              className="form-control date-input-responsive"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
               aria-label="Fecha hasta"
@@ -276,8 +257,8 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({ onRowClick }) =
           </div>
         </div>
         <div className="card">
-          <div className="card-datatable table-responsive" style={{ position: 'relative' }}>
-            <div style={{
+         <div style={{ position: 'relative', marginBottom: '1rem' }}>
+             <div className="pdf-button-wrapper2" style={{
               position: 'absolute',
               top: '30px',
               right: '83px',
@@ -308,9 +289,9 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({ onRowClick }) =
             <CRUDForm<InventoryHistoryTypes>
               fetchItems={GetInventoryHistory}
               searchItem={GetSearchInventoryHistory}
-              createItem={CreateInventoryHistory}
-              updateItem={UpdateInventoryHistory}
-              deleteItem={DeleteInventoryHistory}
+              createItem={async () => { }}
+              updateItem={async () => { }}
+              deleteItem={async () => { }}
               itemTemplate={itemTemplate}
               columns={columns}
               filterButtonOrder={2}

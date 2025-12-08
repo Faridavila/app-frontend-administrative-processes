@@ -3,25 +3,46 @@ export interface ProductTypes {
   productName: string;
   price: number;
   description: string;
-  categoryId: number;
-  categoryName: string;
   quantity: number;
-  observation: string;
+  categoryId: number;
   userId: number;
-  date: string;
-  image: string; 
+  categoryName: string;
+  observation: string;
   purchasePrice: number;
   total: number;
   transactionTotal: number;
+  date: string;
+  image: string;
   productStatus: string;
   status: string;
 }
 
 
-export interface ProductQuantityBatch {
-  productQuantity: ProductTypes[];
+export interface ProductQuantityTransaction {
+  id: number;
+  quantity: number;
+  date: string;
+  observation: string;
+  purchasePrice: number;
+  total: number;
+  transactionTotal: number;
+  userId: number;
 }
 
 
+export interface ProductQuantityBatch {
+  productQuantity: ProductQuantityTransaction[];
+}
 
-
+export interface InventoryOperation {
+  productQuantity: Array<{
+    id: number;
+    quantity: number;
+    purchasePrice: number;
+    total: number;
+    transactionTotal: number;
+    date: string;
+    observation: string;
+    userId: number;
+  }>;
+}

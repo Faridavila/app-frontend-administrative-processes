@@ -154,7 +154,7 @@ const ProductCRUD = () => {
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid  p-0">
         <div className="content-header row"></div>
         <div style={{ display: "flex", alignItems: "center" }}>
           <h3 className="content-body" style={{ margin: "0", fontSize: "21px" }}>

@@ -57,7 +57,7 @@ const CalendarComponent = () => {
 
   return (
     <div className="app-content content">
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid  p-0">
         <div className="content-body">
           <section>
             <div className="app-calendar overflow-hidden border">

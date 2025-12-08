@@ -4,7 +4,7 @@ import withReactContent from 'sweetalert2-react-content';
 import Swal, { SweetAlertResult } from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import HandLoadingSpinner from '../../Spinner/SpinnerAnimation';
-import { AddIcon, FilterIcon, FilterIcon2, EditIcon, DeleteIcon, ExcelIcon, Entrada, Salida,Perdidas } from '../Icons/Icons';
+import { AddIcon, FilterIcon, FilterIcon2, EditIcon, DeleteIcon, ExcelIcon, Entrada,Perdidas } from '../Icons/Icons';
 import './CRUDGeneral.css';
 
 const MySwal = withReactContent(Swal);
@@ -75,6 +75,7 @@ export interface CRUDFormProps<T> {
   renderCustomAddModal?: (onSave: () => Promise<void>, onCancel: () => void) => React.ReactNode;
   renderCustomActionModal?: (onSave: () => Promise<void>, onCancel: () => void, generalActionKey: string, currentItem: T | null, onFieldUpdate: (update: Partial<T>) => void) => React.ReactNode;
   modalSize?: 'sm' | 'lg' | 'xl';
+  customModalClass?: string;
   renderCustomValidation?: () => boolean;
   renderCustomActionValidation?: (generalActionKey: string) => boolean;
   customSave?: (onSuccess: () => void, onError: (error: any) => void) => Promise<void>;
@@ -126,6 +127,7 @@ const CRUDForm = <T extends { id: number }>({
   renderCustomValidation,
   renderCustomActionValidation,
   customIcons,
+  customModalClass,
   customSave,
   customGeneralActionButtons,
   customAddActionButton, 
@@ -572,16 +574,7 @@ const handleSave = async () => {
     }
     return 'No se pudo completar la operación.';
   };
-  async function errorFromResponse(response: Response): Promise<Error> {
-    const text = await response.text();
-    try {
-      const json = JSON.parse(text);
-      const msg = json?.message || json?.error || text || response.statusText;
-      return new Error(`HTTP ${response.status} - ${msg}`);
-    } catch {
-      return new Error(`HTTP ${response.status} - ${text || response.statusText}`);
-    }
-  }
+
   const openGeneralAction = (key: string) => {
     if (!generalItems) {
       handleShowModal('add');
@@ -717,9 +710,9 @@ const handleSave = async () => {
       className: `btn btn-info ${filterSmallClass}`,
       onClick: () => setShowFilters(!showFilters),
       icon: showFilters ? <FilterIcon /> : <FilterIcon2 />,
-      label: showFilters ? 'Ocultar Filtro' : 'Mostrar Filtro',
+      label: showFilters ? '' : '',
       order: filterButtonOrder ?? 3,
-      ariaLabel: showFilters ? 'Ocultar Filtro' : 'Mostrar Filtro',
+      ariaLabel: showFilters ? '' : '',
     }] : []),
     ...(hiddenEditButton ? [{
       key: 'edit',
@@ -727,7 +720,7 @@ const handleSave = async () => {
       onClick: handleEditSelectedRow,
       disabled: !selectedItem,
       icon: <EditIcon />,
-      label: 'Editar',
+      label: '',
       order: editButtonOrder ?? 4,
       ariaLabel: "Editar Elemento Seleccionado",
     }] : []),
@@ -737,7 +730,7 @@ const handleSave = async () => {
       onClick: handleDeleteSelectedRow,
       disabled: !selectedItem,
       icon: <DeleteIcon />,
-      label: 'Eliminar',
+      label: '',
       order: deleteButtonOrder ?? 5,
       ariaLabel: "Eliminar Elemento Seleccionado",
     }] : []),
@@ -779,7 +772,6 @@ const handleSave = async () => {
     })) || []),
   ];
 
-  // Ordenar botones por order (ascendente, null/undefined al final)
   const sortedButtons = allButtons
     .sort((a, b) => {
       const orderA = a.order ?? Infinity;
@@ -787,7 +779,7 @@ const handleSave = async () => {
       return orderA - orderB;
     });
 
-  // Función para obtener el título del modal basado en la acción
+
   const getModalTitle = () => {
     if (operation === 'add') return 'Añadir';
     if (operation === 'edit') return 'Editar';
@@ -811,7 +803,7 @@ return (
                 key={btnConfig.key}
                 className={`${btnConfig.className} me-2`}
                 onClick={btnConfig.onClick}
-                disabled={btnConfig.disabled}
+                disabled={(btnConfig as any).disabled}
                 aria-label={btnConfig.ariaLabel}
               >
                 {btnConfig.icon && <span className="icon">{btnConfig.icon}</span>}
@@ -965,7 +957,7 @@ return (
         <HandLoadingSpinner />
       </div>
     )}
-    <Modal show={showModal} onHide={handleCancel} size={modalSize || 'lg'} centered>
+    <Modal show={showModal} onHide={handleCancel} size={modalSize || 'lg'} centered className={customModalClass}>
       <Modal.Header closeButton>
         <Modal.Title>
           {getModalTitle()}
@@ -1139,9 +1131,9 @@ return (
           )
         )}
       </Modal.Body>
-      <Modal.Footer className="border-top pt-2">
+      <Modal.Footer className="border-top btn-sm  pt-4">
         <Button
-          className='btn btn-success me-1 btn-sm px-4'
+          className='btn btn-success me-1 btn-sm px-6'
           onClick={handleSave}
           disabled={isSaveDisabled || isLoading}
           style={{ opacity: isSaveDisabled ? 0.5 : 1, borderRadius: '0.375rem' }}
@@ -1149,7 +1141,7 @@ return (
           <i className='fa-solid fa-floppy-disk me-1'></i> Guardar
         </Button>
         <Button
-          className='btn btn-danger btn-sm px-4'
+          className='btn btn-danger btn-sm px-2'
           onClick={handleCancel}
           style={{ borderRadius: '0.375rem' }}
           disabled={isLoading}

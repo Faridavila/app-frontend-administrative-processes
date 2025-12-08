@@ -9,10 +9,7 @@ import {
   DeleteSuppliers,
   GetSearchSuppliers,
 } from "../API/SuppliersAPI";
-import {
-  GetSupplierProducts,
-  DeleteSupplierProducts
-} from "../../SupplierProduct/API/SupplierProductAPI";
+import {GetSupplierProducts, DeleteSupplierProducts} from "../../SupplierProduct/API/SupplierProductAPI";
 import SupplierProductsCRUD from "../../SupplierProduct/Components/SupplierProduct";
 import WarehouseSelect from "./SelectWarehouse";
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
@@ -24,12 +21,11 @@ import { generatePDF, PDFConfig } from '../../Hooks/usePDFGeneratorTable';
 import { GetCompanyById } from "../../Company/API/CompanyAPI";
 import { CompanyType } from "../../Company/Types/Company";
 
-
-interface RouteCRUDProps {
+interface SupplierCRUDProps {
   onRowClick?: (item: SupplierTypes) => void;
 }
 
-const SuppliersCRUD: React.FC<RouteCRUDProps> = ({ onRowClick }) => {
+const SuppliersCRUD: React.FC<SupplierCRUDProps> = ({ onRowClick }) => {
   const [selectedRoute, setSelectedSupplier] = useState<SupplierTypes | null>(null);
   const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null);
   const [supplierName, setSupplierName] = useState<string>('');
@@ -44,6 +40,18 @@ const SuppliersCRUD: React.FC<RouteCRUDProps> = ({ onRowClick }) => {
   const [currentSupplierId, setCurrentSupplierId] = useState<number>(0);
   const [supplierProducts, setSupplierProducts] = useState<SupplierProductTypes[]>([]);
   const [companyData, setCompanyData] = useState<CompanyType | null>(null);
+
+    const itemTemplate = (): SupplierTypes => ({
+    id: 0,
+    name: "",
+    email: "",
+    phone: 0,
+    warehouseId: 0,
+    warehouseName: "",
+    warehouse: "",
+    status: "",
+    products: [],
+  });
 
   const columns: {
     key: keyof SupplierTypes;
@@ -69,7 +77,12 @@ const SuppliersCRUD: React.FC<RouteCRUDProps> = ({ onRowClick }) => {
     {
       key: "email",
       label: "Correo",
+         render: (item) => {
+        const observation = item.email || "No aplica";
+        return <span>{observation}</span>;
+      }
     },
+    
     {
       key: "phone",
       label: "Celular",
@@ -95,6 +108,22 @@ const SuppliersCRUD: React.FC<RouteCRUDProps> = ({ onRowClick }) => {
       hidden: true,
     },
   ];
+
+    const renderCustomFormField = (
+    colKey: keyof SupplierTypes,
+    value: any,
+    onChange: (newValue: any) => void
+  ) => {
+    if (colKey === "warehouseId") {
+      return (
+        <WarehouseSelect
+          selectedValue={parseInt(value, 10)}
+          onChange={(newWarehouseId: number) => onChange(newWarehouseId.toString())}
+        />
+      );
+    }
+    return null;
+  };
 
   useEffect(() => {
     const fetchCompanyData = async () => {
@@ -203,18 +232,6 @@ const SuppliersCRUD: React.FC<RouteCRUDProps> = ({ onRowClick }) => {
     generatePDF(pdfConfig);
   };
 
-  const itemTemplate = (): SupplierTypes => ({
-    id: 0,
-    name: "",
-    email: "",
-    phone: 0,
-    warehouseId: 0,
-    warehouseName: "",
-    warehouse: "",
-    status: "",
-    products: [],
-  });
-
   const handleRowSelection = (supplier: SupplierTypes) => {
     setSelectedSupplier(supplier);
     setSelectedSupplierId(supplier.id);
@@ -265,7 +282,7 @@ const SuppliersCRUD: React.FC<RouteCRUDProps> = ({ onRowClick }) => {
         }
       })
       .catch(error => {
-        console.error('Error loading products:', error);
+        console.error('Error al cargar los productos:', error);
         setShowProductsConfig(false);
         setProductss([]);
         setInitialProductss([]);
@@ -554,7 +571,7 @@ const SuppliersCRUD: React.FC<RouteCRUDProps> = ({ onRowClick }) => {
   };
 
   const customSave = async (onSuccess: () => void, onError: (error: any) => void) => {
-    const validationErrors = {};
+    const validationErrors: { [key: string]: string } = {};
     ['name', 'email', 'phone'].forEach(key => {
       const value = key === 'name' ? supplierName : key === 'email' ? email : phone;
       const error = validateField(key as keyof SupplierTypes, value);
@@ -619,40 +636,25 @@ const SuppliersCRUD: React.FC<RouteCRUDProps> = ({ onRowClick }) => {
     return true;
   };
 
-  const renderCustomFormField = (
-    colKey: keyof SupplierTypes,
-    value: any,
-    onChange: (newValue: any) => void
-  ) => {
-    if (colKey === "warehouseId") {
-      return (
-        <WarehouseSelect
-          selectedValue={parseInt(value, 10)}
-          onChange={(newWarehouseId: number) => onChange(newWarehouseId.toString())}
-        />
-      );
-    }
-    return null;
-  };
-
   return (
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid-0">
         <div className="content-header row"></div>
         <div style={{ display: "flex", alignItems: "center" }}>
           <h3 className="content-body" style={{ margin: "0", fontSize: "21px" }}>
             Gestión de proveedores
           </h3>
-          <FavoritoButton path="/SupplierPendingProduct" label="SupplierPendingProducts" />
+          <FavoritoButton path="/supplier" label="Proveedores" />
         </div>
         <p>
           Administre los proveedores mediante la creación, edición o eliminación de registros.
         </p>
         <div className="card">
-          <div className="card-datatable table-responsive" style={{ position: 'relative' }}>
-            <div style={{
+           <div style={{ position: 'relative', marginBottom: '1rem' }}>
+             <div className="pdf-button-wrapper3" 
+             style={{
               position: 'absolute',
               top: '30px',
               right: '246px',

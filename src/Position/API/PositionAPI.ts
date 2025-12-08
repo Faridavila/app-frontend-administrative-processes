@@ -1,9 +1,8 @@
-import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { PositionTypes } from "../Types/PositionTypes";
-import { BASE_URL_APIS_WORKFLOW } from "../../constants";
+import { BASE_URL_APIS_USER } from "../../constants";
 
-const URL = 'http://localhost:8081/api/v1/back-user-service/position';
-//const URL: string = `${BASE_URL_APIS_WORKFLOW}/api/v1/back-user-service/position`;
+//const URL = 'http://localhost:8081/api/v1/back-user-service/position';
+const URL: string = `${BASE_URL_APIS_USER}/position`;
 
 export const GetPosition = async (
   page: number,

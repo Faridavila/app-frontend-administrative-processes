@@ -238,14 +238,14 @@ const CompanyPresentation: React.FC = () => {
 
   return (
     <div className="app-content content">
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid  p-0">
         <div className="content-header row">
           <div className="content-header-left col-md-9 col-12 mb-2">
             <div className="row breadcrumbs-top">
               <div className="col-12">
                 <h2 className="content-header-title float-start mb-0">
-                  Presentación de la Empresa
-                  <FavoritoButton path="/company" label="Presentación" />{" "}
+                  Presentación de la empresa
+
                 </h2>
                 <div className="breadcrumb-wrapper">
                   <ol className="breadcrumb">
@@ -253,7 +253,7 @@ const CompanyPresentation: React.FC = () => {
                       <a href="dashboard">Home</a>
                     </li>
                     <li className="breadcrumb-item">
-                      <a href="#">Empresas</a>
+                      <a href="#">Empresa</a>
                     </li>
                     <li className="breadcrumb-item active">Presentación</li>
                   </ol>
@@ -316,6 +316,7 @@ const CompanyPresentation: React.FC = () => {
           <Modal
             show={showModal}
             onHide={handleClose}
+            centered
             className="animate__animated animate__fadeInDown"
           >
             <Modal.Header closeButton>

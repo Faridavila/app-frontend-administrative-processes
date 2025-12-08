@@ -7,34 +7,21 @@ import {
   UpdateSupplierRate,
   DeleteSupplierRate,
   GetSearchSupplierRate,
+  GeneralSupplierRate,
 } from "../API/SupplierRateAPI";
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
 import SuppliersSelect from "../../ShoppingSuppliers/Components/SelectSupplier";
-import { useState, useEffect } from 'react';
-import { Row, Col, Form, Alert, Table } from 'react-bootstrap';
+import { Row, Col, Form, Alert } from 'react-bootstrap';
 import { PriceIcon } from "../Icons/Icons";
 
 const SupplierRateCRUD = () => {
-  const [allSupplierRates, setAllSupplierRates] = useState<SupplierRateTypes[]>([]);
-
-  useEffect(() => {
-    const fetchAllRates = async () => {
-      try {
-        const allData = await GetSupplierRate(0, 10000, {}, undefined, undefined);
-        setAllSupplierRates(allData || []);
-      } catch (error) {
-        console.error('Error fetching all supplier rates:', error);
-      }
-    };
-    fetchAllRates();
-  }, []);
 
   const itemTemplate = (): SupplierRateTypes => ({
     id: 0,
     supplierId: 0,
     supplierName: "",
     priceRate: 0,
-    status: "ACTIVE",
+    status: "",
   });
 
   const columns: {
@@ -55,11 +42,11 @@ const SupplierRateCRUD = () => {
       label: "Bodega",
       hidden: true,
       required: true,
-      type: "number",  
     },
     {
       key: "supplierName",
       label: "Bodega",
+      required: true,
       hiddenInCreate: true,
       hiddenInEdit: true
     },
@@ -74,56 +61,45 @@ const SupplierRateCRUD = () => {
   const renderCustomFormField = (
     colKey: keyof SupplierRateTypes,
     value: any,
-    onChange: (newValue: any) => void
+    onChange: (update: Partial<SupplierRateTypes>) => void
   ) => {
     if (colKey === "supplierId") {
       return (
         <SuppliersSelect
-          selectedValue={parseInt(value, 10)}
+          selectedValue={typeof value === 'number' ? value : parseInt(value, 10) || 0}
           onChange={(newSupplierId: number) => {
-            onChange(newSupplierId.toString());
+            onChange({ supplierId: newSupplierId });
           }}
         />
       );
     }
+
     return null;
   };
 
   const updatePricesFunction = async (
     item: SupplierRateTypes,
-    imageFile: File | null,
-    extraParams?: Record<string, any>
   ) => {
-    const percentageChange = item.priceRate;
-    const operationType = item.supplierId === 2 ? 'decrease' : 'increase';
+    const rateValue = item.priceRate;
+    const operationType = item.supplierId; 
 
-    if (percentageChange <= 0) {
-      throw new Error('El porcentaje debe ser mayor a 0');
+    if (rateValue <= 0) {
+      throw new Error('El valor debe ser mayor a 0');
     }
 
-    if (item.supplierId <= 0) {
+    if (!operationType || operationType <= 0) {
       throw new Error('Debe seleccionar un tipo de operación');
     }
 
-    if (allSupplierRates.length === 0) {
-      throw new Error('No hay tarifas para actualizar');
-    }
+    const payload = operationType === 1 
+      ? { addRate: rateValue, subtractRate: null }
+      : { addRate: null, subtractRate: rateValue };
 
-    for (const rate of allSupplierRates) {
-      const currentPrice = rate.priceRate;
-      const changeAmount = (currentPrice * percentageChange) / 100;
-      const newPrice = operationType === 'increase' 
-        ? currentPrice + changeAmount 
-        : currentPrice - changeAmount;
+    console.log('📤 Enviando payload:', payload);
 
-      const updatedRate: SupplierRateTypes = {
-        ...rate,
-        priceRate: Math.max(0, newPrice),
-      };
-
-      await UpdateSupplierRate(rate.id, updatedRate, extraParams);
-    }
+    await GeneralSupplierRate(payload);
   };
+
   const renderCustomActionModal = (
     onSave: () => Promise<void>,
     onCancel: () => void,
@@ -133,28 +109,30 @@ const SupplierRateCRUD = () => {
   ) => {
     if (generalActionKey !== 'subtract') return null; 
 
-    const percentageChange = currentItem?.priceRate || 0;
-    const operationType = currentItem?.supplierId === 2 ? 'decrease' : 'increase';
-
-    const previewChanges = allSupplierRates.map(rate => {
-      const currentPrice = rate.priceRate;
-      const changeAmount = (currentPrice * percentageChange) / 100;
-      const newPrice = operationType === 'increase' 
-        ? currentPrice + changeAmount 
-        : currentPrice - changeAmount;
-      
-      return {
-        ...rate,
-        currentPrice,
-        newPrice: Math.max(0, newPrice),
-        changeAmount: operationType === 'increase' ? changeAmount : -changeAmount,
-      };
-    });
+    const rateValue = currentItem?.priceRate || 0;
+    const operationType = currentItem?.supplierId || 0;
 
     return (
       <Form>
         <Alert variant="info" className="mb-3">
-          <strong> Actualización General de Tarifas</strong>
+          <strong>Actualización General de Tarifas</strong>
+          <p className="mb-0 mt-2 small">
+            {operationType === 1 && rateValue > 0 && (
+              <span className="text-success">
+                ✓ Se incrementarán todas las tarifas en: <strong>{rateValue}</strong>
+              </span>
+            )}
+            {operationType === 2 && rateValue > 0 && (
+              <span className="text-danger">
+                ✓ Se reducirán todas las tarifas en: <strong>{rateValue}</strong>
+              </span>
+            )}
+            {(!operationType || operationType <= 0 || rateValue <= 0) && (
+              <span className="text-muted">
+                Complete todos los campos
+              </span>
+            )}
+          </p>
         </Alert>
 
         <Row className="mb-3">
@@ -168,7 +146,7 @@ const SupplierRateCRUD = () => {
               >
                 <option value="">Seleccione una opción</option>
                 <option value={1}>Incremento</option>
-                <option value={2}>Disminución</option>
+                <option value={2}>Decremento</option>
               </Form.Select>
             </Form.Group>
           </Col>
@@ -178,57 +156,18 @@ const SupplierRateCRUD = () => {
               <Form.Control
                 type="number"
                 min={0}
-                max={100}
                 step={0.01}
                 value={currentItem?.priceRate || 0}
                 onChange={(e) => onFieldUpdate({ priceRate: parseFloat(e.target.value) || 0 })}
-                placeholder="Ej: 10 para 10%"
+                placeholder="Ej: 3000"
                 required
               />
+              <Form.Text className="text-muted">
+                Ingrese el valor que se {operationType === 1 ? 'sumará' : operationType === 2 ? 'restará' : 'aplicará'} a todas las tarifas
+              </Form.Text>
             </Form.Group>
           </Col>
         </Row>
-
-        {percentageChange > 0 && allSupplierRates.length > 0 && (
-          <>
-            <Alert variant="warning" className="mb-3">
-              <strong>⚠️ Vista Previa</strong> - Se {operationType === 'increase' ? 'incrementarán' : 'disminuirán'} las tarifas en <strong>{percentageChange}%</strong>
-            </Alert>
-
-            <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #dee2e6', borderRadius: '0.375rem' }}>
-              <Table bordered hover size="sm" className="mb-0">
-                <thead className="table-light" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
-                  <tr>
-                    <th>Proveedor</th>
-                    <th className="text-end">Tarifa Actual</th>
-                    <th className="text-center">Cambio</th>
-                    <th className="text-end">Nueva Tarifa</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {previewChanges.map((item) => (
-                    <tr key={item.id}>
-                      <td>{item.supplierName}</td>
-                      <td className="text-end">${item.currentPrice.toFixed(2)}</td>
-                      <td className="text-center">
-                        <span className={operationType === 'increase' ? 'text-success' : 'text-danger'}>
-                          {operationType === 'increase' ? '+' : '-'}${Math.abs(item.changeAmount).toFixed(2)}
-                        </span>
-                      </td>
-                      <td className="text-end">
-                        <strong>${item.newPrice.toFixed(2)}</strong>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-
-            <Alert variant="success" className="mt-3 mb-0">
-              <strong>📊 Resumen:</strong> Se actualizarán <strong>{allSupplierRates.length}</strong> tarifa(s)
-            </Alert>
-          </>
-        )}
       </Form>
     );
   };
@@ -237,7 +176,7 @@ const SupplierRateCRUD = () => {
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid p-0">
         <div className="content-header row"></div>
         <div className="content-body">
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -245,12 +184,12 @@ const SupplierRateCRUD = () => {
               className="content-body"
               style={{ margin: "0", fontSize: "21px" }}
             >
-              Gestión de tarifa de proveedores
+              Gestión de tarifa de bodegas
             </h3>
             <FavoritoButton path="/SupplierRate" label="SupplierRate" />
           </div>
           <p>
-            Administre las tarifa de proveedores mediante la creación, edición o eliminación de registros.
+            Administre las tarifa de bodegas mediante la creación, edición o eliminación de registros.
           </p>
 
           <div className="card">
@@ -272,7 +211,7 @@ const SupplierRateCRUD = () => {
                 renderCustomFormField={renderCustomFormField}
                 renderCustomActionModal={renderCustomActionModal}
                 customSubtractActionButton={{
-                  label: 'Tarifas Generales',
+                  label: 'Tarifa General',
                   color: 'warning',
                   icon: <PriceIcon />,
                   order: 6,

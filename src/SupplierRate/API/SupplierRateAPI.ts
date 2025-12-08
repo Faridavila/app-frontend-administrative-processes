@@ -1,9 +1,8 @@
-import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
-import { SupplierRateTypes } from "../Types/SupplierRateTypes";
-import { BASE_URL_APIS_WORKFLOW } from "../../constants";
+import { GeneralRate, SupplierRateTypes } from "../Types/SupplierRateTypes";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8081/api/v1/back-user-service/SupplierRate';
-//const URL: string = `${BASE_URL_APIS_WORKFLOW}/api/v1/back-user-service/SupplierRate`;
+//const URL = 'http://localhost:8081/api/v1/back-user-service/SupplierRate';
+const URL: string = `${BASE_URL_APIS_CORE}/supplier-rate`;
 
 export const GetSupplierRate = async (
   page: number,
@@ -32,7 +31,7 @@ export const GetSupplierRate = async (
   });
 
   try {
-    const response = await fetch(`${URL}?${queryParams.toString()}`);
+    const response = await fetch(`${URL}/get-all?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }
@@ -123,6 +122,25 @@ export async function UpdateSupplierRate(id: number, branchDto: SupplierRateType
         throw error;
     }
 }
+
+export async function GeneralSupplierRate( branchDto: GeneralRate): Promise<void> {
+    try {
+        const response = await fetch(`${URL}/general-rates`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(branchDto),
+        });
+        if (!response.ok) {
+            throw new Error(`La solicitud a la API fallo ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Error al llamar a la API:", error);
+        throw error;
+    }
+}
+
 
 
 export async function DeleteSupplierRate(id: number): Promise<void> {

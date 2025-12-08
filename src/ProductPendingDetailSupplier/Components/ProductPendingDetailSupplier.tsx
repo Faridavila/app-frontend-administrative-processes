@@ -3,24 +3,18 @@ import React, { useState } from 'react';
 import { Card, Container, Row, Col} from 'react-bootstrap';
 import { ProductPendingDetailSupplierTypes } from "../Types/ProductPendingDetailSupplierTypes";
 import { ProductPendingDetailSupplierSortFieldMap } from "../Types/MapeoProductPendingDetailSupplier";
-import {
-  GetProductPendingDetailSupplier,
-  CreateProductPendingDetailSupplier,
-  UpdateProductPendingDetailSupplier,
-  DeleteProductPendingDetailSupplier,
-  GetSearchProductPendingDetailSupplier,
-} from "../API/ProductPendingDetailSupplierAPI";
+import {GetProductPendingDetailSupplier,GetSearchProductPendingDetailSupplier } from "../API/ProductPendingDetailSupplierAPI";
 
 
 
 interface ProductPendingDetailSupplierCRUDProps {
-  extraParams: { supplierId: number };
+  extraParams: { pendingDetailSupplierId: number };
   onRowClick?: (item: ProductPendingDetailSupplierTypes) => void;
-  setSelectedSupplierId: (id: number) => void;
+  setSelectedPendingDetailSupplierId: (id: number) => void;
 }
 
-const ProductPendingDetailSupplierCRUD: React.FC<ProductPendingDetailSupplierCRUDProps> = ({ extraParams, onRowClick, setSelectedSupplierId }) => {
-  const [selectedMicroRoutes, setSelectedMicroRoutes] = useState<ProductPendingDetailSupplierTypes | null>(null);
+const ProductPendingDetailSupplierCRUD: React.FC<ProductPendingDetailSupplierCRUDProps> = ({ extraParams, onRowClick }) => {
+  const [selectedPendingDetailSupplier, setSelectedPendingDetailSupplier] = useState<ProductPendingDetailSupplierTypes | null>(null);
 
   const itemTemplate = (): ProductPendingDetailSupplierTypes => ({
     id: 0,
@@ -49,7 +43,7 @@ const ProductPendingDetailSupplierCRUD: React.FC<ProductPendingDetailSupplierCRU
 
 
   const handleRowSelection = (supplier: ProductPendingDetailSupplierTypes) => {
-    setSelectedMicroRoutes(supplier);
+    setSelectedPendingDetailSupplier(supplier);
     if (onRowClick) {
       onRowClick(supplier);
     }
@@ -62,13 +56,13 @@ const ProductPendingDetailSupplierCRUD: React.FC<ProductPendingDetailSupplierCRU
         <Col md={12}>
           <Card className="w-100" style={{ margin: '0' }}>
             <Card.Body className="table-responsive" style={{ maxHeight: '600px', padding: '0' }}>
-              <h2 style={{ fontWeight: 'bold', fontSize: '22px' }}>Detalles del productos</h2>
+              <h2 className="product-details-title"  style={{ fontWeight: 'bold', fontSize: '22px' }}>Detalles del productos</h2>
               <CRUDForm<ProductPendingDetailSupplierTypes>
                 fetchItems={GetProductPendingDetailSupplier}
-                searchItem={GetSearchProductPendingDetailSupplier}
-                createItem={CreateProductPendingDetailSupplier}
-                updateItem={UpdateProductPendingDetailSupplier}
-                deleteItem={DeleteProductPendingDetailSupplier}
+                searchItem={GetSearchProductPendingDetailSupplier }
+                createItem={async () => {}}
+                updateItem={async () => {}}
+                deleteItem={async () => {}}
                 itemTemplate={itemTemplate}
                 columns={columns}
                 filterButtonOrder={2}
@@ -77,7 +71,7 @@ const ProductPendingDetailSupplierCRUD: React.FC<ProductPendingDetailSupplierCRU
                 hiddenEditButton={false}
                 hiddenDeleteButton={false}
                 sortFieldMap={ProductPendingDetailSupplierSortFieldMap}
-                pageTitle="Productos detalle historial inventario"
+                pageTitle="Materiales pendientes de proveedores"
                 extraParams={extraParams}
                 onRowClick={handleRowSelection}
               />

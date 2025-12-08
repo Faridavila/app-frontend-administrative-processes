@@ -1397,3 +1397,47 @@ body.dark-layout {
 
 .dark-layout .horizontal-layout .main-menu-content .navbar-nav > li.active .dropdown-menu li.open.active > a {
   color: #b4b7bd !important; }
+
+
+td:hover::before,
+td:hover::after,
+th:hover::before,
+th:hover::after {
+  display: none !important;
+  content: none !important;
+}
+
+
+td input[type="checkbox"]:not(.form-check-input),
+th input[type="checkbox"]:not(.form-check-input) {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+.product-select-container:hover::before,
+.product-select-container:hover::after {
+  display: none !important;
+  content: none !important;
+}
+
+td[style*="overflow: visible"]:hover::before,
+td[style*="overflow: visible"]:hover::after {
+  display: none !important;
+  content: none !important;
+}
+
+.product-select-container select,
+.product-select-container .form-control {
+  width: 100%;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  background-color: #fff;
+}
+
+
+.dark-layout .product-select-container select,
+.dark-layout .product-select-container .form-control {
+  background-color: #283046;
+  border-color: #404656;
+  color: #b4b7bd;
+}

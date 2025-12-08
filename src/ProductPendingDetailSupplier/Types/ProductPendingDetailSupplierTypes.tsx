@@ -7,6 +7,6 @@ export interface ProductPendingDetailSupplierTypes {
 }
 
 export interface GetProductParams {
-  supplierId: number;
+  pendingDetailSupplierId?: number;
 } 
 

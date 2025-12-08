@@ -1,9 +1,9 @@
 import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { DepartmentTypes } from "../Types/DepartmentTypes";
-//import {BASE_URL_APIS_CORE} from "../../constants";
+import {BASE_URL_APIS_CORE} from "../../constants";
 
-const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/department';
-//const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/department`;
+//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/department';
+const URL: string = `${BASE_URL_APIS_CORE}/department`;
 
 export async function GetDepartmentId(id: number): Promise<ObjectResponse<DepartmentTypes> | null> {
     try {

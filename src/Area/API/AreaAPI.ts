@@ -1,9 +1,8 @@
-import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { AreaTypes } from "../Types/AreaTypes";
-import { BASE_URL_APIS_WORKFLOW } from "../../constants";
+import { BASE_URL_APIS_USER } from "../../constants";
 
-const URL = 'http://localhost:8081/api/v1/back-user-service/area';
-//const URL: string = `${BASE_URL_APIS_WORKFLOW}/api/v1/back-user-service/area`;
+//const URL = 'http://localhost:8081/api/v1/back-user-service/area';
+const URL: string = `${BASE_URL_APIS_USER}/area`;
 
 export const GetArea = async (
   page: number,

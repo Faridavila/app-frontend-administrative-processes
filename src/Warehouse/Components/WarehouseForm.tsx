@@ -1,5 +1,5 @@
 import CRUDForm from "../../GeneralComponents/GeneralCrud/CRUDForm";
-import { Warehouse } from "../../Warehouse/Types/WarehouseTypes";
+import { WarehouseTypes } from "../../Warehouse/Types/WarehouseTypes";
 import { WarehouseSortFieldMap } from "../Types/MapeoWarehouse";
 import {
   GetWarehouses,
@@ -12,7 +12,7 @@ import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
 
 
 const WarehouseCRUD = () => {
-  const itemTemplate = (): Warehouse => ({
+  const itemTemplate = (): WarehouseTypes => ({
     id: 0,
     warehouseName: "",
     status: "",
@@ -21,7 +21,7 @@ const WarehouseCRUD = () => {
   });
 
   const columns: {
-    key: keyof Warehouse;
+    key: keyof WarehouseTypes;
     label: string;
     hidden?: boolean;
     required?: boolean;
@@ -35,6 +35,9 @@ const WarehouseCRUD = () => {
     {
       key: "warehouseName",
       label: "Nombre de bodega",
+      required: true,
+      minLength: 2,
+      maxLength: 100,
     },
     {
       key: "description",
@@ -43,6 +46,9 @@ const WarehouseCRUD = () => {
     {
       key: "address",
       label: "Direccion",
+      required: true,
+      minLength: 2,
+      maxLength: 100,
     },
   ];
 
@@ -51,7 +57,7 @@ const WarehouseCRUD = () => {
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid p-0">
         <div className="content-header row"></div>
         <div style={{ display: "flex", alignItems: "center" }}>
           <h3
@@ -68,7 +74,7 @@ const WarehouseCRUD = () => {
         </p>
         <div className="card">
           <div className="card-datatable table-responsive">
-            <CRUDForm<Warehouse>
+            <CRUDForm<WarehouseTypes>
               fetchItems={GetWarehouses}
               searchItem={GetSearchWarehouses}
               createItem={CreateWarehouse}

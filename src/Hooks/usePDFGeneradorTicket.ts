@@ -336,7 +336,7 @@ class PDFTicketGenerator {
           if (hasQuantity && product.cantidad) {
             this.doc.text(product.cantidad.toString(), this.pageWidth - 23, this.currentY, { align: 'right' });
           }
-          const valorFormateado = `$${product.valor.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          const valorFormateado = `$${product.valor.toLocaleString('es-CO')}`;
           this.doc.text(valorFormateado, this.pageWidth - this.margin, this.currentY, { align: 'right' });
         }
         
@@ -354,7 +354,7 @@ class PDFTicketGenerator {
     this.doc.setFontSize(8);
     this.doc.setFont('helvetica', 'bold');
     
-    const totalFormateado = `$${total.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const totalFormateado = `$${total.toLocaleString('es-CO')}`;
     
     this.doc.text('Total', this.margin, this.currentY);
     this.doc.text(totalFormateado, this.pageWidth - this.margin, this.currentY, { align: 'right' });

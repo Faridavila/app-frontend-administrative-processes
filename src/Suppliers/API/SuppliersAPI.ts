@@ -1,8 +1,8 @@
 import { SupplierTypes } from "../Types/SuppliersTypes";
-import { BASE_URL_APIS_WORKFLOW } from "../../constants";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/supplier';
-//const URL: string = `${BASE_URL_APIS_WORKFLOW}/api/v1/back-user-service/Suppliers`;
+//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/supplier';
+const URL: string = `${BASE_URL_APIS_CORE}/supplier`;
 
 export const GetSuppliers = async (
   page: number,
@@ -44,7 +44,7 @@ export const GetSuppliers = async (
 };
 
 
-export async function CreateSuppliers(supplierDto: SupplierTypes): Promise<SupplierTypes> {
+export async function CreateSuppliers(supplierDto: SupplierTypes): Promise<void> {
     try {
         const requestBody = {
             name: supplierDto.name,

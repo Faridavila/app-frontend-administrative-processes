@@ -4,17 +4,18 @@ import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Form, Table, Alert } from 'react-bootstrap';
 import { ProductSortFieldMap } from "../Types/MapeoInventoryTypes";
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
+import { AddIcon, DeleteIcon, PDFIcon } from '../Icons/Icons';
+import { generatePDF, PDFConfig } from '../../Hooks/usePDFGeneratorTable';
+import { GetCompanyById } from "../../Company/API/CompanyAPI";
+import { CompanyType } from "../../Company/Types/Company";
 import ProductSelect from "./SelectProduct";
 import {
   GetProduct,
   UpdateIntorySubtract,
-  DeleteProduct,
-  CreateProduct,
-  UpdateProduct,
   GetSearchProduct,
-  UpdateIntoryAdd
+  UpdateIntoryAdd,
+  GetAllProductNoPage
 } from "../API/InventoryAPI";
-import { AddIcon, DeleteIcon } from '../Icons/Icons';
 
 interface ProductLine {
   tempId: string;
@@ -31,22 +32,10 @@ const InventoryCRUD = () => {
   const [date, setDate] = useState<string>('');
   const [observation, setObservation] = useState<string>('');
   const [currentAction, setCurrentAction] = useState<'add' | 'subtract' | null>(null);
+  const [companyData, setCompanyData] = useState<CompanyType | null>(null);
+  const [inventoryData, setInventoryData] = useState<any[]>([]);
+  const [lastSavedMovement, setLastSavedMovement] = useState<any>(null);
 
-  useEffect(() => {
-    const storedUserId = localStorage.getItem('userId');
-    if (storedUserId) {
-      setCurrentUserId(parseInt(storedUserId, 10));
-    }
-  }, []);
-
-
-  const getLocalDate = (): string => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
 
   const itemTemplate = (): ProductTypes => ({
     id: 0,
@@ -66,19 +55,6 @@ const InventoryCRUD = () => {
     productStatus: "",
     status: "",
   });
-
-  const getStatusColor = (productStatus: string) => {
-    switch (productStatus) {
-      case "agotado":
-        return "red";
-      case "pocas unidades":
-        return "orange";
-      case "disponible":
-        return "green";
-      default:
-        return "transparent";
-    }
-  };
 
   const columns: {
     key: keyof ProductTypes;
@@ -191,6 +167,117 @@ const InventoryCRUD = () => {
     return null;
   };
 
+  const getLocalDate = (): string => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const getStatusColor = (productStatus: string) => {
+    switch (productStatus) {
+      case "agotado":
+        return "red";
+      case "pocas unidades":
+        return "orange";
+      case "disponible":
+        return "green";
+      default:
+        return "transparent";
+    }
+  };
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      setCurrentUserId(parseInt(storedUserId, 10));
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchCompanyData = async () => {
+      try {
+        const data = await GetCompanyById(1);
+        if (data) setCompanyData(data);
+      } catch (error) {
+        console.error('Error al cargar datos de la empresa:', error);
+      }
+    };
+    fetchCompanyData();
+  }, []);
+
+  useEffect(() => {
+    const loadInventory = async () => {
+      try {
+        const items = await GetAllProductNoPage();
+        setInventoryData(items || []);
+      } catch (error) {
+        console.error("Error cargando inventario:", error);
+      }
+    };
+    loadInventory();
+  }, []);
+
+  const generarReporteGeneralInventario = () => {
+    if (!companyData) {
+      alert("Cargando datos de la empresa...");
+      return;
+    }
+
+    if (inventoryData.length === 0) {
+      alert("No hay productos en el inventario.");
+      return;
+    }
+
+    const valorTotalInventario = inventoryData.reduce((sum, p) => sum + (p.price * p.quantity), 0);
+
+    const config: PDFConfig = {
+      header: {
+        title: "INVENTARIO",
+        showDate: true,
+      },
+      companyInfo: {
+        nit: companyData.nit,
+        direccion: companyData.address,
+        celular: companyData.phone,
+        email: companyData.email,
+      },
+      mainInfo: [
+        { label: "Total de productos", value: inventoryData.length },
+        { label: "Fecha del reporte", value: new Date().toLocaleString('es-CO') },
+      ],
+      table: {
+        columns: [
+          { header: "PRODUCTO", dataKey: "productName", width: 50 },
+          { header: "MEDIDAS", dataKey: "description", width: 40 },
+          { header: "PRECIO VENTA", dataKey: "price", width: 40 },
+          { header: "CANTIDAD", dataKey: "quantity", width: 40 },
+        ],
+        data: inventoryData.map(item => ({
+          productName: item.productName || "Sin nombre",
+          description: item.description || "Sin descripcion",
+          price: new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(item.price || 0),
+          quantity: (item.quantity || 0).toLocaleString('es-CO'),
+          totalValue: new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format((item.price || 0) * (item.quantity || 0)),
+          productStatus: item.productStatus || "desconocido",
+        })),
+        showTotal: false,
+        totalLabel: "VALOR TOTAL INVENTARIO",
+        totalValue: new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(valorTotalInventario),
+      },
+      footer: {
+        showGeneratedBy: true,
+        generatedByText: `Generado por ${companyData.companyName}`,
+        showPageNumber: true,
+      },
+      fileName: `Inventario_${new Date().toISOString().split('T')[0]}.pdf`,
+    };
+
+    generatePDF(config);
+  };
+
+
   const handleAddLine = () => {
     const newLine: ProductLine = {
       tempId: Date.now().toString(),
@@ -235,8 +322,14 @@ const InventoryCRUD = () => {
     );
   };
 
-  const renderCustomActionModal = (onSave: () => Promise<void>, onCancel: () => void, actionKey: 'add' | 'subtract') => {
-    const allLinesValid = productLines.length > 0 && productLines.every(line => line.productId > 0 && line.quantity > 0 && line.purchasePrice >= 0);
+  const renderCustomActionModal = (
+    onSave: () => Promise<void>,
+    onCancel: () => void,
+    generalActionKey: string,
+    currentItem: ProductTypes | null,
+    onFieldUpdate: (update: Partial<ProductTypes>) => void
+  ) => {
+    const actionKey = generalActionKey as 'add' | 'subtract';
     const totalGeneral = productLines.reduce((sum, line) => sum + (line.quantity * line.purchasePrice), 0);
 
     return (
@@ -272,10 +365,9 @@ const InventoryCRUD = () => {
               boxShadow: '0 0.125rem 0.25rem rgba(0, 0, 0, 0.075)',
               maxWidth: '100%',
               width: '100%',
-              overflow: 'visible'
             }}>
-              <div >
-                <Table>
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <Table className="table-modal-inventory">
                   <thead>
                     <tr>
                       <th style={{ width: '25%', padding: '12px', textAlign: 'left' }}>PRODUCTO</th>
@@ -321,7 +413,7 @@ const InventoryCRUD = () => {
                           />
                         </td>
                         <td style={{ padding: '12px', verticalAlign: 'middle', textAlign: 'center' }}>
-                           <span
+                          <span
                             className="form-control form-control-sm text-center bg-light"
                             style={{
                               borderRadius: '0.375rem',
@@ -329,9 +421,9 @@ const InventoryCRUD = () => {
                               margin: '0 auto',
                               border: '1px solid #ced4da',
                               display: 'block',
-                              padding: '0.375rem 0.75rem',  
+                              padding: '0.375rem 0.75rem',
                               lineHeight: '1.5',
-                              fontWeight: 'bold',  
+                              fontWeight: 'bold',
                             }}
                           >
                             {new Intl.NumberFormat('es-CO', {
@@ -388,7 +480,7 @@ const InventoryCRUD = () => {
               </span>
               Añadir Producto
             </Button>
-                     <div className="text-end">
+            <div className="text-end">
               <strong className="text-error fs-2 fw-bold">
                 Total: {new Intl.NumberFormat('es-CO', {
                   style: 'currency',
@@ -409,7 +501,6 @@ const InventoryCRUD = () => {
       onError(new Error('Ingrese todos los campos requeridos en las líneas de productos'));
       return;
     }
-
     try {
       const productQuantity: Array<{
         id: number;
@@ -439,22 +530,18 @@ const InventoryCRUD = () => {
           userId: currentUserId,
         });
       });
-
-      const batchData = {
-        productQuantity,
-      };
-
-      if (currentAction === 'add') {
-        await UpdateIntoryAdd(batchData);
-      } else {
-        await UpdateIntorySubtract(batchData);
-      }
-
+      await (UpdateIntoryAdd as any)({ productQuantity });
+      await (UpdateIntorySubtract as any)({ productQuantity });
       setProductLines([]);
       setDate('');
       setObservation('');
       setCurrentAction(null);
       onSuccess();
+      setLastSavedMovement({
+        type: currentAction,
+        date,
+        observation,
+      });
     } catch (error) {
       onError(error);
     }
@@ -464,7 +551,8 @@ const InventoryCRUD = () => {
     return productLines.length > 0 && productLines.every(line => line.productId > 0 && line.quantity > 0 && line.purchasePrice >= 0);
   };
 
-  const onActionModalOpen = (key: 'add' | 'subtract') => {
+  const onActionModalOpen = (key: string) => {
+    const actionKey = key as 'add' | 'subtract';
     setDate(getLocalDate());
     setObservation('');
     setProductLines([{
@@ -475,7 +563,7 @@ const InventoryCRUD = () => {
       quantity: 0,
       total: 0,
     }]);
-    setCurrentAction(key);
+    setCurrentAction(actionKey);
   };
 
   const onActionModalClose = () => {
@@ -489,25 +577,53 @@ const InventoryCRUD = () => {
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid  p-0">
         <div className="content-header row"></div>
         <div style={{ display: "flex", alignItems: "center" }}>
           <h3 className="content-body" style={{ margin: "0", fontSize: "21px" }}>
             Gestión de Inventarios
           </h3>
-          <FavoritoButton path="/product" label="Productos" />
+          <FavoritoButton path="/inventory" label="Inventario" />
         </div>
         <p>
           Administre el inventario, controle el stock y registre entradas o pérdidas de productos.
         </p>
         <div className="card">
+
+          <div style={{ position: 'relative', marginBottom: '1rem' }}>
+            <div className="pdf-button-wrapper" style={{
+              position: 'absolute',
+              top: '30px',
+              right: '333px',
+              zIndex: 10
+            }}>
+              <Button
+                variant="danger"
+                onClick={generarReporteGeneralInventario}
+                style={{
+                  width: '33px',
+                  height: '33px',
+                  padding: '0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '6px',
+                  backgroundColor: '#dc3545',
+                  border: 'none',
+                }}
+                title="Descargar Inventario"
+              >
+                <PDFIcon />
+              </Button>
+            </div>
+          </div>
           <div className="card-datatable table-responsive">
             <CRUDForm<ProductTypes>
               fetchItems={GetProduct}
               searchItem={GetSearchProduct}
-              createItem={CreateProduct}
-              updateItem={UpdateProduct}
-              deleteItem={DeleteProduct}
+              createItem={async () => { }}
+              updateItem={async () => { }}
+              deleteItem={async () => { }}
               generalItems={{ add: UpdateIntoryAdd, subtract: UpdateIntorySubtract }}
               itemTemplate={itemTemplate}
               columns={columns}
@@ -529,7 +645,7 @@ const InventoryCRUD = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -5,12 +5,12 @@ import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
 import SelectProduct from "./SelectProduct";
 import {
   GetShoppingSuppliers,
-  CreateShoppingSuppliers,
-  UpdateShoppingSuppliers,
+  CreateShoppingSuppliers, 
   DeleteShoppingSuppliers,
   GetSearchShoppingSuppliers,
   GetPurchasePrice,
 } from "../API/ShoppingSuppliersAPI";
+import { GetProductDetailSupplier } from "../../ProductDetailSupplier/API/ProductDetailSupplierAPI";
 import SuppliersSelect from "./SelectSupplier";
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Button, Form, Table, Alert } from 'react-bootstrap';
@@ -30,11 +30,12 @@ interface ProductLine {
 }
 
 interface ShoppingSuppliersCRUDProps {
-  extraParams?: { SupplierId: number };
+  extraParams?: { shoppingSupplierId: number };
   onRowClick?: (item: ShoppingSuppliersTypes) => void;
 }
 
 const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({ onRowClick }) => {
+  const [currentUserId, setCurrentUserId] = useState<number>(0);
   const [selectedShoppingSupplier, setSelectedShoppingSupplier] = useState<ShoppingSuppliersTypes | null>(null);
   const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null);
   const [supplierId, setSupplierId] = useState<number>(0);
@@ -45,20 +46,6 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({ onRowClick })
   const [shoppingSuppliersList, setShoppingSuppliersList] = useState<ShoppingSuppliersTypes[]>([]);
 
 
-  useEffect(() => {
-    const fetchCompanyData = async () => {
-      try {
-        const data = await GetCompanyById(1);
-        if (data) {
-          setCompanyData(data);
-        }
-      } catch (error) {
-        console.error('Error al cargar datos de la empresa:', error);
-      }
-    };
-    fetchCompanyData();
-  }, []);
-
   const itemTemplate = (): ShoppingSuppliersTypes => ({
     id: 0,
     supplierId: 0,
@@ -66,7 +53,7 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({ onRowClick })
     productId: 0,
     productName: "",
     purchasePrice: 0,
-    purchaseStatus: "",
+    purchaseStatus: "DEBE",
     remainingAmount: 0,
     warehouseId: 0,
     warehouseName: "",
@@ -75,109 +62,12 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({ onRowClick })
     date: getLocalDate(),
     total: 0,
     transactionTotal: 0,
+    userId: currentUserId,
     status: "",
+    products: [],
   });
 
-  const handleRowSelection = (shopping: ShoppingSuppliersTypes) => {
-    setSelectedShoppingSupplier(shopping);
-    setSelectedSupplierId(shopping.supplierId);
-    if (onRowClick) {
-      onRowClick(shopping);
-    }
-  };
-
-
-const getLocalDate = (): string => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
-
-
-  const handleDownloadPDF = () => {
-    if (!selectedShoppingSupplier) {
-      alert('Por favor, seleccione una compra primero');
-      return;
-    }
-
-    if (!companyData) {
-      alert('No se pudieron cargar los datos de la empresa');
-      return;
-    }
-
-    const relatedPurchases = shoppingSuppliersList.filter(
-      item =>
-        item.supplierId === selectedShoppingSupplier.supplierId &&
-        item.date === selectedShoppingSupplier.date
-    );
-
-    if (relatedPurchases.length === 0) {
-      alert('No se encontraron productos para esta compra');
-      return;
-    }
-
-    const total = relatedPurchases.reduce((sum, item) => sum + (item.total || 0), 0);
-
-    const numeroCompra = `${selectedShoppingSupplier.supplierId}-${selectedShoppingSupplier.id}`;
-
-    const ticketConfig: PDFTicketConfig = {
-      companyInfo: {
-        logo: 'https://res.cloudinary.com/dfotyo6jc/image/upload/v1761872392/Captura_de_pantalla_2025-10-30_195850_kwda8d.png',
-        logoWidth: 25,
-        logoHeight: 25,
-        nit: companyData.nit,
-        direccion: companyData.address,
-        celular: companyData.phone,
-        email: companyData.email,
-      },
-      mainInfo: {
-        fecha: selectedShoppingSupplier.date
-          ? new Date(selectedShoppingSupplier.date).toLocaleString('es-CO', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-          })
-          : new Date().toLocaleString('es-CO'),
-        numeroPago: numeroCompra,
-        proveedor: selectedShoppingSupplier.supplierName,
-      },
-      products: relatedPurchases.map(item => ({
-        producto: item.productName,
-        cantidad: item.quantity,
-        valor: item.total || 0,
-      })),
-      total: total,
-      footer: {
-        showGeneratedBy: true,
-        generatedByText: `Hecho en Colombia por ${companyData.companyName}`,
-        showPageNumber: true,
-      },
-      fileName: `Compra_${selectedShoppingSupplier.supplierName.replace(/\s+/g, '_')}_${selectedShoppingSupplier.date || getLocalDate()}.pdf`,  
-      ticketType: 'compra',
-    };
-
-    generateTicketPDF(ticketConfig);
-  };
-
-  const getStatusColor = (ShoppingSuppliersStatus: string) => {
-    console.log("ShoppingSuppliers Status:", ShoppingSuppliersStatus);
-    switch (ShoppingSuppliersStatus) {
-      case "agotado":
-        return "red";
-      case "pocas unidades":
-        return "orange";
-      case "disponible":
-        return "green";
-      default:
-        return "transparent";
-    }
-  };
-
-  const columns: {
+    const columns: {
     key: keyof ShoppingSuppliersTypes;
     label: string;
     required?: boolean;
@@ -196,51 +86,49 @@ const getLocalDate = (): string => {
       acceptedFormats: string[];
     };
   }[] = [
-      { key: "id", label: "Proveedor", hidden: true, required: true },
-      { key: "supplierName", label: "Proveedor", hiddenInCreate: true, hiddenInEdit: true, },
-      { key: "warehouseId", label: "Bodega", hidden: true, required: true },
-      { key: "warehouseName", label: "Bodega", hiddenInCreate: true, hiddenInEdit: true, hidden: true, },
-      { key: "remainingAmount", label: "cantidad restante", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
-      {
-        key: "date",
-        label: "Fecha",
-        render: (item) => {
-          const date = item.date ? new Date(item.date).toLocaleDateString() : "No disponible";
-          return <span>{date}</span>;
-        }
-      },
-      {
-        key: "purchaseStatus",
-        label: "Estado",
-        hiddenInCreate: true,
-        hiddenInEdit: true,
-        render: (item) => {
-          console.log("Rendering ShoppingSuppliersStatus:", item.purchaseStatus);
-          const statusColor = getStatusColor(item.purchaseStatus);
-          return (
-            <span
-              style={{
-                backgroundColor: statusColor,
-                padding: '5px',
-                borderRadius: '5px',
-                color: '#fff',
-              }}
-            >
-              {item.purchaseStatus}
-            </span>
-          );
-        }
-      },
-      {
-        key: "observation",
-        label: "Observacion",
-      },
-      { key: "productId", label: "Producto", hidden: true, required: true },
-      { key: "productName", label: "Producto", hiddenInCreate: true, hiddenInEdit: true, hidden: true, },
-      { key: "purchasePrice", label: "Precio de compra", hidden: true },
-      { key: "quantity", label: "Cantidad", required: true, hidden: true, regex: /^\d+$/ },
-      { key: "total", label: "Total", required: true, hidden: true, regex: /^\d+$/ },
-    ];
+    { key: "id", label: "N° Compra", required: true },
+    { key: "supplierName", label: "Proveedor", hiddenInCreate: true, hiddenInEdit: true },
+    { key: "warehouseId", label: "Bodega", hidden: true, required: true },
+    { key: "warehouseName", label: "Bodega", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
+    { key: "remainingAmount", label: "cantidad restante", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
+    { key: "date", label: "Fecha",},
+    {
+      key: "purchaseStatus",
+      label: "Estado",
+      hiddenInCreate: true,
+      hiddenInEdit: true,
+      render: (item) => {
+        console.log("Rendering PurchaseStatus:", item.purchaseStatus);
+        const statusColor = getStatusColor(item.purchaseStatus);
+        return (
+          <span
+            style={{
+              backgroundColor: statusColor,
+              padding: '5px',
+              borderRadius: '5px',
+              color: '#fff',
+            }}
+          >
+            {item.purchaseStatus}
+          </span>
+        );
+      }
+    },
+    {
+      key: "observation",
+      label: "Observacion",
+         render: (item) => {
+        const observation = item.observation || "Sin observación";
+        return <span>{observation}</span>;
+      }
+    },
+
+    { key: "productId", label: "Producto", hidden: true, required: true },
+    { key: "productName", label: "Producto", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
+    { key: "purchasePrice", label: "Precio de compra", hidden: true },
+    { key: "quantity", label: "Cantidad", required: true, hidden: true, regex: /^\d+$/ },
+    { key: "total", label: "Total", required: true, hidden: true, regex: /^\d+$/ },
+  ];
 
   const renderCustomFormField = (
     colKey: keyof ShoppingSuppliersTypes,
@@ -280,10 +168,124 @@ const getLocalDate = (): string => {
     return null;
   };
 
+
+    useEffect(() => {
+    const fetchCompanyData = async () => {
+      try {
+        const data = await GetCompanyById(1);
+        if (data) {
+          setCompanyData(data);
+        }
+      } catch (error) {
+        console.error('Error al cargar datos de la empresa:', error);
+      }
+    };
+    fetchCompanyData();
+  }, []);
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      setCurrentUserId(parseInt(storedUserId, 10));
+    }
+  }, []);
+
+
+  const handleRowSelection = (shopping: ShoppingSuppliersTypes) => {
+    setSelectedShoppingSupplier(shopping);
+    setSelectedSupplierId(shopping.id);
+    if (onRowClick) {
+      onRowClick(shopping);
+    }
+  };
+
+  const getLocalDate = (): string => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const loadRelatedPurchases = async (shoppingSupplierId: number) => {
+  try {
+    const products = await GetProductDetailSupplier( 0,10000000,{},'',undefined,{ shoppingSupplierId });
+    return products;
+  } catch (error) {
+    console.error('Error al cargar productos relacionados:', error);
+    return [];
+  }
+};
+
+const handleDownloadPDF = async () => {
+  if (!selectedShoppingSupplier) {
+    alert('Por favor, seleccione una compra primero');
+    return;
+  }
+
+  if (!companyData) {
+    alert('No se pudieron cargar los datos de la empresa');
+    return;
+  }
+
+ const relatedPurchases = await loadRelatedPurchases(selectedShoppingSupplier.id);
+
+  if (relatedPurchases.length === 0) {
+    alert('No se encontraron productos para esta compra');
+    return;
+  }
+
+  const total = relatedPurchases.reduce((sum, item) => sum + (item.total || 0), 0);
+
+  const numeroCompra = `${selectedShoppingSupplier.id}`;
+
+  const ticketConfig: PDFTicketConfig = {
+    companyInfo: {
+      logo: 'https://res.cloudinary.com/dfotyo6jc/image/upload/v1761872392/Captura_de_pantalla_2025-10-30_195850_kwda8d.png',
+      logoWidth: 25,
+      logoHeight: 25,
+      nit: companyData.nit,
+      direccion: companyData.address,
+      celular: companyData.phone,
+      email: companyData.email,
+    },
+    mainInfo: {
+      fecha: selectedShoppingSupplier.date || getLocalDate(),
+      numeroPago: numeroCompra,
+      proveedor: selectedShoppingSupplier.supplierName,
+    },
+    products: relatedPurchases.map(item => ({
+      producto: item.productName,
+      cantidad: item.quantity,
+      valor: item.total || 0,
+    })),
+    total: total,
+    footer: {
+      showGeneratedBy: true,
+      generatedByText: `Hecho en Colombia por ${companyData.companyName}`,
+      showPageNumber: true,
+    },
+    fileName: `Compra_${selectedShoppingSupplier.supplierName.replace(/\s+/g, '_')}_${selectedShoppingSupplier.date || getLocalDate()}.pdf`,
+    ticketType: 'compra',
+  };
+
+  generateTicketPDF(ticketConfig);
+};
+
+  const getStatusColor = (purchaseStatus: string) => {
+    console.log("Purchase Status:", purchaseStatus);
+    switch (purchaseStatus) {
+      case "DEBE":
+        return "red";
+      case "CANCELADO":
+        return "green";
+      default:
+        return "transparent";
+    }
+  };
+
   const handleSupplierChange = async (newId: number) => {
     setSupplierId(newId);
-
-    // Reinicio explícito de todos los precios y totales al cambiar el proveedor
     setProductLines(prevLines =>
       prevLines.map(line => ({
         ...line,
@@ -292,7 +294,6 @@ const getLocalDate = (): string => {
       }))
     );
 
-    // Si hay líneas existentes con productos seleccionados, actualizar sus precios con el nuevo proveedor
     if (newId > 0 && productLines.some(line => line.productId > 0)) {
       for (const line of productLines) {
         if (line.productId > 0) {
@@ -311,7 +312,6 @@ const getLocalDate = (): string => {
             );
           } catch (error) {
             console.error('Error al actualizar el precio de compra para la línea:', error);
-            // Opcional: No revertir el reinicio; el precio permanece en 0 si la API falla
           }
         }
       }
@@ -339,10 +339,10 @@ const getLocalDate = (): string => {
       prevLines.map(line =>
         line.tempId === tempId
           ? {
-            ...line,
-            [field]: value,
-            total: field === 'purchasePrice' ? line.quantity * value : value * line.purchasePrice,
-          }
+              ...line,
+              [field]: value,
+              total: field === 'purchasePrice' ? line.quantity * value : value * line.purchasePrice,
+            }
           : line
       )
     );
@@ -353,11 +353,11 @@ const getLocalDate = (): string => {
       prevLines.map(line =>
         line.tempId === tempId
           ? {
-            ...line,
-            productId,
-            productName: "",
-            purchasePrice: 0,
-          }
+              ...line,
+              productId,
+              productName: "",
+              purchasePrice: 0,
+            }
           : line
       )
     );
@@ -369,10 +369,10 @@ const getLocalDate = (): string => {
           prevLines.map(line =>
             line.tempId === tempId
               ? {
-                ...line,
-                purchasePrice: price,
-                total: line.quantity * price,
-              }
+                  ...line,
+                  purchasePrice: price,
+                  total: line.quantity * price,
+                }
               : line
           )
         );
@@ -427,15 +427,14 @@ const getLocalDate = (): string => {
         </Row>
         <Row>
           <Col xs={12} className="p-0">
-            <div className="mb-3" style={{
+      <div className="mb-3" style={{
               borderRadius: '0.375rem',
               boxShadow: '0 0.125rem 0.25rem rgba(0, 0, 0, 0.075)',
               maxWidth: '100%',
               width: '100%',
-              overflow: 'visible'
             }}>
-              <div>
-                <Table bordered hover className="mb-0" style={{ tableLayout: 'auto', width: '100%' }}>
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <Table className="table-modal-inventory">
                   <thead>
                     <tr>
                       <th style={{ width: '25%', padding: '12px', textAlign: 'left' }}>PRODUCTO</th>
@@ -489,9 +488,9 @@ const getLocalDate = (): string => {
                               margin: '0 auto',
                               border: '1px solid #ced4da',
                               display: 'block',
-                              padding: '0.375rem 0.75rem',  
+                              padding: '0.375rem 0.75rem',
                               lineHeight: '1.5',
-                              fontWeight: 'bold',  
+                              fontWeight: 'bold',
                             }}
                           >
                             {new Intl.NumberFormat('es-CO', {
@@ -534,7 +533,7 @@ const getLocalDate = (): string => {
               </div>
             </div>
             {!allLinesValid && (
-              <Alert variant="danger" >
+              <Alert variant="danger">
                 Ingrese todos los campos requeridos en los productos agregados.
               </Alert>
             )}
@@ -565,26 +564,36 @@ const getLocalDate = (): string => {
   };
 
   const customSave = async (onSuccess: () => void, onError: (error: any) => void) => {
-    if (supplierId === 0 || productLines.length === 0 || !productLines.every(line => line.productId > 0 && line.quantity > 0 && line.purchasePrice >= 0)) {
-      onError(new Error('Ingrese todos los campos requeridos'));
+    if (supplierId <= 0 || productLines.length === 0) {
+      onError(new Error('Seleccione un proveedor y al menos un producto.'));
       return;
     }
+
+    const invalidLine = productLines.find(
+      line => line.productId <= 0 || line.quantity <= 0 || line.purchasePrice < 0
+    );
+    if (invalidLine) {
+      onError(new Error('Todos los productos deben tener datos válidos.'));
+      return;
+    }
+
     try {
-      for (const line of productLines) {
-        if (line.productId > 0 && line.quantity > 0) {
-          const itemData: Partial<ShoppingSuppliersTypes> = {
-            supplierId,
-            productId: line.productId,
-            purchasePrice: line.purchasePrice,
-            quantity: line.quantity,
-            date: date || getLocalDate(),
-            observation,
-            total: line.total,
-          };
-          const item: ShoppingSuppliersTypes = { ...itemTemplate(), ...itemData };
-          await CreateShoppingSuppliers(item, null);
-        }
-      }
+      const purchaseData = {
+        supplierId,
+        userId: currentUserId,
+        date: date || getLocalDate(),
+        observation: observation.trim(),
+        transactionTotal: productLines.reduce((sum, line) => sum + line.total, 0),
+        purchaseStatus: "DEBE",
+        products: productLines.map(line => ({
+          productId: line.productId,
+          purchasePrice: line.purchasePrice,
+          quantity: line.quantity,
+          total: line.total,
+        })),
+      };
+      await CreateShoppingSuppliers(purchaseData); 
+
       setProductLines([]);
       setDate('');
       setObservation('');
@@ -624,20 +633,21 @@ const getLocalDate = (): string => {
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid p-0">
         <div className="content-header row"></div>
         <div style={{ display: "flex", alignItems: "center" }}>
           <h3 className="content-body" style={{ margin: "0", fontSize: "21px" }}>
             Gestión de compras a proveedores
           </h3>
-          <FavoritoButton path="/ShoppingSuppliers" label="ShoppingSuppliersos" />
+          <FavoritoButton path="/purchaseSupplier" label="Compras de proveedores" />
         </div>
         <p>
           Administre las compras de proveedores, lleva control del registro de compras a cada proveedor.
         </p>
         <div className="card">
-          <div className="card-datatable table-responsive" style={{ position: 'relative' }}>
-            <div style={{
+          <div style={{ position: 'relative', marginBottom: '1rem' }}>
+             <div className="pdf-button-wrapper4" 
+             style={{
               position: 'absolute',
               top: '30px',
               right: '205px',
@@ -674,7 +684,7 @@ const getLocalDate = (): string => {
               }}
               searchItem={GetSearchShoppingSuppliers}
               createItem={CreateShoppingSuppliers}
-              updateItem={UpdateShoppingSuppliers}
+              updateItem={async () => {}}
               deleteItem={DeleteShoppingSuppliers}
               itemTemplate={itemTemplate}
               columns={columns}
@@ -705,7 +715,7 @@ const getLocalDate = (): string => {
 
       <div className="card mt-1">
         <ProductDetailSupplierCRUD
-          extraParams={{ supplierId: selectedSupplierId ?? 0 }}
+          extraParams={{ shoppingSupplierId: selectedSupplierId ?? 0 }}
           setSelectedSupplierId={setSelectedSupplierId}
         />
       </div>

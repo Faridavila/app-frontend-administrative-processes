@@ -1,16 +1,16 @@
-import {ShoppingSuppliersTypes } from "../Types/ShoppingSuppliersTypes";
+import {PendingOrderTypes } from "../Types/PendingOrderTypes";
 //import { BASE_URL_APIS_CORE } from "../../constants";
 
 const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/supplier';
 //const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/cash-register`;
 
-export const GetShoppingSuppliers = async (
+export const GetPendingOrder = async (
   page: number,
   size: number,
-  filters: Partial<ShoppingSuppliersTypes>,
+  filters: Partial<PendingOrderTypes>,
   sortOrder: string = '',  
-  sortBy?: keyof ShoppingSuppliersTypes
-): Promise<ShoppingSuppliersTypes[]> => {
+  sortBy?: keyof PendingOrderTypes
+): Promise<PendingOrderTypes[]> => {
   const queryParams = new URLSearchParams();
 
   queryParams.append('page', String(page));
@@ -24,7 +24,7 @@ export const GetShoppingSuppliers = async (
   }
 
   Object.keys(filters).forEach(key => {
-    const value = filters[key as keyof ShoppingSuppliersTypes];
+    const value = filters[key as keyof PendingOrderTypes];
     if (value) {
       queryParams.append(key, String(value));
     }
@@ -44,20 +44,20 @@ export const GetShoppingSuppliers = async (
 };
 
 
-export async function CreateShoppingSuppliers(
-  ShoppingSuppliersDto: ShoppingSuppliersTypes,
+export async function CreatePendingOrder(
+  PendingOrderDto: PendingOrderTypes,
   imageFile: File | null
 ): Promise<void> {
   try {
     const formData = new FormData();
-    formData.append("ShoppingSuppliersName", ShoppingSuppliersDto.productName);
-    formData.append("quantity", String(Number(ShoppingSuppliersDto.quantity)));
+    formData.append("PendingOrderName", PendingOrderDto.productName);
+    formData.append("quantity", String(Number(PendingOrderDto.quantity)));
 
     if (imageFile) {
       formData.append("image", imageFile); 
     }
 
-    console.log("Data:", ShoppingSuppliersDto);
+    console.log("Data:", PendingOrderDto);
     const response = await fetch(`${URL}/create`, {
       method: "POST",
       body: formData,
@@ -68,14 +68,14 @@ export async function CreateShoppingSuppliers(
     }
 
     const data = await response.json();
-    console.log("ShoppingSupplierso creado:", data);
+    console.log("PendingOrdero creado:", data);
   } catch (error) {
     console.error("Error al llamar a la API:", error);
     throw error;
   }
 }
 
-export async function UpdateIntorySubtract( branchDto: ShoppingSuppliersTypes): Promise<void> {
+export async function UpdateIntorySubtract( branchDto: PendingOrderTypes): Promise<void> {
     try {
         const response = await fetch(`${URL}/subtract-quantity`, {
             method: "PUT",
@@ -93,7 +93,7 @@ export async function UpdateIntorySubtract( branchDto: ShoppingSuppliersTypes): 
     }
 }
 
-export async function UpdateIntoryAdd( branchDto: ShoppingSuppliersTypes): Promise<void> {
+export async function UpdateIntoryAdd( branchDto: PendingOrderTypes): Promise<void> {
     try {
         const response = await fetch(`${URL}/add-quantity`, {
             method: "PUT",
@@ -111,13 +111,13 @@ export async function UpdateIntoryAdd( branchDto: ShoppingSuppliersTypes): Promi
     }
 }
 
-export const GetSearchShoppingSuppliers = async (
+export const GetSearchPendingOrder = async (
   page: number,
   size: number,
-  filters: Partial<ShoppingSuppliersTypes>,
+  filters: Partial<PendingOrderTypes>,
   sortOrder: string = 'ASC',  
-  sortBy?: keyof ShoppingSuppliersTypes 
-): Promise<ShoppingSuppliersTypes[]> => {
+  sortBy?: keyof PendingOrderTypes 
+): Promise<PendingOrderTypes[]> => {
   const queryParams = new URLSearchParams();
 
   queryParams.append('page', String(page));
@@ -133,7 +133,7 @@ export const GetSearchShoppingSuppliers = async (
 
   
   Object.keys(filters).forEach(key => {
-    const value = filters[key as keyof ShoppingSuppliersTypes];
+    const value = filters[key as keyof PendingOrderTypes];
     if (value !== undefined && value !== null && value !== '') {
       queryParams.append(key, String(value));
     }
@@ -153,16 +153,16 @@ export const GetSearchShoppingSuppliers = async (
 };
 
 
-export async function UpdateShoppingSuppliers(
+export async function UpdatePendingOrder(
   id: number,
-  ShoppingSuppliersDto: ShoppingSuppliersTypes,
+  PendingOrderDto: PendingOrderTypes,
   imageFile: File | null
 ): Promise<void> {
   try {
     const formData = new FormData();
     
-    formData.append("ShoppingSuppliersName", ShoppingSuppliersDto.productName);
-    formData.append("quantity", String(Number(ShoppingSuppliersDto.quantity)));
+    formData.append("PendingOrderName", PendingOrderDto.productName);
+    formData.append("quantity", String(Number(PendingOrderDto.quantity)));
 
     if (imageFile) {
       formData.append("image", imageFile); 
@@ -184,7 +184,7 @@ export async function UpdateShoppingSuppliers(
   }
 }
 
-export async function DeleteShoppingSuppliers(id: number): Promise<void> {
+export async function DeletePendingOrder(id: number): Promise<void> {
     try {
         const response = await fetch(`${URL}/delete/${id}`, {
             method: "DELETE",
@@ -199,11 +199,11 @@ export async function DeleteShoppingSuppliers(id: number): Promise<void> {
 }
 
 
-export async function GetAllShoppingSuppliersNoPage(): Promise<ShoppingSuppliersTypes[] | null> {
+export async function GetAllPendingOrderNoPage(): Promise<PendingOrderTypes[] | null> {
   try {
-      const response = await fetch(`${URL}/no-page/getAllShoppingSuppliers`);
+      const response = await fetch(`${URL}/no-page/getAllPendingOrder`);
       if (response.ok) {
-          const data:ShoppingSuppliersTypes[] = await response.json();
+          const data:PendingOrderTypes[] = await response.json();
           return data;
       } else {
           throw new Error(`La solicitud a la API falló ${response.status}`);

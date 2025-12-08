@@ -1,8 +1,8 @@
 import { RolTypes } from "../Types/RolTypes";
 import { BASE_URL_APIS_USER } from "../../constants";
 
-const URL = 'http://localhost:8081/api/v1/back-user-service/rol';
-//const URL: string = `${BASE_URL_APIS_USER}/api/v1/back-user-service/rol`;
+//const URL = 'http://localhost:8081/api/v1/back-user-service/rol';
+const URL: string = `${BASE_URL_APIS_USER}/rol`;
 
 export const GetRol = async (
   page: number,

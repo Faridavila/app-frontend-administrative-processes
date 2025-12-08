@@ -32,7 +32,6 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
   const [error, setError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fetch options only on mount or when fetchData, labelKey, valueKey change
   useEffect(() => {
     const fetchOptions = async () => {
       setLoading(true);
@@ -48,7 +47,6 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
   
           setAllOptions(formattedOptions);
           setFilteredOptions(formattedOptions);
-          // Sync selectedOption after options are loaded
           setSelectedOption(formattedOptions.find(option => option.value === selectedValue) || null);
         } else {
           setAllOptions([]);
@@ -65,16 +63,14 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
     };
   
     fetchOptions();
-  }, [fetchData, labelKey, valueKey]);  // Removed selectedValue to avoid unnecessary re-fetches
+  }, [fetchData, labelKey, valueKey]);  
   
-  // Separate effect to sync selectedOption when selectedValue changes externally
   useEffect(() => {
     if (allOptions.length > 0) {
       setSelectedOption(allOptions.find(option => option.value === selectedValue) || null);
     }
   }, [selectedValue, allOptions]);
 
-  // Filter options based on search term
   useEffect(() => {
     if (!searchTerm.trim()) {
       setFilteredOptions(allOptions);
@@ -87,7 +83,6 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
     }
   }, [searchTerm, allOptions]);
 
-  // Handle outside click to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -107,7 +102,6 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
     setSearchTerm(newValue);
     setIsOpen(true);
 
-    // Clear selection if search term is empty (manual deletion)
     if (newValue.trim() === '') {
       setSelectedOption(null);
       onChange(0);

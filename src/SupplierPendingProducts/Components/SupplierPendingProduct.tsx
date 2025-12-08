@@ -2,33 +2,18 @@ import CRUDForm from "../../GeneralComponents/GeneralCrud/CRUDForm";
 import { SupplierPendingProductTypes } from "../Types/SupplierPendingProductTypes";
 import { SupplierPendingProductSortFieldMap } from "../Types/MapeoSupplierPendingProduct";
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
-import {
-  GetSupplierPendingProduct,
-  CreateSupplierPendingProduct,
-  UpdateSupplierPendingProduct,
-  DeleteSupplierPendingProduct,
-  GetSearchSupplierPendingProduct,
-} from "../API/SupplierPendingProductAPI";
+import {GetSupplierPendingProduct,GetSearchSupplierPendingProduct} from "../API/SupplierPendingProductAPI";
 import React, { useState } from 'react';
 import ProductPendingDetailSupplierCRUD from "../../ProductPendingDetailSupplier/Components/ProductPendingDetailSupplier";
 
-interface ProductLine {
-  tempId: string;
-  productId: number;
-  productName: string;
-  purchasePrice: number;
-  quantity: number;
-  total: number;
-}
-
 interface SupplierPendingProductCRUDProps {
-  extraParams: { SupplierId: number };
+  onRowClick?: (item: SupplierPendingProductTypes) => void;
 }
 
 
 const SupplierPendingProduct: React.FC<SupplierPendingProductCRUDProps> = ({ onRowClick }) => {
-  const [selectedShoppingSupplier, setSelectedShoppingSupplier] = useState<SupplierPendingProductTypes | null>(null);
-  const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null);
+  const [selectedSupplierPendingProduct, setSelectedSupplierPendingProduct] = useState<SupplierPendingProductTypes | null>(null);
+  const [selectedSupplierPendingProductId, setSelectedSupplierPendingProductId] = useState<number | null>(null);
 
   const itemTemplate = (): SupplierPendingProductTypes => ({
     id: 0,
@@ -61,6 +46,14 @@ const SupplierPendingProduct: React.FC<SupplierPendingProductCRUDProps> = ({ onR
         return "transparent";
     }
   };
+
+    const handleRowSelection = (supplierPendingProduct: SupplierPendingProductTypes) => {
+      setSelectedSupplierPendingProduct(supplierPendingProduct);
+      setSelectedSupplierPendingProductId(supplierPendingProduct.id);
+      if (onRowClick) {
+        onRowClick(supplierPendingProduct);
+      }
+    };
 
   const columns: {
     key: keyof SupplierPendingProductTypes;
@@ -135,7 +128,7 @@ const SupplierPendingProduct: React.FC<SupplierPendingProductCRUDProps> = ({ onR
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid p-0">
         <div className="content-header row"></div>
         <div style={{ display: "flex", alignItems: "center" }}>
           <h3 className="content-body" style={{ margin: "0", fontSize: "21px" }}>
@@ -151,15 +144,16 @@ const SupplierPendingProduct: React.FC<SupplierPendingProductCRUDProps> = ({ onR
             <CRUDForm<SupplierPendingProductTypes>
               fetchItems={GetSupplierPendingProduct}
               searchItem={GetSearchSupplierPendingProduct}
-              createItem={CreateSupplierPendingProduct}
-              updateItem={UpdateSupplierPendingProduct}
-              deleteItem={DeleteSupplierPendingProduct}
+              createItem={async () => {}}
+              updateItem={async () => {}}
+              deleteItem={async () => {}}
               itemTemplate={itemTemplate}
               columns={columns}
               filterButtonOrder={1}
               hiddenAddButton={false}
               hiddenEditButton={false}
               hiddenDeleteButton={false}
+              onRowClick={handleRowSelection}
               sortFieldMap={SupplierPendingProductSortFieldMap}
               pageTitle="Compras"
             />
@@ -170,12 +164,10 @@ const SupplierPendingProduct: React.FC<SupplierPendingProductCRUDProps> = ({ onR
 
       <div className="card mt-1">
         <ProductPendingDetailSupplierCRUD
-          extraParams={{ supplierId: selectedSupplierId ?? 0 }}
-          setSelectedSupplierId={setSelectedSupplierId}
+          extraParams={{ pendingDetailSupplierId: selectedSupplierPendingProductId ?? 0 }}
+          setSelectedPendingDetailSupplierId={setSelectedSupplierPendingProductId}
         />
-
       </div>
-
     </div>
   );
 };

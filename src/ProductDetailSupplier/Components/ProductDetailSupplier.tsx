@@ -1,26 +1,19 @@
 import CRUDForm from "../../GeneralComponents/GeneralCrud/CRUDForm";
 import React, { useState } from 'react';
-import { Card, Container, Row, Col} from 'react-bootstrap';
+import { Card, Container, Row, Col } from 'react-bootstrap';
 import { ProductDetailSupplierTypes } from "../Types/ProductDetailSupplierTypes";
 import { ProductDetailSupplierSortFieldMap } from "../Types/MapeoProductDetailSupplier";
-import {
-  GetProductDetailSupplier,
-  CreateProductDetailSupplier,
-  UpdateProductDetailSupplier,
-  DeleteProductDetailSupplier,
-  GetSearchProductDetailSupplier,
-} from "../API/ProductDetailSupplierAPI";
-
+import {GetProductDetailSupplier,GetSearchProductDetailSupplier,} from "../API/ProductDetailSupplierAPI";
 
 
 interface ProductDetailSupplierCRUDProps {
-  extraParams: { supplierId: number };
+  extraParams: { shoppingSupplierId: number };
   onRowClick?: (item: ProductDetailSupplierTypes) => void;
   setSelectedSupplierId: (id: number) => void;
 }
 
-const ProductDetailSupplierCRUD: React.FC<ProductDetailSupplierCRUDProps> = ({ extraParams, onRowClick, setSelectedSupplierId }) => {
-  const [selectedMicroRoutes, setSelectedMicroRoutes] = useState<ProductDetailSupplierTypes | null>(null);
+const ProductDetailSupplierCRUD: React.FC<ProductDetailSupplierCRUDProps> = ({ extraParams, onRowClick }) => {
+  const [selectedSupplierId, setSelectedSupplierId] = useState<ProductDetailSupplierTypes | null>(null);
 
   const itemTemplate = (): ProductDetailSupplierTypes => ({
     id: 0,
@@ -42,18 +35,32 @@ const ProductDetailSupplierCRUD: React.FC<ProductDetailSupplierCRUDProps> = ({ e
     regex?: RegExp;
     hiddenInCreate?: boolean;
     hiddenInEdit?: boolean;
+    render?: (item: ProductDetailSupplierTypes) => React.ReactNode;
   }[] = [
-      { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true,hidden: true },
+      { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
       { key: "productId", label: "Producto", hidden: true, required: true },
       { key: "productName", label: "Producto", required: true, hiddenInCreate: true, hiddenInEdit: true },
-      { key: "purchasePrice", label: "Precio de compra", required: true },
-      { key: "quantity", label: "Cantidad", required: true },
-      { key: "total", label: "Total", required: true, hiddenInCreate: true, hiddenInEdit: true },
+      { key: "purchasePrice", label: "Precio de compra",
+        render: (item) => item.purchasePrice.toLocaleString('es-ES')},
+      {
+        key: "quantity",
+        label: "Cantidad",
+        required: true,
+        render: (item) => item.quantity.toLocaleString('es-ES')
+      },
+      {
+        key: "total",
+        label: "Total",
+        required: true,
+        hiddenInCreate: true,
+        hiddenInEdit: true,
+        render: (item) => item.total.toLocaleString('es-ES')
+      },
     ];
 
 
   const handleRowSelection = (supplier: ProductDetailSupplierTypes) => {
-    setSelectedMicroRoutes(supplier);
+    setSelectedSupplierId(supplier);
     if (onRowClick) {
       onRowClick(supplier);
     }
@@ -65,14 +72,14 @@ const ProductDetailSupplierCRUD: React.FC<ProductDetailSupplierCRUDProps> = ({ e
       <Row className="mt-3">
         <Col md={12}>
           <Card className="w-100" style={{ margin: '0' }}>
-            <Card.Body className="table-responsive" style={{ maxHeight: '600px', padding: '0' }}>
-              <h2 style={{ fontWeight: 'bold', fontSize: '22px' }}>Detalles del productos</h2>
+            <Card.Body className="table-responsive" style={{ padding: '0' }}>
+              <h2 className="product-details-title" style={{ fontWeight: 'bold', fontSize: '22px' }}>Detalles del productos</h2>
               <CRUDForm<ProductDetailSupplierTypes>
-                fetchItems={GetProductDetailSupplier}
+                fetchItems={GetProductDetailSupplier as any}
                 searchItem={GetSearchProductDetailSupplier}
-                createItem={CreateProductDetailSupplier}
-                updateItem={UpdateProductDetailSupplier}
-                deleteItem={DeleteProductDetailSupplier}
+                createItem={async () => {}}
+                updateItem={async () => {}}
+                deleteItem={async () => {}}
                 itemTemplate={itemTemplate}
                 columns={columns}
                 filterButtonOrder={2}

@@ -102,6 +102,7 @@ const CompanyCRUD = () => {
                 deleteItem={DeleteCompanyCRUD}
                 itemTemplate={itemTemplate}
                 columns={columns}
+                pageTitle="Compañias"
                 sortFieldMap={CitySortFieldMap}
               />
             </div>

@@ -5,3 +5,7 @@ export interface SupplierRateTypes {
   priceRate: number;
   status: string;
 }
+export interface GeneralRate {
+  addRate: number | null;
+  subtractRate: number | null;
+}
