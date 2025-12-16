@@ -1,21 +1,21 @@
 export interface ClientTypes {
   id: number;
   name : string;
-  typeIdentificationId: number;
-  identificationType: string;
-  identification: number;
-  departmentId: number;
+  typeIdentificationId: number | null;
+  identificationType: string | null;
+  identification: number | null;
+  departmentId: number | null;
   departmentName: string;
-  municipalityId: number;
+  municipalityId: number | null;
   municipality: string;
   neighborhoodName: string;
   address: string;
   phone: string;
   email:string;
-  verificationDigit: number;
-  personTypeId: number;
+  verificationDigit: number | null;
+  personTypeId: number | null;
   personType: string;
-  taxLiabilityId: number;
+  taxLiabilityId: number | null;
   taxLiability: string;
   status: string;
 }

@@ -14,6 +14,7 @@ import RolSelect from "./UserSelectRol";
 import PositionSelect from "./UserSelectPosition";
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
 
+
 const UserCRUD = () => {
   const itemTemplate = (): UserTypes => ({
     id: 0,
@@ -21,11 +22,16 @@ const UserCRUD = () => {
     login: "",
     password: "",
     email: "",
-    rol: { id: 0, name: "" },
-    position: { id: 0, description: "" },
-    company: { companyid: 0, companyName: "" },
-    area: { id: 0, description: "" },
-    status: "ACTIVE",
+    rolId:0,
+    rolName:"",
+    positionId:0,
+    positionName:"",
+    companyId:0,
+    companyName:"",
+    areaId:0,
+    areaName:"",
+    phone:0,
+    status: "",
   });
 
   const columns: {
@@ -77,78 +83,103 @@ const UserCRUD = () => {
       regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
     },
     {
-      key: "area",
+      key: "areaId",
+      label: "Area",
+      hidden: true 
+    },
+        {
+      key: "areaName",
       label: "Area",
       required: true,
-      render: (item: UserTypes) => {
-        return item.area?.description || "";
-      },
+      hiddenInCreate: true, 
+      hiddenInEdit: true 
+
     },
-    {
-      key: "rol",
+      {
+      key: "rolId",
+      label: "Rol",
+      hidden: true 
+    },
+        {
+      key: "rolName",
       label: "Rol",
       required: true,
-      render: (item: UserTypes) => {
-        return item.rol?.name || "";
-      },
+      hiddenInCreate: true, 
+      hiddenInEdit: true 
+
     },
     {
-      key: "position",
+      key: "positionId",
+      label: "Cargo",
+      hidden: true 
+    },
+        {
+      key: "positionName",
       label: "Cargo",
       required: true,
-      render: (item: UserTypes) => {
-        return item.position?.description || "";
-      },
+      hiddenInCreate: true, 
+      hiddenInEdit: true 
+
     },
     {
-      key: "company",
+      key: "companyId",
+      label: "Empresa",
+      hidden: true 
+    },
+     {
+      key: "companyName",
       label: "Empresa",
       required: true,
-      render: (item: UserTypes) => {
-        return item.company?.companyName || "";
-      },
+      hiddenInCreate: true, 
+      hiddenInEdit: true 
+
     },
+       {
+      key: "phone",
+      label: "Celular",
+    },
+
   ];
 
 const renderCustomFormField = (
   colKey: keyof UserTypes,
   value: any,
-  onChange: (newValue: any) => void
+   onChange: (update: Partial<UserTypes>) => void
 ) => {
-  if (colKey === "company") {
+  if (colKey === "companyId") {
     return (
       <CompanySelect
         selectedValue={parseInt(value, 10)}
-        onChange={(newCompanyId: number) =>
-          onChange(newCompanyId.toString())
-        }
+         onChange={(newCompanyId: number) => {
+            onChange({ companyId: newCompanyId });
+          }}
       />
     );
-  } else if (colKey === "area") {
+  }  if (colKey === "areaId") {
     return (
       <AreaSelect
         selectedValue={parseInt(value, 10)}
-        onChange={(newAreaId: number) =>
-          onChange(newAreaId.toString())
-        }
+         onChange={(newAreaId: number) => {
+            onChange({ areaId: newAreaId });
+          }}
       />
     );
-  } else if (colKey === "rol") {
+  }  if (colKey === "rolId") {
     return (
       <RolSelect
         selectedValue={parseInt(value, 10)}
-        onChange={(newRolId: number) =>
-          onChange(newRolId.toString())
-        }
+        onChange={(newRolId: number) => {
+            onChange({ rolId: newRolId });
+          }}
       />
     );
-  } else if (colKey === "position") {
+  }  if (colKey === "positionId") {
     return (
       <PositionSelect
         selectedValue={parseInt(value, 10)}
-        onChange={(newPositionId: number) =>
-          onChange(newPositionId.toString())
-        }
+        onChange={(newPositionId: number) => {
+            onChange({ positionId: newPositionId });
+          }}
       />
     );
   }

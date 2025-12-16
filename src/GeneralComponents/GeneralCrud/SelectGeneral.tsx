@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { Form, InputGroup, FormControl, ListGroup } from 'react-bootstrap';
 
 export interface SelectOption {
@@ -30,7 +31,9 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -85,7 +88,8 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
+          inputRef.current && !inputRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -95,6 +99,18 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
     }
 
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  // Actualizar posición del dropdown cuando se abre
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      const rect = inputRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width
+      });
+    }
   }, [isOpen]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,13 +150,71 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
     );
   }
 
-
   const displayValue = selectedOption ? selectedOption.label : placeholder;
 
+  // Dropdown renderizado con Portal
+  const dropdownPortal = isOpen ? ReactDOM.createPortal(
+    <div 
+      ref={dropdownRef}
+      style={{
+        position: 'absolute',
+        top: `${dropdownPosition.top}px`,
+        left: `${dropdownPosition.left}px`,
+        width: `${dropdownPosition.width}px`,
+        zIndex: 99999,
+      }}
+    >
+      <ListGroup 
+        className="shadow-sm" 
+        style={{ 
+          maxHeight: '200px', 
+          overflowY: 'auto',
+          backgroundColor: 'white',
+          border: '1px solid #dee2e6',
+          borderRadius: '0.375rem',
+        }}
+      >
+        {filteredOptions.length === 0 ? (
+          <ListGroup.Item 
+            className="text-muted"
+            style={{ 
+              borderTop: 'none',
+              borderLeft: 'none',
+              borderRight: 'none',
+              borderBottom: 'none',
+            }}
+          >
+            No se encontraron opciones
+          </ListGroup.Item>
+        ) : (
+          filteredOptions.map((option, index) => (
+            <ListGroup.Item
+              key={option.value}
+              action
+              active={selectedOption?.value === option.value}
+              onClick={() => handleSelectOption(option)}
+              style={{
+                cursor: 'pointer',
+                borderTop: 'none',
+                borderLeft: 'none',
+                borderRight: 'none',
+                borderBottom: index === filteredOptions.length - 1 ? 'none' : '1px solid #dee2e6',
+              }}
+            >
+              {option.label}
+            </ListGroup.Item>
+          ))
+        )}
+      </ListGroup>
+    </div>,
+    document.body
+  ) : null;
+
   return (
-    <div ref={dropdownRef} className="position-relative">
-  <InputGroup>
+    <div className="position-relative">
+      <InputGroup>
         <FormControl
+          ref={inputRef}
           type="text"
           placeholder={displayValue}
           value={searchTerm}
@@ -158,7 +232,7 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
             right: '12px',
             top: '50%',
             transform: 'translateY(-50%)',
-            pointerEvents: 'none',
+            pointerEvents: 'auto',
             zIndex: 10,
             cursor: 'pointer',
             color: '#6c757d',
@@ -169,28 +243,7 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
           ▼
         </span>
       </InputGroup>
-      {isOpen && (
-        <ListGroup 
-          className="position-absolute w-100 shadow-sm border" 
-          style={{ zIndex: 1050, maxHeight: '200px', overflowY: 'auto' }}
-        >
-          {filteredOptions.length === 0 ? (
-            <ListGroup.Item className="text-muted">No se encontraron opciones</ListGroup.Item>
-          ) : (
-            filteredOptions.map((option) => (
-              <ListGroup.Item
-                key={option.value}
-                action
-                active={selectedOption?.value === option.value}
-                onClick={() => handleSelectOption(option)}
-                className="border-0"
-              >
-                {option.label}
-              </ListGroup.Item>
-            ))
-          )}
-        </ListGroup>
-      )}
+      {dropdownPortal}
     </div>
   );
 };

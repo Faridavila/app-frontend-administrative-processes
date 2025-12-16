@@ -18,29 +18,29 @@ export interface Client {
   id: number;
   name: string;
   phone: string;
-  identification: number;
+  identification: number | null;
   address: string;
   cityName: string;
-}
+}   
 
 export interface NewClientData {
   id: number;
   name : string;
-  typeIdentificationId: number;
+  typeIdentificationId: number | null;
   identificationType: string;
-  identification: number;
-  departmentId: number;
+  identification: number | null;
+  departmentId: number | null;
   departmentName: string;
-  municipalityId: number;
+  municipalityId: number | null;
   municipality: string;
   neighborhoodName: string;
   address: string;
   phone: string;
   email:string;
-  verificationDigit: number;
-  personTypeId: number;
+  verificationDigit: number | null;
+  personTypeId: number | null;
   personType: string;
-  taxLiabilityId: number;
+  taxLiabilityId: number | null;
   taxLiability: string;
   status: string;
 }
@@ -89,3 +89,4 @@ export interface InvoiceViewOnlyProps {
     companyPhone?: string;
   };
 }
+

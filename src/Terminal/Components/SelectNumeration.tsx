@@ -32,7 +32,7 @@ const NumerationSelect: React.FC<NumerationSelectProps> = ({ selectedValue, onCh
       onChange={onChange}
       labelKey="displayLabel"
       valueKey="id"
-      placeholder="Seleccione un municipio"
+      placeholder="Seleccione un rango de numeración"
     />
   );
 };

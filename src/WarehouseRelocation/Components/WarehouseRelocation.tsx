@@ -1,27 +1,27 @@
 import CRUDForm from "../../GeneralComponents/GeneralCrud/CRUDForm";
-import { ShoppingSuppliersTypes } from "../Types/ShoppingSuppliersTypes";
-import { ShoppingSuppliersSortFieldMap } from "../Types/MapeoShoppingSuppliers";
+import { WarehouseRelocationTypes } from "../Types/WarehouseRelocationTypes";
+import { WarehouseRelocationSortFieldMap } from "../Types/MapeoWarehouseRelocation";
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
 import SelectProduct from "./SelectProduct";
 import {
-  GetShoppingSuppliers,
-  CreateShoppingSuppliers,
-  DeleteShoppingSuppliers,
-  GetSearchShoppingSuppliers,
+  GetWarehouseRelocation,
+  CreateWarehouseRelocation,
+  DeleteWarehouseRelocation,
+  GetSearchWarehouseRelocation,
   GetPurchasePrice,
-} from "../API/ShoppingSuppliersAPI";
+} from "../API/WarehouseRelocationAPI";
 import { GetProductDetailSupplier } from "../../ProductDetailSupplier/API/ProductDetailSupplierAPI";
 import SuppliersSelect from "./SelectSupplier";
 import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Form, Table, Alert } from "react-bootstrap";
 import { AddIcon, DeleteIcon, PDFIcon } from "../Icons/Icons";
-import ProductDetailSupplierCRUD from "../../ProductDetailSupplier/Components/ProductDetailSupplier";
 import {
   generateTicketPDF,
   PDFTicketConfig,
 } from "../../Hooks/usePDFGeneradorTicket";
 import { GetCompanyById } from "../../Company/API/CompanyAPI";
 import { CompanyType } from "../../Company/Types/Company";
+import SelectUser from "../../AssignOrder/Components/SelectUser";
 
 interface ProductLine {
   tempId: string;
@@ -32,52 +32,51 @@ interface ProductLine {
   total: number;
 }
 
-interface ShoppingSuppliersCRUDProps {
+interface WarehouseRelocationCRUDProps {
   extraParams?: { shoppingSupplierId: number };
-  onRowClick?: (item: ShoppingSuppliersTypes) => void;
+  onRowClick?: (item: WarehouseRelocationTypes) => void;
 }
 
-const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
+const WarehouseRelocation: React.FC<WarehouseRelocationCRUDProps> = ({
   onRowClick,
 }) => {
   const [currentUserId, setCurrentUserId] = useState<number>(0);
   const [selectedShoppingSupplier, setSelectedShoppingSupplier] =
-    useState<ShoppingSuppliersTypes | null>(null);
+    useState<WarehouseRelocationTypes | null>(null);
   const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(
     null
   );
+  const [userId, setUserId] = useState<number>(0);
   const [supplierId, setSupplierId] = useState<number>(0);
   const [productLines, setProductLines] = useState<ProductLine[]>([]);
   const [date, setDate] = useState<string>("");
+  const [hour, setHour] = useState<string>("");
   const [observation, setObservation] = useState<string>("");
   const [companyData, setCompanyData] = useState<CompanyType | null>(null);
-  const [shoppingSuppliersList, setShoppingSuppliersList] = useState<
-    ShoppingSuppliersTypes[]
+  const [WarehouseRelocationList, setWarehouseRelocationList] = useState<
+    WarehouseRelocationTypes[]
   >([]);
 
-  const itemTemplate = (): ShoppingSuppliersTypes => ({
+  const itemTemplate = (): WarehouseRelocationTypes => ({
     id: 0,
     supplierId: 0,
     supplierName: "",
     productId: 0,
     productName: "",
-    purchasePrice: 0,
-    purchaseStatus: "DEBE",
-    remainingAmount: 0,
-    warehouseId: 0,
     warehouseName: "",
     quantity: 0,
     observation: "",
     date: getLocalDate(),
-    total: 0,
-    transactionTotal: 0,
+    hour: "",
     userId: currentUserId,
+    userName: "",
+    orderStatus: "",
     status: "",
     products: [],
   });
 
   const columns: {
-    key: keyof ShoppingSuppliersTypes;
+    key: keyof WarehouseRelocationTypes;
     label: string;
     required?: boolean;
     minLength?: number;
@@ -87,45 +86,30 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
     hiddenInEdit?: boolean;
     hidden?: boolean;
     editable?: boolean;
-    dependentOn?: keyof ShoppingSuppliersTypes;
+    dependentOn?: keyof WarehouseRelocationTypes;
     validationMessage?: string;
-    render?: (item: ShoppingSuppliersTypes) => React.ReactNode;
+    render?: (item: WarehouseRelocationTypes) => React.ReactNode;
     imageOptions?: {
       maxSize: number;
       acceptedFormats: string[];
     };
   }[] = [
-    { key: "id", label: "N° Compra", required: true },
+    { key: "id", label: "Id", required: true },
     {
       key: "supplierName",
       label: "Proveedor",
       hiddenInCreate: true,
       hiddenInEdit: true,
     },
-    { key: "warehouseId", label: "Bodega", hidden: true, required: true },
-    {
-      key: "warehouseName",
-      label: "Bodega",
-      hiddenInCreate: true,
-      hiddenInEdit: true,
-      hidden: true,
-    },
-    {
-      key: "remainingAmount",
-      label: "cantidad restante",
-      hiddenInCreate: true,
-      hiddenInEdit: true,
-      hidden: true,
-    },
     { key: "date", label: "Fecha" },
     {
-      key: "purchaseStatus",
+      key: "orderStatus",
       label: "Estado",
       hiddenInCreate: true,
       hiddenInEdit: true,
       render: (item) => {
-        console.log("Rendering PurchaseStatus:", item.purchaseStatus);
-        const statusColor = getStatusColor(item.purchaseStatus);
+        console.log("Rendering PurchaseStatus:", item.orderStatus);
+        const statusColor = getStatusColor(item.orderStatus);
         return (
           <span
             style={{
@@ -135,7 +119,7 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
               color: "#fff",
             }}
           >
-            {item.purchaseStatus}
+            {item.orderStatus}
           </span>
         );
       },
@@ -157,7 +141,6 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
       hiddenInEdit: true,
       hidden: true,
     },
-    { key: "purchasePrice", label: "Precio de compra", hidden: true },
     {
       key: "quantity",
       label: "Cantidad",
@@ -165,17 +148,10 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
       hidden: true,
       regex: /^\d+$/,
     },
-    {
-      key: "total",
-      label: "Total",
-      required: true,
-      hidden: true,
-      regex: /^\d+$/,
-    },
   ];
 
   const renderCustomFormField = (
-    colKey: keyof ShoppingSuppliersTypes,
+    colKey: keyof WarehouseRelocationTypes,
     value: any,
     onChange: (newValue: any) => void
   ) => {
@@ -233,7 +209,7 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
     }
   }, []);
 
-  const handleRowSelection = (shopping: ShoppingSuppliersTypes) => {
+  const handleRowSelection = (shopping: WarehouseRelocationTypes) => {
     setSelectedShoppingSupplier(shopping);
     setSelectedSupplierId(shopping.id);
     if (onRowClick) {
@@ -468,9 +444,31 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
     return (
       <Form>
         <Row className="mb-1">
+              <Col md={12}>
+            <Form.Group className="mb-1">
+              <Form.Label>Transportador</Form.Label>
+              <SelectUser
+                selectedValue={userId}
+                onChange={handleSupplierChange}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+          
+            <Form.Group className="mb-1">
+              <Form.Label>Bodega(origen)</Form.Label>
+              <SuppliersSelect
+                selectedValue={supplierId}
+                onChange={handleSupplierChange}
+              />
+              {!supplierValid && (
+                <div className="text-danger">Proveedor es obligatorio.</div>
+              )}
+            </Form.Group>
+          </Col>
           <Col md={6}>
             <Form.Group className="mb-1">
-              <Form.Label>Proveedor</Form.Label>
+              <Form.Label>Bodega(destino)</Form.Label>
               <SuppliersSelect
                 selectedValue={supplierId}
                 onChange={handleSupplierChange}
@@ -487,6 +485,16 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group className="mb-1">
+              <Form.Label>Hora</Form.Label>
+              <Form.Control
+                type="time"
+                value={hour}
+                onChange={(e) => setHour(e.target.value)}
               />
             </Form.Group>
           </Col>
@@ -508,26 +516,16 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
         <Row>
           <Col xs={12} className="p-0">
             <div
+              className="mb-3"
               style={{
                 borderRadius: "0.375rem",
                 boxShadow: "0 0.125rem 0.25rem rgba(0, 0, 0, 0.075)",
-                overflow: "visible",
+                maxWidth: "100%",
+                width: "100%",
               }}
             >
-              <div
-                style={{
-                  overflowX: "auto",
-                  overflowY: "visible",
-                }}
-              >
-                <Table
-                  style={{
-                    tableLayout: "auto",
-                    width: "100%",
-                    minWidth: "600px",
-                    marginBottom: 0,
-                  }}
-                >
+              <div className="table-responsive" style={{ overflowX: "auto" }}>
+                <Table className="table-modal-inventory">
                   <thead>
                     <tr>
                       <th
@@ -546,25 +544,7 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
                           textAlign: "center",
                         }}
                       >
-                        PRECIO DE COMPRA
-                      </th>
-                      <th
-                        style={{
-                          width: "20%",
-                          padding: "12px",
-                          textAlign: "center",
-                        }}
-                      >
                         CANTIDAD
-                      </th>
-                      <th
-                        style={{
-                          width: "20%",
-                          padding: "12px",
-                          textAlign: "center",
-                        }}
-                      >
-                        TOTAL
                       </th>
                       <th
                         style={{
@@ -597,35 +577,6 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
                         >
                           <Form.Control
                             type="number"
-                            placeholder="Precio de compra"
-                            value={line.purchasePrice || ""}
-                            onChange={(e) =>
-                              handleLineChange(
-                                line.tempId,
-                                "purchasePrice",
-                                parseFloat(e.target.value) || 0
-                              )
-                            }
-                            min={0}
-                            step={0.01}
-                            className="form-control form-control-sm text-center"
-                            style={{
-                              borderRadius: "0.375rem",
-                              maxWidth: "120px",
-                              margin: "0 auto",
-                              border: "1px solid #ced4da",
-                            }}
-                          />
-                        </td>
-                        <td
-                          style={{
-                            padding: "12px",
-                            verticalAlign: "middle",
-                            textAlign: "center",
-                          }}
-                        >
-                          <Form.Control
-                            type="number"
                             placeholder="Cantidad"
                             value={line.quantity || ""}
                             onChange={(e) => {
@@ -642,15 +593,7 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
                             }}
                           />
                         </td>
-                        <td
-                          style={{
-                            padding: "12px",
-                            textAlign: "center",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          ${line.total.toLocaleString("es-CO")}
-                        </td>
+
                         <td
                           style={{
                             padding: "12px",
@@ -690,31 +633,20 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
               </div>
             </div>
             {!allLinesValid && (
-              <Alert variant="danger" className="mt-1">
+              <Alert variant="danger">
                 Ingrese todos los campos requeridos en los productos agregados.
               </Alert>
             )}
             <Button
               variant="outline-secondary"
               onClick={handleAddLine}
-              className="btn-sm px-1 mt-1"
+              className="btn-sm px-1"
             >
               <span className="me-1">
                 <AddIcon />
               </span>
               Añadir Producto
             </Button>
-            <div className="text-end">
-              <strong className="text-error fs-2 fw-bold">
-                Total:{" "}
-                {new Intl.NumberFormat("es-CO", {
-                  style: "currency",
-                  currency: "COP",
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
-                }).format(totalGeneral)}
-              </strong>
-            </div>
           </Col>
         </Row>
       </Form>
@@ -757,7 +689,7 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
           total: line.total,
         })),
       };
-      await CreateShoppingSuppliers(purchaseData);
+      await CreateWarehouseRelocation(purchaseData);
 
       setProductLines([]);
       setDate("");
@@ -781,7 +713,9 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
   };
 
   const onAddModalOpen = () => {
+    const now = new Date();
     setDate(getLocalDate());
+    const localTime = now.toISOString().slice(11, 16);
     setObservation("");
     setSupplierId(0);
     setProductLines([
@@ -814,7 +748,7 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
             className="content-body"
             style={{ margin: "0", fontSize: "21px" }}
           >
-            Gestión de compras a proveedores
+            Translado de bogada
           </h3>
           <FavoritoButton
             path="/purchaseSupplier"
@@ -822,8 +756,7 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
           />
         </div>
         <p>
-          Administre las compras de proveedores, lleva control del registro de
-          compras a cada proveedor.
+          Administre el translado de bodega mediante la creación de registros.
         </p>
         <div className="card">
           <div style={{ position: "relative", marginBottom: "1rem" }}>
@@ -832,7 +765,7 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
               style={{
                 position: "absolute",
                 top: "30px",
-                right: "205px",
+                right: "245px",
                 zIndex: 10,
               }}
             >
@@ -860,29 +793,28 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
               </Button>
             </div>
 
-            <CRUDForm<ShoppingSuppliersTypes>
+            <CRUDForm<WarehouseRelocationTypes>
               fetchItems={(page, pageSize, filters, sortField, sortOrder) => {
-                return GetShoppingSuppliers(
+                return GetWarehouseRelocation(
                   page,
                   pageSize,
                   filters,
                   sortField,
                   sortOrder
                 ).then((data) => {
-                  setShoppingSuppliersList(data);
+                  setWarehouseRelocationList(data);
                   return data;
                 });
               }}
-              searchItem={GetSearchShoppingSuppliers}
-              createItem={CreateShoppingSuppliers}
+              searchItem={GetSearchWarehouseRelocation}
+              createItem={CreateWarehouseRelocation}
               updateItem={async () => {}}
-              deleteItem={DeleteShoppingSuppliers}
+              deleteItem={DeleteWarehouseRelocation}
               itemTemplate={itemTemplate}
               columns={columns}
               hiddenAddButton={true}
               hiddenDeleteButton={true}
-              hiddenEditButton={false}
-              sortFieldMap={ShoppingSuppliersSortFieldMap}
+              sortFieldMap={WarehouseRelocationSortFieldMap}
               pageTitle="Compras"
               renderCustomFormField={renderCustomFormField}
               renderCustomAddModal={renderCustomAddModal}
@@ -891,27 +823,16 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
               onAddModalOpen={onAddModalOpen}
               onAddModalClose={onAddModalClose}
               onRowClick={handleRowSelection}
-              rowClassName={(item: ShoppingSuppliersTypes) =>
+              rowClassName={(item: WarehouseRelocationTypes) =>
                 selectedShoppingSupplier?.id === item.id ? "selected-row" : ""
               }
               filterButtonOrder={1}
-              downloadButtonOrder={2}
-              addButtonOrder={3}
-              deleteButtonOrder={4}
             />
           </div>
         </div>
-      </div>
-      <style>{`.selected-row { background-color: #cc322d !important; color: white; }`}</style>
-
-      <div className="card mt-1">
-        <ProductDetailSupplierCRUD
-          extraParams={{ shoppingSupplierId: selectedSupplierId ?? 0 }}
-          setSelectedSupplierId={setSelectedSupplierId}
-        />
       </div>
     </div>
   );
 };
 
-export default ShoppingSuppliers;
+export default WarehouseRelocation;

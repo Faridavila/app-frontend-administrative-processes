@@ -1,5 +1,7 @@
-const URL = 'http://localhost:8081/api/v1/back-user-service/user'; 
-//const URL: string = `${BASE_URL_APIS_USER}/api/v1/back-user-service/user/login`;
+import { BASE_URL_APIS_USER } from "../../constants";
+
+//const URL = 'http://localhost:8081/api/v1/back-user-service/user'; 
+const URL: string = `${BASE_URL_APIS_USER}/user`;
 
 
 export const login = async (username: string, password: string) => {

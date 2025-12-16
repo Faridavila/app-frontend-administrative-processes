@@ -14,7 +14,6 @@ import "react-datepicker/dist/react-datepicker.css";
 const NumerationCRUD = () => {
   const itemTemplate = (): NumerationTypes => ({
     id: 0,
-    authNumer: "0",
     prefix: "",
     startDate: "",
     finishDate: "",
@@ -39,7 +38,7 @@ const NumerationCRUD = () => {
   }[] = [
       { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true },
       { key: "prefix", label: "Prefijo", required: true },
-      { key: "authNumer", label: "Número de autorización", },
+      { key: "resolutionNumber", label: "Número de autorización", },
 
       {
         key: "startDate", label: "Fecha de autorización", required: true,

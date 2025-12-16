@@ -22,12 +22,12 @@ const LoginPage = () => {
     const response = await login(username, password);
 
     if (response && response.statusCode === 200) {
-      const {id, token, tokenDateExpired, name, rol } = response.data;
+      const {id, token, tokenDateExpired, name, rolName } = response.data;
       localStorage.setItem('userId', id.toString());
       localStorage.setItem('jwt_token', token);
       localStorage.setItem('token_expiry', tokenDateExpired);
       localStorage.setItem('username', name);
-      localStorage.setItem('rol', rol.name);
+      localStorage.setItem('rol',rolName );
 
       navigate("/dashboard");
     } else {

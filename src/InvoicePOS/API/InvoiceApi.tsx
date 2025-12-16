@@ -2,7 +2,7 @@ import { GenerateInvoiceType } from "../Types/GenerateInvoice";
 import {BASE_URL_APIS_CORE} from "../../constants/index";
 
 //const API_URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/invoice';
-const API_URL: string = `${BASE_URL_APIS_CORE}/invoice`;
+const API_URL: string = `${BASE_URL_APIS_CORE}/generate-invoice`;
 
 export const GetGenerateInvoice = async (): Promise<GenerateInvoiceType> => {
   const response = await fetch(`${API_URL}/all`);
@@ -92,32 +92,28 @@ try {
 }
 };
 
-export async function CreateInvoiceCRUD(branchDto: GenerateInvoiceType) {
+
+export async function CreateInvoice(invoiceData: GenerateInvoiceType): Promise<any> {
   try {
     const response = await fetch(`${API_URL}/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(branchDto),
+      body: JSON.stringify(invoiceData),
     });
 
     if (!response.ok) {
-      const errorMessage = await response.text();
-      console.error("Error al llamar a la API:", errorMessage);
-      throw new Error(`La solicitud a la API falló ${response.status}: ${errorMessage}`);
+      const errorText = await response.text();
+      throw new Error(`Error ${response.status}: ${errorText}`);
     }
 
-    const responseData = await response.json();
-    console.log("Respuesta de la API:", responseData);  
-    return responseData;  
+    return await response.json();
   } catch (error) {
-    console.error("Error al llamar a la API:", error);
-    return null;  
+    console.error("Error al crear factura:", error);
+    throw error;
   }
 }
-
-
 
 export const GetSearchInvoiceCRUD = async (
 page: number,

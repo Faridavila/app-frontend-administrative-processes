@@ -40,7 +40,7 @@ const ProductDetailSupplierCRUD: React.FC<ProductDetailSupplierCRUDProps> = ({ e
       { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
       { key: "productId", label: "Producto", hidden: true, required: true },
       { key: "productName", label: "Producto", required: true, hiddenInCreate: true, hiddenInEdit: true },
-      { key: "purchasePrice", label: "Precio de compra",
+      { key: "purchasePrice", label: "Precio de venta",
         render: (item) => item.purchasePrice.toLocaleString('es-ES')},
       {
         key: "quantity",

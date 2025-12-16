@@ -394,7 +394,7 @@ const SuppliersCRUD: React.FC<SupplierCRUDProps> = ({ onRowClick }) => {
       <Form>
         <Row>
           <Col md={6}>
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-2">
               <Form.Label>Nombre</Form.Label>
               <Form.Control
                 value={supplierName}
@@ -548,7 +548,7 @@ const SuppliersCRUD: React.FC<SupplierCRUDProps> = ({ onRowClick }) => {
               </div>
 
               {showProductsConfig && (Productss.length === 0 || !Productss.every(isProductsValid)) && (
-                <Alert variant="danger" className="mt-2 mb-2">
+                <Alert variant="danger" className="mt-1 ">
                   Ingrese todos los campos requeridos, en los productos agregados.
                 </Alert>
               )}

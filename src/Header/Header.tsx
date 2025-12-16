@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed, toggleMobileMenu }) =>
     return name.substring(0, 2).toUpperCase();
   };
 
-  const getColorFromName = () => "#cc322d"; // Color fijo como tenías
+  const getColorFromName = () => "#cc322d"; 
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
@@ -42,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed, toggleMobileMenu }) =>
   };
 
   const menuOptions = [
-    { label: "Calendario", icon: <FiCalendar size={20} />, link: "/CalendarComponent" },
+    { label: "Calendario", icon: <FiCalendar size={20} />, link: "/calendar" },
     { label: "Calculadora", icon: <BsCalculator size={20} />, link: "/calculator" },
   ];
 

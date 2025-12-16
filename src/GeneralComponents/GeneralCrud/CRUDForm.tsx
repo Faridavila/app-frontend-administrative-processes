@@ -957,7 +957,15 @@ return (
         <HandLoadingSpinner />
       </div>
     )}
-    <Modal show={showModal} onHide={handleCancel} size={modalSize || 'lg'} centered className={customModalClass}>
+    <Modal 
+  show={showModal} 
+  onHide={handleCancel} 
+  size={modalSize || 'lg'} 
+  centered 
+  className={customModalClass}
+  style={{ overflow: 'visible' }}
+  dialogClassName="modal-overflow-visible"
+>
       <Modal.Header closeButton>
         <Modal.Title>
           {getModalTitle()}

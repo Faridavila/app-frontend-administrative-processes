@@ -427,3 +427,127 @@
   }
 }
 
+/* ============================================
+   CSS MODAL CON SCROLL - VERSIÓN FINAL
+   ============================================ */
+
+/* Modal con overflow visible para dropdowns */
+.modal-overflow-visible {
+  overflow: visible !important;
+}
+
+.modal-overflow-visible .modal-dialog {
+  overflow: visible !important;
+  max-height: 90vh; /* Altura máxima del modal */
+  margin: 1.75rem auto;
+}
+
+.modal-overflow-visible .modal-content {
+  overflow: visible !important;
+  max-height: 90vh; /* Limitar altura del contenido */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Modal Body con scroll vertical */
+.modal-overflow-visible .modal-body {
+  /* AJUSTA ESTE VALOR para controlar cuándo aparece el scroll */
+  max-height: 80vh; /* 👈 Cambiar aquí: 50vh, 60vh, 70vh, etc. */
+  overflow-y: auto; /* Scroll vertical automático */
+  overflow-x: visible; /* Permite que dropdowns se salgan */
+  flex: 1;
+}
+
+/* Responsive - Tablet */
+@media (max-width: 768px) {
+  .modal-overflow-visible .modal-dialog {
+    max-height: 95vh;
+    margin: 0.5rem;
+  }
+  
+  .modal-overflow-visible .modal-content {
+    max-height: 95vh;
+  }
+  
+  .modal-overflow-visible .modal-body {
+    max-height: 65vh; /* 👈 Scroll en tablets */
+  }
+}
+
+/* Responsive - Móvil */
+@media (max-width: 576px) {
+  .modal-overflow-visible .modal-dialog {
+    max-height: 98vh;
+    margin: 0.25rem;
+  }
+  
+  .modal-overflow-visible .modal-content {
+    max-height: 98vh;
+  }
+  
+  .modal-overflow-visible .modal-body {
+    max-height: 70vh; /* 👈 Scroll en móviles */
+  }
+}
+
+/* Modal Header y Footer fijos (no hacen scroll) */
+.modal-overflow-visible .modal-header {
+  flex-shrink: 0;
+}
+
+.modal-overflow-visible .modal-footer {
+  flex-shrink: 0;
+}
+
+/* Z-index para capas */
+.modal-backdrop {
+  z-index: 1040 !important;
+}
+
+.modal {
+  z-index: 1050 !important;
+}
+
+.position-relative .list-group {
+  z-index: 99999 !important;
+}
+
+/* Remover overflow hidden de Bootstrap Modal */
+.modal.show {
+  overflow: visible !important;
+}
+
+.modal.show .modal-dialog {
+  overflow: visible !important;
+}
+
+/* Tabla dentro del modal */
+.modal-body .table-responsive {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+/* Scrollbar personalizada (Chrome/Edge/Safari) */
+.modal-overflow-visible .modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-overflow-visible .modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.modal-overflow-visible .modal-body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.modal-overflow-visible .modal-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Scrollbar Firefox */
+.modal-overflow-visible .modal-body {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}

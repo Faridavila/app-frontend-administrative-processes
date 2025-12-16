@@ -532,6 +532,7 @@ export const generateInvoicePDF = async (config: PDFInvoiceConfig): Promise<stri
   return await generator.generate(config);
 };
 
+
 const InvoicePDF: React.FC<{ config: PDFInvoiceConfig }> = ({ config }) => {
   useEffect(() => {
     const generate = async () => {

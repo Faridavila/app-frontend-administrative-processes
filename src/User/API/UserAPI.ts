@@ -32,7 +32,7 @@ export const GetUser = async (
   });
 
   try {
-    const response = await fetch(`${URL}?${queryParams.toString()}`);
+    const response = await fetch(`${URL}/get-all-page?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }
@@ -139,11 +139,11 @@ export async function DeleteUser(id: number): Promise<void> {
 }
 
 
-export async function GetAllUseresNoPage(): Promise<ObjectResponse<UserTypes[]> | null> {
+export async function GetAllUseresNoPage(): Promise<UserTypes[] | null> {
     try {
         const response = await fetch(`${URL}/get-all`);
         if (response.ok) {
-            const data: ObjectResponse<UserTypes[]> = await response.json();
+            const data: UserTypes[] = await response.json();
             return data;
         } else {
             throw new Error(`La solicitud a la API fallo ${response.status}`);

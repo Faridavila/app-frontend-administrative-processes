@@ -125,8 +125,6 @@ const InvoiceCrud = () => {
                 <AddIcon />
               </Button>
             </div>
-
-            {/* Botón Ver Detalle */}
             <div className="see-invoice-button-wrapper" style={{ position: 'absolute', top: '30px', right: '200px', zIndex: 10 }}>
               <Button
                 variant={selectedInvoiceId ? "info" : "secondary"}
@@ -148,7 +146,6 @@ const InvoiceCrud = () => {
               </Button>
             </div>
 
-            {/* Tabla con selección de fila */}
             <CRUDForm<InvoiceCrudTypes>
               fetchItems={GetInvoiceCrud}
               searchItem={async () => []}

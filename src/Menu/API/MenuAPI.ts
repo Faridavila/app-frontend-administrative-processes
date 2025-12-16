@@ -1,9 +1,9 @@
 import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { MenuTypes } from "../Types/MenuTypes";
-import { BASE_URL_APIS_CORE } from "../../constants";
+import { BASE_URL_APIS_USER} from "../../constants";
 
 //const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/Menu';
-const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-user-service/menu`;
+const URL: string = `${BASE_URL_APIS_USER}/menu`;
 
 export async function GetMenuById(id: number): Promise<ObjectResponse<MenuTypes> | null> {
     try {

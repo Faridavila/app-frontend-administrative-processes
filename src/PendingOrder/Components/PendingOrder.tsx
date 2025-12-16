@@ -133,7 +133,7 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
       }
     },
      { key: "observation", label: "Observacion", hiddenInCreate: true, hiddenInEdit: true },
-     { key: "totalPurchase", label: "Total", hiddenInCreate: true, hiddenInEdit: true },
+     { key: "totalPurchase", label: "Total a cobrar", hiddenInCreate: true, hiddenInEdit: true },
   ];
 
   const getLocalDate = (): string => {

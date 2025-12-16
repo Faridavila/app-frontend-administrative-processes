@@ -21,7 +21,6 @@ import CategoryCRUD from "./Category/Components/CategoryComponents.tsx";
 import CityCRUD from "./City/Components/City.tsx";
 import CurrencyTipeCRUD from "./CurrencyType/Components/CurrencyType.tsx";
 import ForgotPassword from "./Login/Components/ForgotPassword.tsx";
-import AuthCRUD from "./Auth/Components/Auth.tsx";
 import LoginPage from "./Login/Components/login.tsx";
 import Dashboard from "./Dashboard/Dashboard.tsx";
 import SolicitudForm from "./RadicarSolicitud/Components/SolicitudForm.tsx";
@@ -53,7 +52,7 @@ import DiscountCRUD from "./Discount/Components/DiscountCRUD.tsx";
 import SuppliersCRUD from "./Suppliers/Components/Suppliers.tsx";
 import InventoryCRUD from "./Inventory/Components/InventoryCRUD.tsx";
 import InventoryHistory from "./InventoryHistory/Components/InventoryHistory.tsx";
-import ShoppingSuppliers from "./ShoppingSuppliers/Components/ShoppingSuppliers.tsx"
+import ShoppingSuppliers from "./ShoppingSuppliers/Components/ShoppingSuppliers.tsx";
 import SupplierPendingProduct from "./SupplierPendingProducts/Components/SupplierPendingProduct.tsx";
 import EmployeeCRUD from "./Employee/Components/Employee.tsx";
 import EmployeePayment from "./EmployeePayments/Components/EmployeePayment.tsx";
@@ -67,6 +66,7 @@ import InvoiceCrud from "./InvoiceCrud/Components/InvoiceCrud.tsx";
 import Calculator from "./Calculator/Calculator.tsx";
 import InvoiceDetail from "./InvoicePOS/Components/InvoiceDetail.tsx";
 import TerminalCRUD from "./Terminal/Components/Terminal.tsx";
+import WarehouseRelocation from "./WarehouseRelocation/Components/WarehouseRelocation.tsx";
 
 const router = createBrowserRouter([
   {
@@ -86,34 +86,54 @@ const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: "/paymentMethod",
-        element: <PaymentMethodCRUD />,
+        path: "/company",
+        element: <CompanyPresentation />,
+      },
+
+      {
+        path: "/area",
+        element: <AreaCRUD />,
       },
       {
-        path: "/seller",
-        element: <SellerCRUD />,
+        path: "/rol",
+        element: <RolCRUD />,
+      },
+      {
+        path: "/position",
+        element: <PositionCRUD />,
+      },
+
+      {
+        path: "/user",
+        element: <UserCRUD />,
       },
       {
         path: "/client",
         element: <ClientCRUD />,
       },
       {
-        path: "/cashRegister",
-        element: <CashRegisterCRUD />,
+        path: "/category",
+        element: <CategoryCRUD />,
+      },
+
+      {
+        path: "/product",
+        element: <ProductCRUD />,
       },
       {
         path: "/inventory",
         element: <InventoryCRUD />,
-      },
-      {
-        path: "/product",
-        element: <ProductCRUD />,
       },
 
       {
         path: "/inventoryHistory",
         element: <InventoryHistory />,
       },
+      {
+        path: "/warehouse",
+        element: <WarehouseForm />,
+      },
+
       {
         path: "/supplier",
         element: <SuppliersCRUD />,
@@ -147,6 +167,10 @@ const router = createBrowserRouter([
         element: <NeighborhoodRateCRUD />,
       },
       {
+        path: "/warehouse-relocation",
+        element: <WarehouseRelocation />,
+      },
+      {
         path: "/assignOrder",
         element: <AssignOrder />,
       },
@@ -162,16 +186,74 @@ const router = createBrowserRouter([
         path: "/invoice",
         element: <InvoiceCrud />,
       },
+      {
+        path: "/new-invoice",
+        element: <InvoicePOS />,
+      },
+      {
+        path: "/invoice-detail/:id",
+        element: <InvoiceDetail />,
+      },
+      {
+        path: "/paymentMethod",
+        element: <PaymentMethodCRUD />,
+      },
+      {
+        path: "/numeration",
+        element: <NumerationCRUD />,
+      },
 
-
-
-
-
-
+      {
+        path: "/terminal",
+        element: <TerminalCRUD />,
+      },
 
       {
         path: "/department",
         element: <DepartmentCRUD />,
+      },
+
+      {
+        path: "/city",
+        element: <CityCRUD />,
+      },
+
+      {
+        path: "/calendar",
+        element: <CalendarComponent />,
+      },
+      {
+        path: "/calculator",
+        element: <Calculator />,
+      },
+
+      ///otros
+      {
+        path: "/seller",
+        element: <SellerCRUD />,
+      },
+      {
+        path: "/cashRegister",
+        element: <CashRegisterCRUD />,
+      },
+
+      {
+        path: "/economicActivity",
+        element: <EconomicActivityCRUD />,
+      },
+      {
+        path: "branch",
+        element: <BranchCRUD />,
+      },
+
+      {
+        path: "currencyType",
+        element: <CurrencyTipeCRUD />,
+      },
+
+      {
+        path: "/Solicitud",
+        element: <SolicitudForm />,
       },
       {
         path: "/discount",
@@ -181,44 +263,10 @@ const router = createBrowserRouter([
         path: "/discountType",
         element: <DiscountTypeCRUD />,
       },
-      {
-        path: "/company",
-        element: <CompanyPresentation />,
-      },
+
       {
         path: "/configCompany",
         element: <CompanyCRUD />,
-      },
-      {
-        path: "/economicActivity",
-        element: <EconomicActivityCRUD />,
-      },
-      {
-        path: "branch",
-        element: <BranchCRUD />,
-      },
-      {
-        path: "/category",
-        element: <CategoryCRUD />,
-      },
-      {
-        path: "/city",
-        element: <CityCRUD />,
-      },
-      {
-        path: "currencyType",
-        element: <CurrencyTipeCRUD />,
-      },
-
-
-      {
-        path: "/auth",
-        element: <AuthCRUD />,
-      },
-
-      {
-        path: "/Solicitud",
-        element: <SolicitudForm />,
       },
       {
         path: "/tipos-bodega",
@@ -234,43 +282,15 @@ const router = createBrowserRouter([
       },
 
       {
-        path: "/Solicitud",
-        element: <SolicitudForm />,
-      },
-      {
         path: "/Registrarproducto",
         element: <RegistroProductoWizard />,
       },
-      {
-        path: "/CalendarComponent",
-        element: <CalendarComponent />,
-      },
-      {
-        path: "/calculator",
-        element: <Calculator />,
-      },
-      {
-        path: "/new-invoice",
-        element: <InvoicePOS />,
-      },
-      {
-        path: "/invoice-detail/:id",
-        element: <InvoiceDetail />,  
-      },
 
-      {
-        path: "/numeration",
-        element: <NumerationCRUD />,
-      },
       {
         path: "/taxConfiguration",
         element: <TaxConfigurationCRUD />,
       },
 
-      {
-        path: "/user",
-        element: <UserCRUD />,
-      },
       {
         path: "/ParameterType",
         element: <ParameterTypeCRUD />,
@@ -278,15 +298,6 @@ const router = createBrowserRouter([
       {
         path: "/Parameter",
         element: <ParameterCRUD />,
-      },
-      {
-        path: "/warehouse",
-        element: <WarehouseForm />,
-      },
-
-      {
-        path: "/terminal",
-        element: <TerminalCRUD />,
       },
 
       {
@@ -296,18 +307,6 @@ const router = createBrowserRouter([
       {
         path: "/menuType",
         element: <MenuTypeCRUD />,
-      },
-      {
-        path: "/area",
-        element: <AreaCRUD />,
-      },
-      {
-        path: "/rol",
-        element: <RolCRUD />,
-      },
-      {
-        path: "/position",
-        element: <PositionCRUD />,
       },
     ],
   },

@@ -115,9 +115,10 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
       subItems: [
         { id: 7.1, title: "Tarifa por bodega", route: "/supplierRate" },
         { id: 7.2, title: "Tarifa por barrio", route: "/neighborhoodRate" },
-        { id: 7.3, title: "Pedidos pendiente", route: "/pendingOrder" },
-        { id: 7.4, title: "Asignar pedidos", route: "/assignOrder" },
-        { id: 7.5, title: "Pedidos completos", route: "/completeOrderHistory" },
+        { id: 7.3, title: "Translado de bodega", route: "/warehouse-relocation" },
+        { id: 7.4, title: "Pedidos pendiente", route: "/pendingOrder" },
+        { id: 7.5, title: "Asignar pedidos", route: "/assignOrder" },
+        { id: 7.6, title: "Pedidos completos", route: "/completeOrderHistory" },
       ],
     },
     {

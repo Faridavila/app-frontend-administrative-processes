@@ -4,21 +4,14 @@ export interface UserTypes {
   login: string;
   password: string;
   email: string;
-  rol: {
-    id: number;
-    name: string;
-  };
-  position: {
-    id: number;
-    description: string;
-  };
-  company: {
-    companyid: number;
-    companyName: string;
-  };
-  area: {
-    id: number;
-    description: string;
-  };
+  rolId:number;
+  rolName:string;
+  positionId:number;
+  positionName:string;
+  companyId:number;
+  companyName:string;
+  areaId:number;
+  areaName:string;
+  phone:number;
   status: string; 
 }
