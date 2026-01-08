@@ -31,24 +31,19 @@ export async function GetCompanyById(id: number): Promise<CompanyType | null> {
 }
 
 
-
-export const UpdateCompany = async (company: CompanyType): Promise<boolean> => {
+export const UpdateCompany = async (companyId: 1, formData: FormData): Promise<boolean> => {
   try {
-    const response = await fetch(`${API_URL}/update/${1}`, {
+    const response = await fetch(`${API_URL}/update/${companyId}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(company),
+      body: formData, // No poner headers Content-Type → el navegador lo hace automáticamente
     });
 
-    return response.ok; 
+    return response.ok;
   } catch (error) {
     console.error("Error al actualizar company:", error);
-    return false; 
+    return false;
   }
 };
-
 
 
 export const GetCompanyCRUD= async (

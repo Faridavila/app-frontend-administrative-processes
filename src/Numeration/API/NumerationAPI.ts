@@ -1,24 +1,8 @@
-import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { NumerationTypes } from "../Types/NumerationTypes";
 import { BASE_URL_APIS_CORE } from "../../constants";
 
 //const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/numeration';
 const URL: string = `${BASE_URL_APIS_CORE}/numeration`;
-
-export async function GetNumerationId(id: number): Promise<ObjectResponse<NumerationTypes> | null> {
-    try {
-        const response = await fetch(`${URL}/get/${id}`);
-        if (response.ok) {
-            const data: ObjectResponse<NumerationTypes> = await response.json();
-            return data;
-        } else {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        return null;
-    }
-}
 
 export const GetNumeration = async (
   page: number,

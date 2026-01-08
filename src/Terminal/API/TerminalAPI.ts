@@ -1,8 +1,8 @@
 import { TerminalTypes } from "../Types/TerminalTypes";
-import { BASE_URL_APIS_USER } from "../../constants";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
 //const URL = 'http://localhost:8081/api/v1/back-user-service/Terminal';
-const URL: string = `${BASE_URL_APIS_USER}/Terminal`;
+const URL: string = `${BASE_URL_APIS_CORE}/terminal`;
 
 export const GetTerminal = async (
   page: number,
@@ -31,7 +31,7 @@ export const GetTerminal = async (
   });
 
   try {
-    const response = await fetch(`${URL}?${queryParams.toString()}`);
+    const response = await fetch(`${URL}/get-all?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }

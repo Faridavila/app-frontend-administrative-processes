@@ -10,7 +10,7 @@ export interface SelectOption {
 interface GenericSelectProps {
   fetchData: () => Promise<any[] | null>; 
   selectedValue: number;
-  onChange: (newValue: number) => void;
+  onChange: (newValue: number, selectedItem?: any) => void;
   labelKey: string; 
   valueKey: string; 
   placeholder?: string;
@@ -25,6 +25,7 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
   placeholder = "Seleccione una opción",
 }) => {
   const [allOptions, setAllOptions] = useState<SelectOption[]>([]);
+  const [allData, setAllData] = useState<any[]>([]); 
   const [filteredOptions, setFilteredOptions] = useState<SelectOption[]>([]);
   const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -42,7 +43,9 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
       try {
         const data = await fetchData();
         
-        if (data && Array.isArray(data) && data.length > 0) { 
+        if (data && Array.isArray(data) && data.length > 0) {
+          setAllData(data);
+          
           const formattedOptions = data.map(item => ({
             value: item[valueKey],
             label: item[labelKey],
@@ -52,6 +55,7 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
           setFilteredOptions(formattedOptions);
           setSelectedOption(formattedOptions.find(option => option.value === selectedValue) || null);
         } else {
+          setAllData([]);
           setAllOptions([]);
           setFilteredOptions([]);
           setSelectedOption(null);
@@ -70,7 +74,15 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
   
   useEffect(() => {
     if (allOptions.length > 0) {
-      setSelectedOption(allOptions.find(option => option.value === selectedValue) || null);
+      const foundOption = allOptions.find(option => option.value === selectedValue);
+      setSelectedOption(foundOption || null);
+      
+      if (!foundOption || selectedValue === 0) {
+        setSearchTerm('');
+      }
+    } else if (selectedValue === 0) {
+      setSelectedOption(null);
+      setSearchTerm('');
     }
   }, [selectedValue, allOptions]);
 
@@ -101,7 +113,6 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  // Actualizar posición del dropdown cuando se abre
   useEffect(() => {
     if (isOpen && inputRef.current) {
       const rect = inputRef.current.getBoundingClientRect();
@@ -127,7 +138,10 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
   const handleSelectOption = (option: SelectOption) => {
     setSelectedOption(option);
     setSearchTerm(option.label);
-    onChange(option.value);
+    
+    const fullItem = allData.find(item => item[valueKey] === option.value);
+
+    onChange(option.value, fullItem);
     setIsOpen(false);
   };
 
@@ -152,7 +166,6 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
 
   const displayValue = selectedOption ? selectedOption.label : placeholder;
 
-  // Dropdown renderizado con Portal
   const dropdownPortal = isOpen ? ReactDOM.createPortal(
     <div 
       ref={dropdownRef}
@@ -169,8 +182,6 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
         style={{ 
           maxHeight: '200px', 
           overflowY: 'auto',
-          backgroundColor: 'white',
-          border: '1px solid #dee2e6',
           borderRadius: '0.375rem',
         }}
       >
@@ -187,7 +198,7 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
             No se encontraron opciones
           </ListGroup.Item>
         ) : (
-          filteredOptions.map((option, index) => (
+          filteredOptions.map((option) => (
             <ListGroup.Item
               key={option.value}
               action
@@ -198,7 +209,6 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
                 borderTop: 'none',
                 borderLeft: 'none',
                 borderRight: 'none',
-                borderBottom: index === filteredOptions.length - 1 ? 'none' : '1px solid #dee2e6',
               }}
             >
               {option.label}

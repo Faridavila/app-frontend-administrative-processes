@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { BsCalculator } from "react-icons/bs";
+import { BsCalculator, BsPower,BsGear } from "react-icons/bs";
 import { FiBell, FiCalendar } from "react-icons/fi";
 import { MdMenu } from "react-icons/md";
 import ThemeToggle from "./ChangeTheme";
@@ -10,9 +10,13 @@ interface HeaderProps {
   toggleMobileMenu: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ isMenuCollapsed, toggleMobileMenu }) => {
+const Header: React.FC<HeaderProps> = ({
+  isMenuCollapsed,
+  toggleMobileMenu,
+}) => {
   const [username, setUsername] = useState<string>("Usuario");
   const [rol, setRol] = useState<string>("Admin");
+  const [positionName, setPositionName] = useState<string>("Admin");
 
   const navigate = useNavigate();
 
@@ -25,25 +29,32 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed, toggleMobileMenu }) =>
     return name.substring(0, 2).toUpperCase();
   };
 
-  const getColorFromName = () => "#cc322d"; 
+  const getColorFromName = () => "#cc322d";
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
     const storedRol = localStorage.getItem("rol");
+    const storedPositionName = localStorage.getItem("positionName");
     setUsername(storedUsername || "Usuario");
     setRol(storedRol || "Admin");
+    setPositionName(storedPositionName || "Admin");
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("username");
     localStorage.removeItem("rol");
+    localStorage.removeItem("positionName");
     navigate("/login");
   };
 
   const menuOptions = [
     { label: "Calendario", icon: <FiCalendar size={20} />, link: "/calendar" },
-    { label: "Calculadora", icon: <BsCalculator size={20} />, link: "/calculator" },
+    {
+      label: "Calculadora",
+      icon: <BsCalculator size={20} />,
+      link: "/calculator",
+    },
   ];
 
   return (
@@ -54,11 +65,7 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed, toggleMobileMenu }) =>
       data-menu-state={isMenuCollapsed ? "collapsed" : "expanded"}
     >
       <div className="navbar-container d-flex justify-content-between align-items-center w-100">
-
-        {/* IZQUIERDA: Menú móvil + Iconos rápidos */}
         <div className="bookmark-wrapper d-flex align-items-center">
-
-          {/* Botón menú móvil */}
           <ul className="nav navbar-nav d-xl-none">
             <li className="nav-item">
               <button
@@ -71,7 +78,6 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed, toggleMobileMenu }) =>
             </li>
           </ul>
 
-          {/* Iconos rápidos → AHORA VISIBLES EN MÓVIL Y ESCRITORIO */}
           <ul className="nav navbar-nav bookmark-icons">
             {menuOptions.map((option) => (
               <li className="nav-item" key={option.label}>
@@ -87,15 +93,11 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed, toggleMobileMenu }) =>
           </ul>
         </div>
 
-        {/* DERECHA: ThemeToggle + Notificaciones + Perfil */}
         <ul className="nav navbar-nav align-items-center ms-auto">
-
-          {/* ThemeToggle → ahora envuelto en li y siempre visible */}
           <li className="nav-item">
             <ThemeToggle />
           </li>
 
-          {/* Notificaciones */}
           <li className="nav-item dropdown dropdown-notification me-25">
             <a className="nav-link" href="#" data-bs-toggle="dropdown">
               <FiBell size={20} />
@@ -104,13 +106,15 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed, toggleMobileMenu }) =>
             <ul className="dropdown-menu dropdown-menu-media dropdown-menu-end">
               <li className="dropdown-menu-header">
                 <div className="dropdown-header d-flex">
-                  <h4 className="notification-title mb-0 me-auto">Notificaciones</h4>
-                  <div className="badge rounded-pill badge-light-primary">6 Nuevas</div>
+                  <h4 className="notification-title mb-0 me-auto">
+                    Notificaciones
+                  </h4>
+                  <div className="badge rounded-pill badge-light-primary">
+                    6 Nuevas
+                  </div>
                 </div>
               </li>
-              <li className="scrollable-container media-list">
-                {/* Tus notificaciones aquí */}
-              </li>
+              <li className="scrollable-container media-list"></li>
               <li className="dropdown-menu-footer">
                 <NavLink className="btn btn-primary w-100" to="/notificaciones">
                   Ver todas las notificaciones
@@ -119,7 +123,6 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed, toggleMobileMenu }) =>
             </ul>
           </li>
 
-          {/* Perfil de usuario → EXACTAMENTE IGUAL que en PC */}
           <li className="nav-item dropdown dropdown-user">
             <a
               className="nav-link dropdown-toggle dropdown-user-link d-flex align-items-center"
@@ -128,13 +131,11 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed, toggleMobileMenu }) =>
               aria-haspopup="true"
               aria-expanded="false"
             >
-              {/* Nombre y rol → se ven en pantallas medianas y grandes */}
               <div className="user-nav d-sm-flex d-none text-start">
                 <span className="user-name fw-bolder">{username}</span>
-                <span className="user-status">{rol}</span>
+                <span className="user-status">{positionName}</span>
               </div>
 
-              {/* Avatar → siempre visible */}
               <span
                 className="avatar"
                 style={{
@@ -158,7 +159,7 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed, toggleMobileMenu }) =>
 
             <div className="dropdown-menu dropdown-menu-end">
               <NavLink className="dropdown-item" to="/company">
-                <i data-feather="user" className="me-50"></i> Configuración
+                <BsGear className="me-50" /> Configuración
               </NavLink>
               <div className="dropdown-divider"></div>
               <a
@@ -166,7 +167,7 @@ const Header: React.FC<HeaderProps> = ({ isMenuCollapsed, toggleMobileMenu }) =>
                 onClick={handleLogout}
                 style={{ cursor: "pointer" }}
               >
-                <i data-feather="power" className="me-50"></i> Cerrar sesión
+                <BsPower className="me-50" /> Cerrar sesión
               </a>
             </div>
           </li>

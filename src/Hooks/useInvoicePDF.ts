@@ -5,7 +5,7 @@ import autoTable from 'jspdf-autotable';
 // Interfaces extendidas para la factura con más detalles
 export interface PDFInvoiceCompanyInfo {
   name?: string;
-  logo?: string; // URL o base64 de la imagen
+  logo?:  string | null; 
   logoWidth?: number;
   logoHeight?: number;
   title?: string;

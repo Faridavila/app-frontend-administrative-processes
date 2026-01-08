@@ -22,6 +22,7 @@ import {
 import { GetCompanyById } from "../../Company/API/CompanyAPI";
 import { CompanyType } from "../../Company/Types/Company";
 import SelectUser from "../../AssignOrder/Components/SelectUser";
+import ProductDetailWarehouseRelocationCRUD from "../../ProductDetailWarehouseRelocation/Components/ProductDetailWarehouseRelocation";
 
 interface ProductLine {
   tempId: string;
@@ -59,11 +60,12 @@ const WarehouseRelocation: React.FC<WarehouseRelocationCRUDProps> = ({
 
   const itemTemplate = (): WarehouseRelocationTypes => ({
     id: 0,
-    supplierId: 0,
-    supplierName: "",
     productId: 0,
     productName: "",
-    warehouseName: "",
+    warehouseOriginId: 0,
+    warehouseOriginName: "",
+    warehouseDestinationId: 0,
+    warehouseDestinationName: "",
     quantity: 0,
     observation: "",
     date: getLocalDate(),
@@ -75,80 +77,123 @@ const WarehouseRelocation: React.FC<WarehouseRelocationCRUDProps> = ({
     products: [],
   });
 
-  const columns: {
-    key: keyof WarehouseRelocationTypes;
-    label: string;
-    required?: boolean;
-    minLength?: number;
-    maxLength?: number;
-    regex?: RegExp;
-    hiddenInCreate?: boolean;
-    hiddenInEdit?: boolean;
-    hidden?: boolean;
-    editable?: boolean;
-    dependentOn?: keyof WarehouseRelocationTypes;
-    validationMessage?: string;
-    render?: (item: WarehouseRelocationTypes) => React.ReactNode;
-    imageOptions?: {
-      maxSize: number;
-      acceptedFormats: string[];
-    };
-  }[] = [
-    { key: "id", label: "Id", required: true },
-    {
-      key: "supplierName",
-      label: "Proveedor",
-      hiddenInCreate: true,
-      hiddenInEdit: true,
-    },
-    { key: "date", label: "Fecha" },
-    {
-      key: "orderStatus",
-      label: "Estado",
-      hiddenInCreate: true,
-      hiddenInEdit: true,
-      render: (item) => {
-        console.log("Rendering PurchaseStatus:", item.orderStatus);
-        const statusColor = getStatusColor(item.orderStatus);
-        return (
-          <span
-            style={{
-              backgroundColor: statusColor,
-              padding: "5px",
-              borderRadius: "5px",
-              color: "#fff",
-            }}
-          >
-            {item.orderStatus}
-          </span>
-        );
-      },
-    },
-    {
-      key: "observation",
-      label: "Observacion",
-      render: (item) => {
-        const observation = item.observation || "Sin observación";
-        return <span>{observation}</span>;
-      },
-    },
+  // Reemplazar la sección de columns en tu código:
 
-    { key: "productId", label: "Producto", hidden: true, required: true },
-    {
-      key: "productName",
-      label: "Producto",
-      hiddenInCreate: true,
-      hiddenInEdit: true,
-      hidden: true,
+const columns: {
+  key: keyof WarehouseRelocationTypes;
+  label: string;
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  regex?: RegExp;
+  hiddenInCreate?: boolean;
+  hiddenInEdit?: boolean;
+  hidden?: boolean;
+  editable?: boolean;
+  dependentOn?: keyof WarehouseRelocationTypes;
+  validationMessage?: string;
+  render?: (item: WarehouseRelocationTypes) => React.ReactNode;
+  imageOptions?: {
+    maxSize: number;
+    acceptedFormats: string[];
+  };
+}[] = [
+  { key: "id", label: "Id", required: true },
+  { key: "userId", label: "Transportador", hidden: true },
+  {
+    key: "userName",
+    label: "Transportador",
+    hiddenInCreate: true,
+    hiddenInEdit: true,
+  },
+  {
+    key: "warehouseOriginId",
+    label: "Bodega(origen)",
+    hidden: true,
+  },
+  {
+    key: "warehouseOriginName",
+    label: "Bodega(origen)",
+    hiddenInCreate: true,
+    hiddenInEdit: true,
+  },
+  {
+    key: "warehouseDestinationId",
+    label: "Bodega(destino)",
+    hidden: true,
+  },
+  {
+    key: "warehouseDestinationName",
+    label: "Bodega(destino)",
+    hiddenInCreate: true,
+    hiddenInEdit: true,
+  },
+  { 
+    key: "date", 
+    label: "Fecha",
+    render: (item) => {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <span style={{ fontWeight: '500' }}>
+            {item.date || 'Sin fecha'}
+          </span>
+          <span style={{ fontSize: '1em', color: '#6c757d' }}>
+            {item.hour || 'Sin hora'}
+          </span>
+        </div>
+      );
+    }
+  },
+  {
+    key: "hour",
+    label: "Hora",
+    hidden: true, 
+  },
+  {
+    key: "orderStatus",
+    label: "Estado",
+    hiddenInCreate: true,
+    hiddenInEdit: true,
+    render: (item) => {
+      const statusColor = getStatusColor(item.orderStatus);
+      return (
+        <span
+          style={{
+            backgroundColor: statusColor,
+            padding: "5px",
+            borderRadius: "5px",
+            color: "#fff",
+          }}
+        >
+          {item.orderStatus}
+        </span>
+      );
     },
-    {
-      key: "quantity",
-      label: "Cantidad",
-      required: true,
-      hidden: true,
-      regex: /^\d+$/,
+  },
+  {
+    key: "observation",
+    label: "Observacion",
+    render: (item) => {
+      const observation = item.observation || "Sin observación";
+      return <span>{observation}</span>;
     },
-  ];
+  },
+  { key: "productId", label: "Producto", hidden: true, required: true },
+  {
+    key: "productName",
+    label: "Producto",
+    hiddenInCreate: true,
+    hiddenInEdit: true,
+    hidden: true,
+  },
+  {
+    key: "quantity",
+    label: "Cantidad",
+    required: true,
+    hidden: true,
+    regex: /^\d+$/,
+  },
+];
 
   const renderCustomFormField = (
     colKey: keyof WarehouseRelocationTypes,
@@ -830,6 +875,14 @@ const WarehouseRelocation: React.FC<WarehouseRelocationCRUDProps> = ({
             />
           </div>
         </div>
+      </div>
+      <style>{`.selected-row { background-color: #cc322d !important; color: white; }`}</style>
+
+      <div className="card mt-1">
+        <ProductDetailWarehouseRelocationCRUD
+          extraParams={{ shoppingSupplierId: selectedSupplierId ?? 0 }}
+          setSelectedSupplierId={setSelectedSupplierId}
+        />
       </div>
     </div>
   );

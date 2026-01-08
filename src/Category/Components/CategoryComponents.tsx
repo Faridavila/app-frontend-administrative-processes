@@ -9,13 +9,14 @@ import {
   GetSearchCategory,
 } from "../API/Category";
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
+import { Form } from "react-bootstrap";
 
 const CategoryCRUD = () => {
   const itemTemplate = (): CategoryTypes => ({
     id: 0,
     nameCategory: "",
-    soldOutValue: "",
-    fewUnits: "",
+    soldOutValue: 0,
+    fewUnits: 0,
     image: "",
     status: "ACTIVE",
   });
@@ -58,6 +59,7 @@ const CategoryCRUD = () => {
         label: "Rango de unidades agotadas",
         required: true,
         regex: /^\d+$/,
+        render: (item) => item.soldOutValue.toLocaleString('es-ES')
       },
       {
         key: "fewUnits",
@@ -65,7 +67,8 @@ const CategoryCRUD = () => {
         required: true,
         dependentOn: "soldOutValue",
         validationMessage: "El valor debe ser mayor que 'Rango de unidades agotadas'.",
-        regex: /^\d+$/
+        regex: /^\d+$/,
+        render: (item) => item.fewUnits.toLocaleString('es-ES')
       },
       {
         key: "image",
@@ -99,24 +102,21 @@ const CategoryCRUD = () => {
   const renderCustomFormField = (
     colKey: keyof CategoryTypes,
     value: any,
-    onChange: (newValue: any) => void
+    onChange: (update: Partial<CategoryTypes>) => void
   ) => {
     if (colKey === "image") {
       return (
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
-          <input
-            type="file"
-            accept=".jpg,.jpeg,.png,.webp"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                onChange(file);
-              }
-            }}
-          />
-          {value instanceof File && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            marginTop: "8px",
+          }}
+        >
+          {value && (
             <img
-              src={URL.createObjectURL(value)}
+              src={value instanceof File ? URL.createObjectURL(value) : value}
               alt="Vista previa"
               style={{
                 width: "80px",
@@ -124,16 +124,49 @@ const CategoryCRUD = () => {
                 objectFit: "cover",
                 borderRadius: "8px",
                 border: "1px solid #ccc",
+                marginBottom: "8px"
               }}
             />
           )}
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                onChange({ image: file as unknown } as Partial<CategoryTypes>);
+              }
+            }}
+          />
         </div>
+      );
+    }
+
+    if (colKey === "soldOutValue" || colKey === "fewUnits") {
+      const numericValue = typeof value === 'string' ? value : String(value || '');
+      const displayValue = numericValue ? parseInt(numericValue).toLocaleString('es-ES') : '';
+
+      return (
+        <Form.Control
+          type="text"
+          placeholder={colKey === "soldOutValue" ? "Ej: 1.000" : "Ej: 5.000"}
+          value={displayValue}
+          onChange={(e) => {
+            let input = e.target.value;
+            input = input.replace(/\./g, "");
+
+            if (!/^\d*$/.test(input)) {
+              return;
+            }
+            onChange({ [colKey]: input } as Partial<CategoryTypes>);
+          }}
+          className="fw-medium"
+        />
       );
     }
 
     return null;
   };
-
 
   return (
     <div className="app-content content">

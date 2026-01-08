@@ -2,16 +2,16 @@ import { useState } from "react";
 import { Form, Button, InputGroup, Spinner, Alert } from "react-bootstrap";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../API/LoginAPI.tsx";
+import { login, forgotPassword } from "../API/LoginAPI.tsx";
 import "./login.css";
 
 const LoginPage = () => {
-  const [username, setUsername] = useState<string>(""); 
-  const [password, setPassword] = useState<string>(""); 
-  const [showPass, setShowPass] = useState<boolean>(false); 
-  const [loading, setLoading] = useState<boolean>(false); 
-  const [error, setError] = useState<string | null>(null); 
-  const [isForgotPassword, setIsForgotPassword] = useState<boolean>(false); 
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [showPass, setShowPass] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isForgotPassword, setIsForgotPassword] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -22,12 +22,14 @@ const LoginPage = () => {
     const response = await login(username, password);
 
     if (response && response.statusCode === 200) {
-      const {id, token, tokenDateExpired, name, rolName } = response.data;
-      localStorage.setItem('userId', id.toString());
-      localStorage.setItem('jwt_token', token);
-      localStorage.setItem('token_expiry', tokenDateExpired);
-      localStorage.setItem('username', name);
-      localStorage.setItem('rol',rolName );
+      const { id, token, tokenDateExpired, name, rolName,imageCompany,positionName} = response.data;
+      localStorage.setItem("userId", id.toString());
+      localStorage.setItem("jwt_token", token);
+      localStorage.setItem("token_expiry", tokenDateExpired);
+      localStorage.setItem("username", name);
+      localStorage.setItem("rol", rolName);
+      localStorage.setItem("imageCompany", imageCompany);
+      localStorage.setItem("positionName", positionName);
 
       navigate("/dashboard");
     } else {
@@ -39,11 +41,25 @@ const LoginPage = () => {
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Recuperando contraseña para:", username);
-    setIsForgotPassword(false); 
-    setError("Si el correo está registrado, se enviará un enlace para restablecer la contraseña.");
-  };
+    setLoading(true);
+    setError(null);
 
+    if (!username.trim()) {
+      setError("Por favor ingresa tu correo electrónico.");
+      setLoading(false);
+      return;
+    }
+
+    const result = await forgotPassword(username.trim());
+
+    if (result.success) {
+      setError(result.message); 
+    } else {
+      setError(result.message);
+    }
+
+    setLoading(false);
+  };
   return (
     <div className="login-shell light-page">
       <aside className="brand-panel d-none d-lg-flex">
@@ -51,9 +67,19 @@ const LoginPage = () => {
           <h2 className="brand-title">Ladrillera La Transversal 12</h2>
           <p className="brand-sub">Panel de administración</p>
         </div>
-        <svg className="brick-pattern" viewBox="0 0 200 200" preserveAspectRatio="none">
+        <svg
+          className="brick-pattern"
+          viewBox="0 0 200 200"
+          preserveAspectRatio="none"
+        >
           <defs>
-            <pattern id="bricks" width="40" height="20" patternUnits="userSpaceOnUse" patternTransform="translate(0,0)">
+            <pattern
+              id="bricks"
+              width="40"
+              height="20"
+              patternUnits="userSpaceOnUse"
+              patternTransform="translate(0,0)"
+            >
               <animateTransform
                 attributeName="patternTransform"
                 type="translate"
@@ -63,7 +89,14 @@ const LoginPage = () => {
                 repeatCount="indefinite"
               />
               <rect width="40" height="20" fill="var(--brick-900)" />
-              <rect width="36" height="16" x="2" y="2" rx="2" fill="var(--brick-700)" />
+              <rect
+                width="36"
+                height="16"
+                x="2"
+                y="2"
+                rx="2"
+                fill="var(--brick-700)"
+              />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#bricks)" />
@@ -73,13 +106,26 @@ const LoginPage = () => {
       <main className="login-main">
         <div className="login-card glass light">
           <header className="text-center mb-3">
-            <h2 className="mb-1">{isForgotPassword ? "Recupera tu contraseña" : "¡Bienvenido!"}</h2>
-            <p className="muted">{isForgotPassword ? "Ingresa tu correo electrónico" : "Inicia sesión con tu cuenta de usuario"}</p>
+            <h2 className="mb-1">
+              {isForgotPassword ? "Recupera tu contraseña" : "¡Bienvenido!"}
+            </h2>
+            <p className="muted">
+              {isForgotPassword
+                ? "Ingresa tu correo electrónico"
+                : "Inicia sesión con tu cuenta de usuario"}
+            </p>
           </header>
 
-          {error && <Alert variant="danger" className="py-2 text-center">{error}</Alert>}
+          {error && (
+            <Alert variant="danger" className="py-2 text-center">
+              {error}
+            </Alert>
+          )}
 
-          <Form onSubmit={isForgotPassword ? handleForgotPassword : handleLogin} className="mt-2">
+          <Form
+            onSubmit={isForgotPassword ? handleForgotPassword : handleLogin}
+            className="mt-2"
+          >
             {isForgotPassword ? (
               <Form.Group className="mb-3" controlId="username">
                 <Form.Label>Correo Electrónico</Form.Label>
@@ -128,11 +174,17 @@ const LoginPage = () => {
                       variant="outline-secondary"
                       onClick={() => setShowPass((s) => !s)}
                       type="button"
-                      aria-label={showPass ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      aria-label={
+                        showPass ? "Ocultar contraseña" : "Mostrar contraseña"
+                      }
                       aria-pressed={showPass}
                       className="d-inline-flex align-items-center justify-content-center px-3"
                     >
-                      {showPass ? <BsEyeSlash size={20} /> : <BsEye size={20} />}
+                      {showPass ? (
+                        <BsEyeSlash size={20} />
+                      ) : (
+                        <BsEye size={20} />
+                      )}
                     </Button>
                   </InputGroup>
                 </Form.Group>
@@ -143,14 +195,30 @@ const LoginPage = () => {
               <Link
                 to="#"
                 className="forgot-link ms-auto text-nowrap"
-                onClick={() => setIsForgotPassword(!isForgotPassword)}  
+                onClick={() => setIsForgotPassword(!isForgotPassword)}
               >
-                {isForgotPassword ? "Iniciar sesión" : "¿Olvidaste tu contraseña?"}
+                {isForgotPassword
+                  ? "Iniciar sesión"
+                  : "¿Olvidaste tu contraseña?"}
               </Link>
             </div>
 
-            <Button variant="primary" type="submit" className="w-100" disabled={loading}>
-              {loading ? (<><Spinner animation="border" size="sm" className="me-2" /> Iniciando…</>) : isForgotPassword ? "Recuperar contraseña" : "Iniciar sesión"}
+            <Button
+              variant="primary"
+              type="submit"
+              className="w-100"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />{" "}
+                  Iniciando…
+                </>
+              ) : isForgotPassword ? (
+                "Recuperar contraseña"
+              ) : (
+                "Iniciar sesión"
+              )}
             </Button>
           </Form>
 

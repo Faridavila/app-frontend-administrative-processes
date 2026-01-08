@@ -119,6 +119,7 @@ const InventoryCRUD = () => {
       hidden: true,
       required: true,
     },
+
     {
       key: "productStatus",
       label: "Estado",
@@ -127,16 +128,30 @@ const InventoryCRUD = () => {
       render: (item) => {
         const statusColor = getStatusColor(item.productStatus);
         return (
-          <span
+          <div
             style={{
-              backgroundColor: statusColor,
-              padding: "5px",
-              borderRadius: "5px",
-              color: "#fff",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
+              height: "100%",
             }}
           >
-            {item.productStatus}
-          </span>
+            <span
+              style={{
+                backgroundColor: statusColor,
+                padding: "6px 16px",
+                borderRadius: "80px",
+                color: "#fff",
+                fontWeight: "500",
+                display: "inline-block",
+                textAlign: "center",
+                minWidth: "120px",
+              }}
+            >
+              {item.productStatus}
+            </span>
+          </div>
         );
       },
     },
@@ -202,11 +217,11 @@ const InventoryCRUD = () => {
   const getStatusColor = (productStatus: string) => {
     switch (productStatus) {
       case "agotado":
-        return "red";
+         return "#dc3545";
       case "pocas unidades":
-        return "orange";
+        return "#ffbf00";
       case "disponible":
-        return "green";
+         return "#28a745";
       default:
         return "transparent";
     }
@@ -612,7 +627,7 @@ const InventoryCRUD = () => {
                 (line) =>
                   line.productId > 0 &&
                   line.quantity > 0 &&
-                  line.purchasePrice >= 0
+                  line.purchasePrice > 0
               )) && (
               <Alert variant="danger" className="mt-1">
                 Ingrese todos los campos requeridos, en los productos agregados.
@@ -653,11 +668,13 @@ const InventoryCRUD = () => {
   ) => {
     if (
       !currentAction ||
-      productLines.length === 0 ||
-      !productLines.every(
-        (line) =>
-          line.productId > 0 && line.quantity > 0 && line.purchasePrice >= 0
-      )
+    productLines.length === 0 ||
+    !productLines.every(
+      (line) =>
+        line.productId > 0 && 
+        line.quantity > 0 && 
+        line.purchasePrice > 0  
+    )
     ) {
       onError(
         new Error(
@@ -712,16 +729,17 @@ const InventoryCRUD = () => {
     }
   };
 
-  const renderCustomActionValidation = () => {
-    return (
-      productLines.length > 0 &&
-      productLines.every(
-        (line) =>
-          line.productId > 0 && line.quantity > 0 && line.purchasePrice >= 0
-      )
-    );
-  };
-
+const renderCustomActionValidation = () => {
+  return (
+    productLines.length > 0 &&
+    productLines.every(
+      (line) =>
+        line.productId > 0 && 
+        line.quantity > 0 && 
+        line.purchasePrice > 0  
+    )
+  );
+};
   const onActionModalOpen = (key: string) => {
     const actionKey = key as "add" | "subtract";
     setDate(getLocalDate());

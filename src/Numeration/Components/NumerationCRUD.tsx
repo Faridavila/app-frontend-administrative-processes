@@ -20,7 +20,7 @@ const NumerationCRUD = () => {
     initialNumber: 0,
     finalNumber: 0,
     currentNumber: 0,
-    resolutionNumber: 0,
+    authNumber: 0,
     status: "",
   });
 
@@ -38,7 +38,7 @@ const NumerationCRUD = () => {
   }[] = [
       { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true },
       { key: "prefix", label: "Prefijo", required: true },
-      { key: "resolutionNumber", label: "Número de autorización", },
+      { key: "authNumber", label: "Número de autorización", },
 
       {
         key: "startDate", label: "Fecha de autorización", required: true,
@@ -56,9 +56,9 @@ const NumerationCRUD = () => {
       },
 
 
-      { key: "initialNumber", label: "Número inicial", required: true, minLength: 2, maxLength: 100, },
-      { key: "finalNumber", label: "Número final", required: true, minLength: 2, maxLength: 100, },
-      { key: "currentNumber", label: "Número actual", required: true, minLength: 2, maxLength: 100, },
+      { key: "initialNumber", label: "Número inicial", required: true,  },
+      { key: "finalNumber", label: "Número final", required: true, },
+      { key: "currentNumber", label: "Número actual", required: true, },
 
     ];
 

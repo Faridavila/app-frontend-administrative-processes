@@ -3,18 +3,17 @@ import GenericSelect from '../../GeneralComponents/GeneralCrud/SelectGeneral';
 import { GetAllClientNoPage } from '../../Client/API/ClientAPI';
 
 interface ClientSelectProps {
-  selectedValue: number;
-  onChange: (newValue: number) => void;
+  selectedValue: number | null;
+  onChange: (newValue: number | null) => void;
 }
 
 const ClientSelect: React.FC<ClientSelectProps> = ({ selectedValue, onChange }) => {
-  // Función que formatea los datos del departamento
+
   const fetchClients = async () => {
     try {
       const ClientData = await GetAllClientNoPage();
       
       if (ClientData && Array.isArray(ClientData)) {
-        // Transformamos los datos para que tengan el formato correcto
         return ClientData.map(dep => ({
           id: dep.id,
           displayLabel: `${dep.name}-${dep.identification}`,
@@ -30,7 +29,7 @@ const ClientSelect: React.FC<ClientSelectProps> = ({ selectedValue, onChange }) 
   return (
     <GenericSelect
       fetchData={fetchClients}
-      selectedValue={selectedValue}
+      selectedValue={selectedValue || 0}
       onChange={onChange}
       labelKey="displayLabel"
       valueKey="id"

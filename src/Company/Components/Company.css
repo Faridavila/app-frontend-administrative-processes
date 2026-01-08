@@ -63,7 +63,7 @@
 
 .edit-button {
   display: block;
-  width: 100%;
+  width: 20%;
   padding: 10px 20px;
   border-radius: 10px;
   background: #ff0000;
@@ -214,3 +214,13 @@ button.close:hover {
 }
 
 
+.company-detail strong {
+  font-weight: 700;
+  color: #898787;
+}
+
+.company-detail span {
+  font-weight: 400;
+  color: #898787;
+  margin-left: 8px;
+}

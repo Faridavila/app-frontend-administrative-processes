@@ -4,6 +4,29 @@ import { BASE_URL_APIS_USER } from "../../constants";
 const URL: string = `${BASE_URL_APIS_USER}/user`;
 
 
+
+export const forgotPassword = async (email: string): Promise<any> => {
+  try {
+    const response = await fetch(`${URL}/forget`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return { success: true, message: data.message || "Enlace enviado correctamente." };
+    } else {
+      return { success: false, message: data.message || "Error al procesar la solicitud." };
+    }
+  } catch (err) {
+    return { success: false, message: "Error de conexión. Inténtalo más tarde." };
+  }
+};
+
 export const login = async (username: string, password: string) => {
     const loginData = {
         username: username,

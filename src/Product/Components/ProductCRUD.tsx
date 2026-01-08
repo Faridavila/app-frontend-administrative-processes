@@ -3,6 +3,7 @@ import { ProductTypes } from "../Types/ProductTypes";
 import { ProductSortFieldMap } from "../Types/MapeoProductTypes";
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
 import CategorySelect from "./CategorySelectProduct";
+import { Form } from "react-bootstrap";
 import {
   GetProduct,
   CreateProduct,
@@ -10,7 +11,6 @@ import {
   DeleteProduct,
   GetSearchProduct,
 } from "../API/ProductAPI";
-
 
 const ProductCRUD = () => {
   const itemTemplate = (): ProductTypes => ({
@@ -23,9 +23,8 @@ const ProductCRUD = () => {
     categoryName: "",
     image: "",
     purchasePrice: 0,
-    status: "", 
+    status: "",
   });
-
 
   const columns: {
     key: keyof ProductTypes;
@@ -36,10 +35,10 @@ const ProductCRUD = () => {
     regex?: RegExp;
     hiddenInCreate?: boolean;
     hiddenInEdit?: boolean;
-    hidden?: boolean; 
+    hidden?: boolean;
     editable?: boolean;
-    dependentOn?: keyof ProductTypes; 
-    validationMessage?: string;    
+    dependentOn?: keyof ProductTypes;
+    validationMessage?: string;
     render?: (item: ProductTypes) => React.ReactNode;
     imageOptions?: {
       maxSize: number;
@@ -47,46 +46,63 @@ const ProductCRUD = () => {
     };
   }[] = [
     { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true },
-    { key: "productName", 
+    {
+      key: "productName",
       label: "Nombre del producto",
       required: true,
       minLength: 2,
       maxLength: 40,
-      regex: /^[A-Za-záéíóúÁÉÍÓÚ0-9\s\.,;¡!¿?(){}[\]@#%&*+_\\/-]+$/, },
-    { key: "price", 
+      regex: /^[A-Za-záéíóúÁÉÍÓÚ0-9\s\.,;¡!¿?(){}[\]@#%&*+_\\/-]+$/,
+    },
+    {
+      key: "price",
       label: "Precio de venta",
       required: true,
-      regex:/^\d+(\.\d+)?$/},
-    { key: "description", 
-      label: "Medidas", 
+      regex: /^\d+$/,
+      render: (item) => item.price.toLocaleString('es-ES')
+    },
+    {
+      key: "description",
+      label: "Medidas",
       required: true,
       minLength: 2,
       maxLength: 80,
-      regex: /^[A-Za-záéíóúÁÉÍÓÚ0-9\s\.,;¡!¿?(){}[\]@#%&*+_\\/-]+$/, },
-    { key: "purchasePrice", 
-      label: "Precio de compra", 
+      regex: /^[A-Za-záéíóúÁÉÍÓÚ0-9\s\.,;¡!¿?(){}[\]@#%&*+_\\/-]+$/,
+    },
+    {
+      key: "purchasePrice",
+      label: "Precio de compra",
       required: true,
-      regex:/^\d+(\.\d+)?$/},
-    { key: "quantity", 
+      regex: /^\d+$/,
+      render: (item) => item.purchasePrice.toLocaleString('es-ES')
+    },
+    {
+      key: "quantity",
       hidden: true,
       label: "Cantidad inicial",
       required: true,
-      regex: /^\d+$/ },
-    { key: "categoryId", 
+      regex: /^\d+$/,
+      render: (item) => item.quantity.toLocaleString('es-ES')
+    },
+    { 
+      key: "categoryId", 
+      required: true,
       label: "Categoria", 
-      required:true,
-      hidden: true },
-    { key: "categoryName", 
+      hidden: true 
+    },
+    {
+      key: "categoryName",
       label: "Categoria",
-      required:true,
-      hiddenInCreate: true, 
-      hiddenInEdit: true },
+      required: true,
+      hiddenInCreate: true,
+      hiddenInEdit: true,
+    },
     {
       key: "image",
       label: "Imagen",
       required: true,
       imageOptions: {
-        maxSize: 2 * 1024 * 1024,  
+        maxSize: 2 * 1024 * 1024,
         acceptedFormats: ["image/jpeg", "image/png", "image/webp"],
       },
       render: (item) =>
@@ -100,30 +116,27 @@ const ProductCRUD = () => {
           "N/A"
         ),
       editable: true,
-    }
+    },
   ];
 
   const renderCustomFormField = (
     colKey: keyof ProductTypes,
     value: any,
-    onChange: (newValue: any) => void
+    onChange: (update: Partial<ProductTypes>) => void
   ) => {
     if (colKey === "image") {
       return (
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
-          <input
-            type="file"
-            accept=".jpg,.jpeg,.png,.webp"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                onChange(file); 
-              }
-            }}
-          />
-          {value instanceof File && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            marginTop: "8px",
+          }}
+        >
+          {value && (
             <img
-              src={URL.createObjectURL(value)}
+              src={value instanceof File ? URL.createObjectURL(value) : value}
               alt="Vista previa"
               style={{
                 width: "80px",
@@ -131,9 +144,20 @@ const ProductCRUD = () => {
                 objectFit: "cover",
                 borderRadius: "8px",
                 border: "1px solid #ccc",
+                marginBottom: "8px"
               }}
             />
           )}
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                onChange({ image: file as unknown } as Partial<ProductTypes>);
+              }
+            }}
+          />
         </div>
       );
     }
@@ -142,7 +166,32 @@ const ProductCRUD = () => {
       return (
         <CategorySelect
           selectedValue={parseInt(value, 10)}
-          onChange={(newCategoryId: number) => onChange(newCategoryId.toString())}
+          onChange={(newCategoryId: number) => {
+            onChange({ categoryId: newCategoryId });
+          }}
+        />
+      );
+    }
+    if (colKey === "price" || colKey === "purchasePrice" || colKey === "quantity") {
+      const numValue = value > 0 ? value : '';
+      const displayValue = numValue ? numValue.toLocaleString('es-ES') : '';
+      
+      const placeholders: Record<string, string> = {
+        price: "Ej: 50.000",
+        purchasePrice: "Ej: 30.000",
+        quantity: "Ej: 100"
+      };
+
+      return (
+        <Form.Control
+          type="text"
+          placeholder={placeholders[colKey]}
+          value={displayValue}
+          onChange={(e) => {
+            const input = e.target.value.replace(/\./g, "");
+            if (!/^\d*$/.test(input)) return;
+            onChange({ [colKey]: input ? parseInt(input) : 0 } as Partial<ProductTypes>);
+          }}
         />
       );
     }
@@ -157,13 +206,17 @@ const ProductCRUD = () => {
       <div className="content-wrapper container-fluid  p-0">
         <div className="content-header row"></div>
         <div style={{ display: "flex", alignItems: "center" }}>
-          <h3 className="content-body" style={{ margin: "0", fontSize: "21px" }}>
+          <h3
+            className="content-body"
+            style={{ margin: "0", fontSize: "21px" }}
+          >
             Gestión de Productos
           </h3>
           <FavoritoButton path="/product" label="Productos" />
         </div>
         <p>
-          Administre los productos mediante la creación, edición o eliminación de registros.
+          Administre los productos mediante la creación, edición o eliminación
+          de registros.
         </p>
         <div className="card">
           <div className="card-datatable table-responsive">
@@ -177,7 +230,7 @@ const ProductCRUD = () => {
               columns={columns}
               filterButtonOrder={1}
               sortFieldMap={ProductSortFieldMap}
-              pageTitle="Productos" 
+              pageTitle="Productos"
               renderCustomFormField={renderCustomFormField}
             />
           </div>

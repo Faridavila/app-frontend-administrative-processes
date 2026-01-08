@@ -11,9 +11,9 @@ export interface InvoiceDetail {
 
 export interface GenerateInvoiceType {
   customerId: number;
-  invoiceDate: string; // ISO: "2025-12-04T15:30:00"
+  invoiceDate: string; 
   dueDate?: string | null;
-  paymentTypeId: number; // 1 = contado, 2 = crédito, 3 = abono
+  paymentTypeId: number; 
   paymentMethodId: number;
   deliveryType: "LLEVAR" | "RECOGER";
   deliveryCost: number;

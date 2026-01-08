@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import CRUDForm from "../../GeneralComponents/GeneralCrud/CRUDForm";
-import { TerminalTypes } from "../Types/TerminalTypes";
+import { TerminalTypes, UserList } from "../Types/TerminalTypes";
 import { TerminalSortFieldMap } from "../Types/MapeoTerminal";
 import {
   GetTerminal,
@@ -19,11 +19,17 @@ const TerminalCRUD = () => {
 
   useEffect(() => {
     const loadUsers = async () => {
-      const result = await GetAllUseresNoPage();
-      if (result && result.content) {
-        setUsers(result.content);
-      } else if (Array.isArray(result)) {
-        setUsers(result);
+      try {
+        const result = await GetAllUseresNoPage();
+        // La API puede devolver { content: [...] } o directamente un array
+        if (result && Array.isArray((result as any).content)) {
+          setUsers((result as any).content);
+        } else if (Array.isArray(result)) {
+          setUsers(result);
+        }
+      } catch (error) {
+        console.error("Error cargando usuarios:", error);
+        setUsers([]);
       }
     };
     loadUsers();
@@ -36,38 +42,37 @@ const TerminalCRUD = () => {
     numerationId: 0,
     initialNumber: 0,
     finalNumber: 0,
-    userId: 0,
-    userName: "",
-    numberUser: 0,
+    users: [],           // Array vacío inicialmente
+    numberUser: 0,       // Se calculará automáticamente si el backend lo requiere
     status: "",
   });
 
   const columns = [
     { key: "id" as const, label: "ID", hiddenInCreate: true, hiddenInEdit: true },
     { key: "name" as const, label: "Nombre", required: true },
-    { key: "prefix" as const, label: "Prefijo", hiddenInCreate: true, hiddenInEdit: true, hidden:true },
-
-    { key: "numerationId" as const, label: "Rango de numeración",  required: true },
+    { key: "prefix" as const, label: "Prefijo", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
+    { key: "numerationId" as const, label: "Rango de numeración", required: true },
     {
-      key: "userName" as const,
+      key: "users" as const,
       label: "Usuarios",
-      hidden:true ,
+      hidden: true,
       render: (item: TerminalTypes) => {
-        if (!item.userName) return <Badge bg="secondary">Sin usuarios</Badge>;
-        const userList = item.userName.split(', ').filter(Boolean);
+        if (item.users.length === 0) {
+          return <Badge bg="secondary">Sin usuarios</Badge>;
+        }
         return (
-          <div className="d-flex flex-wrap gap-1">
-            {userList.map((user, i) => (
+          <div className="d-flex flex-wrap gap-1 align-items-center">
+            {item.users.map((user, i) => (
               <Badge key={i} bg="info" className="text-dark">
-                {user}
+                {user.userName}
               </Badge>
             ))}
-            <small className="text-muted ms-2">({item.numberUser})</small>
+            <small className="text-muted ms-2">({item.users.length})</small>
           </div>
         );
-      }
+      },
     },
-    {key: "numberUser" as const, label: "Usuarios asignados", hiddenInCreate: true, hiddenInEdit: true,  },
+    { key: "numberUser" as const, label: "Cantidad usuarios", hiddenInCreate: true, hiddenInEdit: true },
     { key: "status" as const, label: "Estado", hiddenInCreate: true, hiddenInEdit: true },
   ];
 
@@ -80,52 +85,59 @@ const TerminalCRUD = () => {
     if (colKey === "numerationId") {
       return (
         <NumerationSelect
-          selectedValue={parseInt(value || "0", 10)}
+          selectedValue={parseInt(String(value || "0"), 10)}
           onChange={(newValue) => onUpdate({ numerationId: newValue })}
         />
       );
     }
 
-    if (colKey === "userName") {
+    if (colKey === "users") {
+      const selectedUserIds = currentItem.users.map(u => u.userId);
+
+      const handleUserToggle = (user: any, checked: boolean) => {
+        let newUsers: UserList[];
+
+        if (checked) {
+          newUsers = [...currentItem.users, { userId: user.id, userName: user.name }];
+        } else {
+          newUsers = currentItem.users.filter(u => u.userId !== user.id);
+        }
+
+        onUpdate({
+          users: newUsers,
+          numberUser: newUsers.length,  
+        });
+      };
+
       return (
         <div>
-          <Form.Label className="text-muted text-white mb-2">
+          <Form.Label className="mb-2 fw-medium">
             Seleccionar usuarios que usarán esta terminal
           </Form.Label>
-          <div 
-            
+          <div
+            style={{
+              maxHeight: '320px',
+              overflowY: 'auto',
+              border: '1px solid #dee2e6',
+              borderRadius: '0.375rem',
+              padding: '0.5rem',
+            }}
           >
             {users.length === 0 ? (
-              <div className="text-center py-4">
-                <p className="text-muted mt-2 mb-0">Cargando usuarios...</p>
-              </div>
+              <p className="text-muted text-center my-4">Cargando usuarios...</p>
             ) : (
               users.map((user: any) => {
-                const isChecked = currentItem.userName?.includes(user.name) || false;
+                const isChecked = selectedUserIds.includes(user.id);
+
                 return (
                   <Form.Check
                     key={user.id}
                     type="checkbox"
                     id={`user-${user.id}`}
-                    label={
-                      <div className="d-flex justify-content-between align-items-center w-100">
-                        <span className="text-muted fw-medium">{user.name}</span>
-                      </div>
-                    }
+                    label={<span className="fw-medium">{user.name}</span>}
                     checked={isChecked}
-                    onChange={(e) => {
-                      const checked = e.target.checked;
-                      const current = currentItem.userName ? currentItem.userName.split(', ') : [];
-                      const newUsers = checked
-                        ? [...current.filter(Boolean), user.name]
-                        : current.filter(u => u !== user.name);
-
-                      onUpdate({
-                        userName: newUsers.join(', '),
-                        numberUser: newUsers.length,
-                      });
-                    }}
-                    className=" p-1 "
+                    onChange={(e) => handleUserToggle(user, e.target.checked)}
+                    className="py-1"
                   />
                 );
               })
@@ -142,7 +154,7 @@ const TerminalCRUD = () => {
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-fluid  p-0">
+      <div className="content-wrapper container-fluid p-0">
         <div className="content-header row"></div>
         <div className="content-body">
           <div style={{ display: "flex", alignItems: "center", marginBottom: "1rem" }}>

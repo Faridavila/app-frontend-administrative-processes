@@ -1,9 +1,10 @@
+// SupplierProductsCRUD.tsx
 import CRUDForm from "../../GeneralComponents/GeneralCrud/CRUDForm";
 import React, { useState } from 'react';
 import { Card, Container, Row, Col} from 'react-bootstrap';
 import { SupplierProductTypes } from "../Types/SupplierProductTypes";
 import { SupplierProductSortFieldMap } from "../Types/MapeoSupplierProduct";
-import { GetSupplierProducts,GetSearchSupplierProducts,} from "../API/SupplierProductAPI";
+import { GetSupplierProducts, GetSearchSupplierProducts } from "../API/SupplierProductAPI";
 
 interface SupplierProductCRUDProps {
   extraParams: { supplierId: number };
@@ -13,6 +14,7 @@ interface SupplierProductCRUDProps {
 
 const SupplierProductsCRUD: React.FC<SupplierProductCRUDProps> = ({ extraParams, onRowClick }) => {
   const [selectedMicroRoutes, setSelectedshoppingSupplierId] = useState<SupplierProductTypes | null>(null);
+  
   const itemTemplate = (): SupplierProductTypes => ({
     id: 0,
     productId: 0,
@@ -42,14 +44,12 @@ const SupplierProductsCRUD: React.FC<SupplierProductCRUDProps> = ({ extraParams,
       }
     ];
 
-
   const handleRowSelection = (supplier: SupplierProductTypes) => {
     setSelectedshoppingSupplierId(supplier);
     if (onRowClick) {
       onRowClick(supplier);
     }
   };
-
 
   return (
     <Container fluid>
@@ -59,7 +59,7 @@ const SupplierProductsCRUD: React.FC<SupplierProductCRUDProps> = ({ extraParams,
             <Card.Body className="table-responsive" style={{  padding: '0' }}>
               <h2 className="product-details-title" style={{ fontWeight: 'bold', fontSize: '22px' }}>Productos precio de compra</h2>
               <CRUDForm<SupplierProductTypes>
-                fetchItems={GetSupplierProducts as any}
+                fetchItems={GetSupplierProducts}
                 searchItem={GetSearchSupplierProducts}
                 createItem={async () => {}}
                 updateItem={async () => {}}

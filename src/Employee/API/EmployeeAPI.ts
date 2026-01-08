@@ -1,8 +1,8 @@
 import { EmployeeTypes } from "../Types/EmployeeTypes";
-import { BASE_URL_APIS_USER } from "../../constants";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8081/api/v1/back-user-service/Employee';
-//const URL: string = `${BASE_URL_APIS_USER}/api/v1/back-user-service/Employee`;
+//const URL = 'http://localhost:8081/api/v1/back-user-service/employee';
+const URL: string = `${BASE_URL_APIS_CORE}/employee`;
 
 export const GetEmployee = async (
   page: number,
@@ -141,7 +141,7 @@ export async function DeleteEmployee(id: number): Promise<void> {
 
 export async function GetAllEmployeeNoPage(): Promise<EmployeeTypes[] | null> {
   try {
-      const response = await fetch(`${URL}/get-all-without-page`);
+      const response = await fetch(`${URL}/no-page/getAllEmployee`);
       if (response.ok) {
           const data: EmployeeTypes[] = await response.json();
           return data;

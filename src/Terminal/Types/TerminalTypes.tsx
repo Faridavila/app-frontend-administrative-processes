@@ -5,8 +5,14 @@ export interface TerminalTypes {
   prefix: string;
   initialNumber: number;
   finalNumber: number;
-  userId: number;
-  userName: string;
+  users: UserList[];
   numberUser: number;
   status: string;
 }
+
+
+export interface UserList {
+  userId: number;
+  userName: string;
+}
+

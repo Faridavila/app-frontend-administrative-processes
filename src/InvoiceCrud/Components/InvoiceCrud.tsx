@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 import { InvoiceCrudTypes } from "../Types/InvoiceCrudTypes";
-import { GetInvoiceCrud, GetGenerateInvoiceById } from "../API/InvoiceCrudAPI";
+import { GetInvoice,DeleteInvoice, GetGenerateInvoiceById } from "../API/InvoiceCrudAPI";
 import { AddIcon, SeeIcon } from '../Icons/Icons';
 import { Button, Spinner } from 'react-bootstrap';
 import { InvoiceCrudSortFieldMap } from "../Types/MapeoInvoiceCrud";
@@ -147,11 +147,11 @@ const InvoiceCrud = () => {
             </div>
 
             <CRUDForm<InvoiceCrudTypes>
-              fetchItems={GetInvoiceCrud}
+              fetchItems={GetInvoice}
               searchItem={async () => []}
               createItem={async () => { }}
               updateItem={async () => { }}
-              deleteItem={async () => { }}
+              deleteItem={DeleteInvoice}
               itemTemplate={itemTemplate}
               columns={columns}
               filterButtonOrder={1}

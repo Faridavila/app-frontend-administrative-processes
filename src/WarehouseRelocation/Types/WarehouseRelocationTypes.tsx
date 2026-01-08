@@ -1,9 +1,9 @@
 export interface WarehouseRelocationTypes {
   id: number;
   warehouseOriginId: number;
-  warehouseNameOrigin: string;
+  warehouseOriginName: string;
   warehouseDestinationId: number;
-  warehouseNameDestination: string;
+  warehouseDestinationName: string;
   productId: number;
   productName: string;
   quantity: number;
@@ -14,22 +14,22 @@ export interface WarehouseRelocationTypes {
   userName: string;
   orderStatus: string;
   status: string;
-  products: PurchaseProductDto[];
+  products: ProductDto[];
 }
 
-export interface PurchaseProductDto {
+export interface ProductDto {
   productId: number;
   quantity: number;
 }
 
 export interface CreatePurchaseDto {
-  supplierId: number;
+  warehouseOriginId: number;
+  warehouseDestinationId: number;
   userId: number;
   date: string; 
+  hour: string;
   observation: string;
-  transactionTotal: number;
-  purchaseStatus: string; 
-  products: PurchaseProductDto[];
+  products: ProductDto[];
 }
 
 

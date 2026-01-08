@@ -153,3 +153,18 @@ export async function GetAllUseresNoPage(): Promise<UserTypes[] | null> {
         return null;
     }
 }
+
+export async function GetAllUserByUser(): Promise<UserTypes[] | null> {
+    try {
+        const response = await fetch(`${URL}/get-all-rol-by-user`);
+        if (response.ok) {
+            const data: UserTypes[] = await response.json();
+            return data;
+        } else {
+            throw new Error(`La solicitud a la API fallo ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Error al llamar a la API:", error);
+        return null;
+    }
+}

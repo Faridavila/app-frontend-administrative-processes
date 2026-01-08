@@ -1,8 +1,8 @@
 import { EmployeeHistoryTypes } from "../Types/EmployeeHistoryTypes";
-import { BASE_URL_APIS_USER } from "../../constants";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8081/api/v1/back-user-service/EmployeeHistory';
-//const URL: string = `${BASE_URL_APIS_USER}/api/v1/back-user-service/EmployeeHistory`;
+//const URL = 'http://localhost:8081/api/v1/back-user-service/EmployeeHistory';}
+const URL: string = `${BASE_URL_APIS_CORE}/employee`;
 
 export const GetEmployeeHistory = async (
   page: number,
@@ -31,7 +31,7 @@ export const GetEmployeeHistory = async (
   });
 
   try {
-    const response = await fetch(`${URL}?${queryParams.toString()}`);
+    const response = await fetch(`${URL}/get-all-payment?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }
@@ -42,25 +42,6 @@ export const GetEmployeeHistory = async (
     return [];
   }
 };
-
-
-export async function CreateEmployeeHistory(branchDto: EmployeeHistoryTypes): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/create`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(branchDto),
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        throw error;
-    }
-}
 
 export const GetSearchEmployeeHistory = async (
   page: number,
@@ -91,7 +72,7 @@ export const GetSearchEmployeeHistory = async (
   });
 
   try {
-    const response = await fetch(`${URL}/search?${queryParams.toString()}`);
+    const response = await fetch(`${URL}/search-payment?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }
@@ -104,46 +85,11 @@ export const GetSearchEmployeeHistory = async (
 };
 
 
-
-export async function UpdateEmployeeHistory(id: number, branchDto: EmployeeHistoryTypes): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/update/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(branchDto),
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        throw error;
-    }
-}
-
-
-export async function DeleteEmployeeHistory(id: number): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/delete/${id}`, {
-            method: "DELETE",
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        throw error;
-    }
-}
-
-
-export async function GetAllEmployeeHistoryNoPage(): Promise<EmployeeHistoryTypes[] | null> {
+export async function GetAllEmployeePaymentNoPage(): Promise<EmployeeHistoryTypes[] | null> {
   try {
-      const response = await fetch(`${URL}/get-all-without-page`);
+      const response = await fetch(`${URL}/get-all-payment-no-page`);
       if (response.ok) {
-          const data: EmployeeHistoryTypes[] = await response.json();
+          const data:EmployeeHistoryTypes[] = await response.json();
           return data;
       } else {
           throw new Error(`La solicitud a la API falló ${response.status}`);
@@ -153,6 +99,8 @@ export async function GetAllEmployeeHistoryNoPage(): Promise<EmployeeHistoryType
       return null;
   }
 }
+
+
 
 
 

@@ -13,6 +13,6 @@ export interface EmployeeTypes {
   address: string;
   phone: number;
   hasBaseSalary: boolean;
-  base_salary: number | undefined;
+  baseSalary: number | undefined;
   status: string;
 }

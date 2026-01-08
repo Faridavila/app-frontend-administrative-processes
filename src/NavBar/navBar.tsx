@@ -35,12 +35,21 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
   const [lastOpenSubMenu, setLastOpenSubMenu] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [imgCompany, setImgCompany] = useState<string>("");
+  const [imageLoaded, setImageLoaded] = useState<boolean>(false);
 
   const toggleSubMenu = (menu: string) => {
     const newOpenSubMenu = openSubMenu === menu ? null : menu;
     setOpenSubMenu(newOpenSubMenu);
     setLastOpenSubMenu(newOpenSubMenu);
   };
+
+  useEffect(() => {
+    const storedCompany = localStorage.getItem("imageCompany");
+    if (storedCompany) {
+      setImgCompany(storedCompany);
+    }
+  }, []);
 
   useEffect(() => {
     if (isMenuCollapsed && !isHovered) {
@@ -198,12 +207,59 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
         <ul className="nav navbar-nav flex-row">
           <li className="nav-item me-auto">
             <Link className="navbar-brand" to="/dashboard">
-              <span>
-                <img
-                  src="/additional-assets/images/logo/Logo nuevo.png"
-                  alt="Logo"
-                  height="35"
-                />
+              <span style={{ position: 'relative', width: '35px', height: '35px', display: 'inline-block' }}>
+                {!imageLoaded && imgCompany && (
+                  <div
+                    style={{
+                      width: '35px',
+                      height: '35px',
+                      background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
+                      backgroundSize: '200% 100%',
+                      animation: 'loading 1.5s infinite',
+                      borderRadius: '4px',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                    }}
+                  />
+                )}
+                
+                {imgCompany && (
+                  <img
+                    src={imgCompany}
+                    alt="Logo"
+                    height="35"
+                    onLoad={() => setImageLoaded(true)}
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      setImageLoaded(true);
+                    }}
+                    style={{
+                      opacity: imageLoaded ? 1 : 0,
+                      transition: 'opacity 0.3s ease-in-out',
+                      display: 'block',
+                    }}
+                  />
+                )}
+                
+                {!imgCompany && (
+                  <div
+                    style={{
+                      width: '35px',
+                      height: '35px',
+                      background: '#cc322d',
+                      borderRadius: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontWeight: 'bold',
+                      fontSize: '14px',
+                    }}
+                  >
+                    L
+                  </div>
+                )}
               </span>
               <h3 className="brand-text" style={{ color: "#cc322d" }}>
                 Ladrillera

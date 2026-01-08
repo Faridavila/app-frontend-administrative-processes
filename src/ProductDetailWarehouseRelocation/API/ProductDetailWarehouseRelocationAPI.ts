@@ -1,17 +1,17 @@
-// SupplierProductAPI.ts
-import { SupplierProductTypes, GetProductParams } from "../Types/SupplierProductTypes";
+import { ProductDetailWarehouseRelocationTypes,GetProductParams } from "../Types/ProductDetailWarehouseRelocationTypes";
 import { BASE_URL_APIS_CORE } from "../../constants";
 
+//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/supplier';
 const URL: string = `${BASE_URL_APIS_CORE}/supplier`;
 
-export const GetSupplierProducts = async (
+export const GetProductDetailWarehouseRelocation = async (
   page: number,
   size: number,
-  filters: Partial<SupplierProductTypes>,
+  filters: Partial<ProductDetailWarehouseRelocationTypes>,
   sortOrder: string = '',
-  sortBy?: keyof SupplierProductTypes,
-  extraParams?: Record<string, any>
-): Promise<SupplierProductTypes[]> => {
+  sortBy?: keyof ProductDetailWarehouseRelocationTypes,
+  extraParams?: GetProductParams
+): Promise<ProductDetailWarehouseRelocationTypes[]> => {
   const queryParams = new URLSearchParams();
 
   queryParams.append('page', String(page));
@@ -24,21 +24,21 @@ export const GetSupplierProducts = async (
   }
 
   Object.keys(filters).forEach((key) => {
-    const value = filters[key as keyof SupplierProductTypes];
+    const value = filters[key as keyof ProductDetailWarehouseRelocationTypes];
     if (value != null) {  
       queryParams.append(key, String(value));
     }
   });
 
   try {
-    const supplierId = extraParams?.supplierId;
+    const shoppingSupplierId = extraParams?.shoppingSupplierId;
   
-    if (!supplierId || supplierId === 0) {
+    if (!shoppingSupplierId || shoppingSupplierId === 0) {
       console.error("supplierId no está definido o es inválido. Verifica extraParams");
       return [];
     }
 
-    const apiUrl = `${URL}/getAllProductsBySupplier/${supplierId}?${queryParams.toString()}`;
+    const apiUrl = `${URL}/purchase/getAllProductByPurchaseId/${shoppingSupplierId}?${queryParams.toString()}`;
     console.log("URL de la API:", apiUrl);
     const response = await fetch(apiUrl);
 
@@ -62,18 +62,19 @@ export const GetSupplierProducts = async (
   }
 };
 
-export const GetSearchSupplierProducts = async (
+
+export const GetSearchProductDetailWarehouseRelocation = async (
   page: number,
   size: number,
-  filters: Partial<SupplierProductTypes>,
-  sortOrder: string = 'ASC',
-  sortBy?: keyof SupplierProductTypes,
-  extraParams?: Record<string, any>
-): Promise<SupplierProductTypes[]> => {
+  filters: Partial<ProductDetailWarehouseRelocationTypes>,
+  sortOrder: string = 'ASC',  
+  sortBy?: keyof ProductDetailWarehouseRelocationTypes 
+): Promise<ProductDetailWarehouseRelocationTypes[]> => {
   const queryParams = new URLSearchParams();
 
   queryParams.append('page', String(page));
   queryParams.append('size', String(size));
+
 
   const validSortOrder = sortOrder === 'ASC' || sortOrder === 'DESC' ? sortOrder : 'ASC';
   queryParams.append('orders', validSortOrder);
@@ -82,21 +83,16 @@ export const GetSearchSupplierProducts = async (
     queryParams.append('sortBy', String(sortBy));
   }
 
+  
   Object.keys(filters).forEach(key => {
-    const value = filters[key as keyof SupplierProductTypes];
+    const value = filters[key as keyof ProductDetailWarehouseRelocationTypes];
     if (value !== undefined && value !== null && value !== '') {
       queryParams.append(key, String(value));
     }
   });
 
   try {
-    const supplierId = extraParams?.supplierId;
-  
-    if (!supplierId || supplierId === 0) {
-      console.error("supplierId no está definido o es inválido. Verifica extraParams");
-      return [];
-    }
-    const response = await fetch(`${URL}/products/search/${supplierId}?${queryParams.toString()}`);
+    const response = await fetch(`${URL}/search?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }
@@ -108,16 +104,21 @@ export const GetSearchSupplierProducts = async (
   }
 };
 
-export async function DeleteSupplierProducts(id: number): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/products/delete/${id}`, {
-            method: "DELETE",
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        throw error;
-    }
+
+export async function GetAllProductDetailWarehouseRelocationNoPage(): Promise<ProductDetailWarehouseRelocationTypes[] | null> {
+  try {
+      const response = await fetch(`${URL}/get-all-without-page`);
+      if (response.ok) {
+          const data: ProductDetailWarehouseRelocationTypes[] = await response.json();
+          return data;
+      } else {
+          throw new Error(`La solicitud a la API falló ${response.status}`);
+      }
+  } catch (error) {
+      console.error("Error al llamar a la API:", error);
+      return null;
+  }
 }
+
+
+

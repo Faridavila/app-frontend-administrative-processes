@@ -66,10 +66,7 @@ const UserCRUD = () => {
     {
       key: "password",
       label: "Contraseña",
-      required: true,
-      minLength: 8,
-      maxLength: 100,
-      render: (item: UserTypes) => {
+      render: () => {
       const passwordLength = 15; 
       return <span>{"*".repeat(passwordLength)}</span>; 
    },
@@ -130,6 +127,7 @@ const UserCRUD = () => {
       key: "companyName",
       label: "Empresa",
       required: true,
+      hidden:true,
       hiddenInCreate: true, 
       hiddenInEdit: true 
 

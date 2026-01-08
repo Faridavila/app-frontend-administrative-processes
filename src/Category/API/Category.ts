@@ -52,8 +52,8 @@ export async function CreateCategory(
     const formData = new FormData();
     
     formData.append("nameCategory", categoryDto.nameCategory);
-    formData.append("soldOutValue", categoryDto.soldOutValue);
-    formData.append("fewUnits", categoryDto.fewUnits);
+    formData.append("soldOutValue", String(Math.floor(Number(categoryDto.soldOutValue))));
+    formData.append("fewUnits", String(Math.floor(Number(categoryDto.fewUnits))));
 
     if (imageFile) {
       formData.append("image", imageFile); 
@@ -127,8 +127,8 @@ export async function UpdateCategory(
     const formData = new FormData();
     
    formData.append("nameCategory", categoryDto.nameCategory);
-   formData.append("soldOutValue", categoryDto.soldOutValue);
-   formData.append("fewUnits", categoryDto.fewUnits);
+   formData.append("soldOutValue", String(Math.floor(Number(categoryDto.soldOutValue))));
+   formData.append("fewUnits", String(Math.floor(Number(categoryDto.fewUnits))));
 
     if (imageFile) {
       formData.append("image", imageFile);

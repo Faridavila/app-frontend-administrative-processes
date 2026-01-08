@@ -7,7 +7,8 @@ export interface CompanyType {
   phone: string;
   economicActivityId: number;  
   ciiuCode?: string;           
-  description?: string;        
+  description?: string;   
+  image?: string | null;   
   status?: string;          
 }
 

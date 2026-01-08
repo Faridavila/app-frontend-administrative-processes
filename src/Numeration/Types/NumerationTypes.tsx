@@ -6,6 +6,6 @@ export interface NumerationTypes {
   initialNumber: number;
   finalNumber: number;
   currentNumber: number;
-  resolutionNumber: number;
+  authNumber: number;
   status: string;
 }

@@ -118,6 +118,7 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
       hidden: true,
     },
     { key: "date", label: "Fecha" },
+
     {
       key: "purchaseStatus",
       label: "Estado",
@@ -127,16 +128,30 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
         console.log("Rendering PurchaseStatus:", item.purchaseStatus);
         const statusColor = getStatusColor(item.purchaseStatus);
         return (
-          <span
+          <div
             style={{
-              backgroundColor: statusColor,
-              padding: "5px",
-              borderRadius: "5px",
-              color: "#fff",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
+              height: "100%",
             }}
           >
-            {item.purchaseStatus}
-          </span>
+            <span
+              style={{
+                backgroundColor: statusColor,
+                padding: "5px 16px",
+                borderRadius: "80px",
+                color: "#fff",
+                fontWeight: "500",
+                display: "inline-block",
+                textAlign: "center",
+                minWidth: "100px",
+              }}
+            >
+              {item.purchaseStatus}
+            </span>
+          </div>
         );
       },
     },
@@ -333,9 +348,9 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
     console.log("Purchase Status:", purchaseStatus);
     switch (purchaseStatus) {
       case "DEBE":
-        return "red";
+        return "#dc3545";
       case "CANCELADO":
-        return "green";
+        return "#28a745";
       default:
         return "transparent";
     }

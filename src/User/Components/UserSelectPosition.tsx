@@ -4,9 +4,7 @@ import { PositionTypes } from '../../Position/Types/PositionTypes';
 import { GetAllPositionNoPage } from '../../Position/API/PositionAPI';
 
 const fetchPosition = async (): Promise<PositionTypes[]> => {
-  const response = await GetAllPositionNoPage();
-
-
+  const response = await GetAllPositionNoPage()
   if (response && 'data' in response && Array.isArray(response.data)) {
     return response.data;  
   }else if (Array.isArray(response)) {

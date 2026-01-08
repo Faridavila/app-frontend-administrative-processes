@@ -38,6 +38,7 @@ const FacturaComponent = () => {
   const [fechaVencimiento, setFechaVencimiento] = useState<string>("");
   const [abono, setAbono] = useState<number>(0);
   const [entrega, setEntrega] = useState<string>("recoger");
+  const [cotizacion, setCotizacion] = useState<string>();
   const [costoTransporte, setCostoTransporte] = useState<number>(0);
   const [observacion, setObservacion] = useState<string>("");
   const [restante, setRestante] = useState<number>(0);
@@ -139,6 +140,7 @@ const FacturaComponent = () => {
         fechaVencimiento,
         abono,
         entrega,
+        cotizacion,
         observacion,
       });
 
@@ -146,7 +148,7 @@ const FacturaComponent = () => {
 
       const config: PDFInvoiceConfig = {
         companyInfo: {
-          logo: "https://res.cloudinary.com/dfotyo6jc/image/upload/v1761872392/Captura_de_pantalla_2025-10-30_195850_kwda8d.png",
+          logo: companyData?.image,
           logoWidth: 40,
           logoHeight: 40,
           title: "DOCUMENTO NO VALIDO COMO FACTURA DE VENTA",
@@ -519,7 +521,6 @@ const FacturaComponent = () => {
         showConfirmButton: false,
       });
 
-      // LIMPIAR TODO
       // Limpiar todo
       setProductos([]);
       setClienteSeleccionado(null);
@@ -1217,24 +1218,34 @@ ${companyData?.companyName || ""}`;
                       >
                         Domicilio
                       </Form.Label>
+
                       <Form.Check
-                        type="radio"
-                        label="Recoger en depósito"
-                        value="recoger"
+                        type="checkbox"
+                        id="domicilio-recoger"
+                        label={
+                          <span className="fw-medium">Recoger en depósito</span>
+                        }
                         checked={entrega === "recoger"}
                         onChange={(e) => {
-                          setEntrega(e.target.value);
-                          setCostoTransporte(0);
+                          if (e.target.checked) {
+                            setEntrega("recoger");
+                            setCostoTransporte(0);
+                          }
                         }}
-                        style={{ fontSize: "14px", marginBottom: "10px" }}
                       />
                       <Form.Check
-                        type="radio"
-                        label="Llevar a domicilio"
-                        value="llevar"
+                        type="checkbox"
+                        id="domicilio-llevar"
+                        label={
+                          <span className="fw-medium">Llevar a domicilio</span>
+                        }
                         checked={entrega === "llevar"}
-                        onChange={(e) => setEntrega(e.target.value)}
-                        style={{ fontSize: "14px" }}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setEntrega("llevar");
+                          }
+                        }}
+                        className="py-1"
                       />
                     </Form.Group>
                   </Col>
@@ -1329,6 +1340,32 @@ ${companyData?.companyName || ""}`;
                         />
                       </Form.Group>
                     )}
+                    {tipoPago === "contado" && (
+                      <Col md={2}>
+                        <Form.Group className="mb-3">
+                          <Form.Label
+                            style={{ fontSize: "13px", fontWeight: "600" }}
+                          >
+                            Cotizacion
+                          </Form.Label>
+                          <Form.Check
+                            type="checkbox"
+                            id="cotizacion-si"
+                            label={<span className="fw-medium">Cotizar</span>}
+                            checked={cotizacion === "cotizacion"}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setCotizacion("cotizacion");
+                              } else {
+                                setCotizacion("");
+                              }
+                            }}
+                            className="py-1"
+                          />
+                        </Form.Group>
+                      </Col>
+                    )}
+
                     {tipoPago === "abono" && (
                       <Form.Group>
                         <Form.Label

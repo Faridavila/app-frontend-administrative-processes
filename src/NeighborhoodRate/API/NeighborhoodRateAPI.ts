@@ -1,8 +1,8 @@
-import { NeighborhoodRateTypes } from "../Types/NeighborhoodRateTypes";
-import { BASE_URL_APIS_WORKFLOW } from "../../constants";
+import { GeneralRate, NeighborhoodRateTypes } from "../Types/NeighborhoodRateTypes";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8081/api/v1/back-user-service/NeighborhoodRate';
-//const URL: string = `${BASE_URL_APIS_WORKFLOW}/api/v1/back-user-service/NeighborhoodRate`;
+//const URL = 'http://localhost:8081/api/v1/back-user-service/rate-neighborhood';
+const URL: string = `${BASE_URL_APIS_CORE}/rate-neighborhood`;
 
 export const GetNeighborhoodRate = async (
   page: number,
@@ -102,6 +102,25 @@ export const GetSearchNeighborhoodRate = async (
     return [];
   }
 };
+
+
+export async function GeneralSupplierRate( branchDto: GeneralRate): Promise<void> {
+    try {
+        const response = await fetch(`${URL}/general-rates`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(branchDto),
+        });
+        if (!response.ok) {
+            throw new Error(`La solicitud a la API fallo ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Error al llamar a la API:", error);
+        throw error;
+    }
+}
 
 
 
