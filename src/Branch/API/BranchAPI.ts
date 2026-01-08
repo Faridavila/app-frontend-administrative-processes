@@ -2,8 +2,8 @@ import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { BranchTypes } from "../Types/BranchTypes";
 import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/branch';
-//const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/branch`;
+//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/branch';
+const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/branch`;
 
 export async function GetBranchById(id: number): Promise<ObjectResponse<BranchTypes> | null> {
     try {
