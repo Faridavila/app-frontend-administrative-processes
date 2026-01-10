@@ -9,31 +9,56 @@ import {
   DeleteTerminal,
   GetSearchTerminal,
 } from "../API/TerminalAPI";
-import { GetAllUseresNoPage } from '../../User/API/UserAPI';
-import { Form, Badge } from 'react-bootstrap';
+import { GetAllUserByTerminal } from '../../User/API/UserAPI';
+import { Form, Badge, Spinner } from 'react-bootstrap';
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
 import NumerationSelect from "./SelectNumeration";
 
 const TerminalCRUD = () => {
   const [users, setUsers] = useState<any[]>([]);
+  const [currentTerminalId, setCurrentTerminalId] = useState<number | undefined>();
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false); // ✅ Estado de carga
 
-  useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        const result = await GetAllUseresNoPage();
-        // La API puede devolver { content: [...] } o directamente un array
-        if (result && Array.isArray((result as any).content)) {
-          setUsers((result as any).content);
-        } else if (Array.isArray(result)) {
-          setUsers(result);
-        }
-      } catch (error) {
-        console.error("Error cargando usuarios:", error);
-        setUsers([]);
+  // Función para cargar usuarios según el contexto (crear o editar)
+  const loadUsers = async (terminalId?: number) => {
+    setIsLoadingUsers(true); // ✅ Inicia loading
+    try {
+      const result = await GetAllUserByTerminal(terminalId);
+      if (result && Array.isArray((result as any).content)) {
+        setUsers((result as any).content);
+      } else if (Array.isArray(result)) {
+        setUsers(result);
       }
-    };
+    } catch (error) {
+      console.error("Error cargando usuarios:", error);
+      setUsers([]);
+    } finally {
+      setIsLoadingUsers(false); // ✅ Finaliza loading
+    }
+  };
+
+  // Cargar usuarios sin terminal al inicio (para crear)
+  useEffect(() => {
     loadUsers();
   }, []);
+
+  // Callback cuando se abre el modal de CREAR
+  const handleAddModalOpen = () => {
+    setCurrentTerminalId(undefined);
+    loadUsers(); // Sin terminalId = solo usuarios sin terminal
+  };
+
+  // Callback cuando se abre el modal de EDITAR
+  const handleEditModalOpen = (item: TerminalTypes) => {
+    setCurrentTerminalId(item.id);
+    loadUsers(item.id); // Con terminalId = usuarios sin terminal + usuarios de esa terminal
+  };
+
+  // Callback cuando se cierra cualquier modal
+  const handleModalClose = () => {
+    setCurrentTerminalId(undefined);
+    loadUsers(); // Reset a usuarios sin terminal
+  };
 
   const itemTemplate = (): TerminalTypes => ({
     id: 0,
@@ -42,16 +67,31 @@ const TerminalCRUD = () => {
     numerationId: 0,
     initialNumber: 0,
     finalNumber: 0,
-    users: [],           // Array vacío inicialmente
-    numberUser: 0,       // Se calculará automáticamente si el backend lo requiere
+    users: [],           
+    numberUser: 0,      
     status: "",
   });
 
   const columns = [
     { key: "id" as const, label: "ID", hiddenInCreate: true, hiddenInEdit: true },
     { key: "name" as const, label: "Nombre", required: true },
-    { key: "prefix" as const, label: "Prefijo", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
-    { key: "numerationId" as const, label: "Rango de numeración", required: true },
+    { key: "numerationId" as const, label: "Rango de numeración", required: true, hidden: true },
+    { 
+      key: "prefix" as const, 
+      label: "Rango de numeración", 
+      hiddenInCreate: true, 
+      hiddenInEdit: true,
+      render: (item: TerminalTypes) => {
+        if (!item.prefix || item.initialNumber === null || item.finalNumber === null) {
+          return <Badge bg="secondary">Sin numeración</Badge>;
+        }
+        return (
+          <span className="fw-medium">
+            {item.prefix} ({item.initialNumber}-{item.finalNumber})
+          </span>
+        );
+      }
+    },
     {
       key: "users" as const,
       label: "Usuarios",
@@ -73,7 +113,7 @@ const TerminalCRUD = () => {
       },
     },
     { key: "numberUser" as const, label: "Cantidad usuarios", hiddenInCreate: true, hiddenInEdit: true },
-    { key: "status" as const, label: "Estado", hiddenInCreate: true, hiddenInEdit: true },
+    { key: "status" as const, label: "Estado", hiddenInCreate: true, hiddenInEdit: true, hidden: true },
   ];
 
   const renderCustomFormField = (
@@ -121,10 +161,19 @@ const TerminalCRUD = () => {
               border: '1px solid #dee2e6',
               borderRadius: '0.375rem',
               padding: '0.5rem',
+              minHeight: '100px', // ✅ Altura mínima para evitar saltos
             }}
           >
-            {users.length === 0 ? (
-              <p className="text-muted text-center my-4">Cargando usuarios...</p>
+            {isLoadingUsers ? (
+              // ✅ Mostrar spinner mientras carga
+              <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100px' }}>
+                <Spinner animation="border" role="status" size="sm" variant="primary">
+                  <span className="visually-hidden">Cargando...</span>
+                </Spinner>
+                <span className="ms-2 text-muted">Cargando usuarios...</span>
+              </div>
+            ) : users.length === 0 ? (
+              <p className="text-muted text-center my-4">No hay usuarios a los cuales asignarles una terminal</p>
             ) : (
               users.map((user: any) => {
                 const isChecked = selectedUserIds.includes(user.id);
@@ -181,6 +230,9 @@ const TerminalCRUD = () => {
                 sortFieldMap={TerminalSortFieldMap}
                 pageTitle="Terminal"
                 renderCustomFormField={renderCustomFormField}
+                onAddModalOpen={handleAddModalOpen}
+                onEditModalOpen={handleEditModalOpen}
+                onModalClose={handleModalClose}
               />
             </div>
           </div>

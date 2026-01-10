@@ -1,10 +1,10 @@
 import React from 'react';
 import GenericSelect from '../../GeneralComponents/GeneralCrud/SelectGeneral';
 import { UserTypes } from '../../User/Types/UserTypes';
-import { GetAllUserByUser } from '../../User/API/UserAPI';
+import { GetAllUserByRol } from '../../User/API/UserAPI';
 
 const fetchUser = async (): Promise<UserTypes[]> => {
-  const UserData = await GetAllUserByUser();
+  const UserData = await GetAllUserByRol();
   return UserData || [];
 };
 

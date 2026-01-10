@@ -662,12 +662,12 @@ const InventoryCRUD = () => {
     );
   };
 
-  const customSave = async (
-    onSuccess: () => void,
-    onError: (error: any) => void
-  ) => {
-    if (
-      !currentAction ||
+const customSave = async (
+  onSuccess: () => void,
+  onError: (error: any) => void
+) => {
+  if (
+    !currentAction ||
     productLines.length === 0 ||
     !productLines.every(
       (line) =>
@@ -675,59 +675,65 @@ const InventoryCRUD = () => {
         line.quantity > 0 && 
         line.purchasePrice > 0  
     )
-    ) {
-      onError(
-        new Error(
-          "Ingrese todos los campos requeridos en las líneas de productos"
-        )
-      );
-      return;
-    }
-    try {
-      const productQuantity: Array<{
-        id: number;
-        quantity: number;
-        date: string;
-        observation: string;
-        purchasePrice: number;
-        total: number;
-        transactionTotal: number;
-        userId: number;
-      }> = [];
+  ) {
+    onError(
+      new Error(
+        "Ingrese todos los campos requeridos en las líneas de productos"
+      )
+    );
+    return;
+  }
+  
+  try {
+    const productQuantity: Array<{
+      id: number;
+      quantity: number;
+      date: string;
+      observation: string;
+      purchasePrice: number;
+      total: number;
+      transactionTotal: number;
+      userId: number;
+    }> = [];
 
-      let runningTotal = 0;
+    let runningTotal = 0;
 
-      productLines.forEach((line, index) => {
-        const lineTotal = line.quantity * line.purchasePrice;
-        runningTotal += lineTotal;
+    productLines.forEach((line) => {
+      const lineTotal = line.quantity * line.purchasePrice;
+      runningTotal += lineTotal;
 
-        productQuantity.push({
-          id: line.productId,
-          quantity: line.quantity,
-          date: date || getLocalDate(),
-          observation: observation || "",
-          purchasePrice: line.purchasePrice,
-          total: lineTotal,
-          transactionTotal: runningTotal,
-          userId: currentUserId,
-        });
+      productQuantity.push({
+        id: line.productId,
+        quantity: line.quantity,
+        date: date || getLocalDate(),
+        observation: observation || "",
+        purchasePrice: line.purchasePrice,
+        total: lineTotal,
+        transactionTotal: runningTotal,
+        userId: currentUserId,
       });
+    });
+
+    if (currentAction === "add") {
       await (UpdateIntoryAdd as any)({ productQuantity });
+    } else if (currentAction === "subtract") {
       await (UpdateIntorySubtract as any)({ productQuantity });
-      setProductLines([]);
-      setDate("");
-      setObservation("");
-      setCurrentAction(null);
-      onSuccess();
-      setLastSavedMovement({
-        type: currentAction,
-        date,
-        observation,
-      });
-    } catch (error) {
-      onError(error);
     }
-  };
+
+    setProductLines([]);
+    setDate("");
+    setObservation("");
+    setCurrentAction(null);
+    onSuccess();
+    setLastSavedMovement({
+      type: currentAction,
+      date,
+      observation,
+    });
+  } catch (error) {
+    onError(error);
+  }
+};
 
 const renderCustomActionValidation = () => {
   return (

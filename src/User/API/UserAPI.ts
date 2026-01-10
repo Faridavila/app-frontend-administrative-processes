@@ -141,7 +141,7 @@ export async function DeleteUser(id: number): Promise<void> {
 
 export async function GetAllUseresNoPage(): Promise<UserTypes[] | null> {
     try {
-        const response = await fetch(`${URL}/get-all`);
+        const response = await fetch(`${URL}/get-all-page`);
         if (response.ok) {
             const data: UserTypes[] = await response.json();
             return data;
@@ -154,7 +154,24 @@ export async function GetAllUseresNoPage(): Promise<UserTypes[] | null> {
     }
 }
 
-export async function GetAllUserByUser(): Promise<UserTypes[] | null> {
+
+export async function GetAllUserByTerminal(terminalId?: number): Promise<UserTypes[] | null> {
+    try {
+        const params = terminalId ? `?terminalId=${terminalId}` : '';
+        const response = await fetch(`${URL}/get-all-terminal-by-user${params}`);
+        
+        if (response.ok) {
+            const data: UserTypes[] = await response.json();
+            return data;
+        } else {
+            throw new Error(`La solicitud a la API falló ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Error al llamar a la API:", error);
+        return null;
+    }
+}
+export async function GetAllUserByRol(): Promise<UserTypes[] | null> {
     try {
         const response = await fetch(`${URL}/get-all-rol-by-user`);
         if (response.ok) {
