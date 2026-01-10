@@ -31,6 +31,7 @@ const FacturaComponent = () => {
   const [clientes, setClientes] = useState<Client[]>([]);
   const [filteredClientes, setFilteredClientes] = useState<Client[]>([]);
   const [mostrarModalEfectivo, setMostrarModalEfectivo] = useState(false);
+
   const navigate = useNavigate();
 
   // Nuevos estados para campos adicionales
@@ -50,6 +51,7 @@ const FacturaComponent = () => {
   const [customerId, setCustomerId] = useState<number>(0);
 
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [cargandoClientes, setCargandoClientes] = useState(false);
   const [mostrarModalCliente, setMostrarModalCliente] = useState(false);
   const [totalFactura, setTotalFactura] = useState<number>(0);
   const [companyData, setCompanyData] = useState<CompanyType | null>(null);
@@ -113,20 +115,6 @@ const FacturaComponent = () => {
   const [invoiceConfig, setInvoiceConfig] = useState<PDFInvoiceConfig | null>(
     null
   );
-
-  useEffect(() => {
-    const fetchCompanyData = async () => {
-      try {
-        const data = await GetCompanyById(1);
-        if (data) {
-          setCompanyData(data);
-        }
-      } catch (error) {
-        console.error("Error al cargar datos de la empresa:", error);
-      }
-    };
-    fetchCompanyData();
-  }, []);
 
   const guardarFactura = async (efectivoRecibido?: number, cambio?: number) => {
     try {
@@ -516,7 +504,7 @@ const FacturaComponent = () => {
       MySwal.fire({
         icon: "success",
         title: "¡Factura creada!",
-        text: "PDF generado y todo limpio",
+        text: "La factura ha sido creada exitosamente.",
         timer: 2500,
         showConfirmButton: false,
       });
@@ -603,44 +591,32 @@ const FacturaComponent = () => {
     setGuardandoCliente(true);
 
     try {
-      // 1. Crear cliente
-      await CreateClient(nuevoCliente);
+      // 1. Crear cliente y obtener la respuesta directamente
+      const clienteCreado = await CreateClient(nuevoCliente);
 
-      // 2. Recargar clientes
-      const dataActualizada = await GetAllClientNoPage();
-      if (!dataActualizada)
-        throw new Error("No se pudieron cargar los clientes");
+      // 2. Formatear el cliente para el estado local
+      const nuevoClienteConFormato: Client = {
+        ...clienteCreado,
+        cityName: clienteCreado.municipality || "Sin ciudad",
+      };
 
-      const clientesActualizados: Client[] = dataActualizada.map((cliente) => ({
-        ...cliente,
-        cityName: cliente.municipality || "Sin ciudad",
-      }));
-
+      // 3. Agregar al inicio de la lista SIN llamar a la API
+      const clientesActualizados = [nuevoClienteConFormato, ...clientes];
       setClientes(clientesActualizados);
       setFilteredClientes(clientesActualizados);
 
-      // 3. ENCONTRAR AL CLIENTE NUEVO (por nombre + teléfono o cédula)
-      const clienteCreado = clientesActualizados.find((c) => {
-        if (nuevoCliente.identification) {
-          return (
-            c.identification?.toString() ===
-            nuevoCliente.identification?.toString()
-          );
-        }
-        return c.name === nuevoCliente.name && c.phone === nuevoCliente.phone;
-      });
-
-      if (!clienteCreado) {
+      // 4. Validar que el cliente fue creado
+      if (!clienteCreado || !clienteCreado.id) {
         MySwal.fire(
           "Advertencia",
-          "Cliente creado pero no se encontró.",
+          "Cliente creado pero sin ID válido.",
           "warning"
         );
         setMostrarModalCliente(false);
         return;
       }
 
-      // 4. FORZAR SELECCIÓN Y DATOS MANUALMENTE (sin depender de handleClienteChange)
+      // 5. Forzar selección del cliente creado
       const opcionSeleccionada = {
         value: clienteCreado.id,
         label: clienteCreado.identification
@@ -648,7 +624,6 @@ const FacturaComponent = () => {
           : `Sin identificación - ${clienteCreado.name}`,
       };
 
-      // ESTO ES LO QUE FUNCIONA SÍ O SÍ
       setFormData({
         cliente: opcionSeleccionada,
         nombre: clienteCreado.name || "",
@@ -657,7 +632,7 @@ const FacturaComponent = () => {
           ? clienteCreado.identification.toString()
           : "",
         direccion: clienteCreado.address || "",
-        ciudad: clienteCreado.cityName || "",
+        ciudad: clienteCreado.municipality || "",
         caja: "",
         factura: "",
         vendedor: "",
@@ -686,18 +661,6 @@ const FacturaComponent = () => {
       setGuardandoCliente(false);
     }
   };
-  useEffect(() => {
-    const fetchProductos = async () => {
-      try {
-        const data = await GetAllProductNoPage();
-        if (data) setProductosDisponibles(data);
-      } catch (error) {
-        console.error("Error al obtener los productos:", error);
-        MySwal.fire("Error", "No se pudieron cargar los productos.", "error");
-      }
-    };
-    fetchProductos();
-  }, []);
 
   useEffect(() => {
     const valorBruto = productos.reduce(
@@ -724,29 +687,68 @@ const FacturaComponent = () => {
     }
   }, [totalFactura, abono, tipoPago]);
 
-  const fetchClientes = async () => {
-    try {
-      const data = await GetAllClientNoPage();
+  // ✅ FUNCIÓN ÚNICA DE INICIALIZACIÓN
+  const inicializarComponente = async () => {
+    if (cargandoClientes) return; // Prevenir ejecuciones múltiples
 
-      if (!data) {
-        setClientes([]);
-        setFilteredClientes([]);
-        return;
+    setCargandoClientes(true);
+
+    try {
+      // Cargar todo en paralelo
+      const [companyData, productosData, clientesData, paymentMethodsData] =
+        await Promise.all([
+          GetCompanyById(1),
+          GetAllProductNoPage(),
+          GetAllClientNoPage(),
+          GetAllPaymentMethodNoPage(),
+        ]);
+
+      // Procesar datos de la empresa
+      if (companyData) {
+        setCompanyData(companyData);
       }
 
-      const clientesConvertidos: Client[] = data.map((cliente) => ({
-        ...cliente,
-        cityName: cliente.municipality || "Sin ciudad",
-      }));
+      // Procesar productos
+      if (productosData) {
+        setProductosDisponibles(productosData);
+      }
 
-      setClientes(clientesConvertidos);
-      setFilteredClientes(clientesConvertidos);
+      // Procesar clientes
+      if (clientesData) {
+        const clientesConvertidos: Client[] = clientesData.map((cliente) => ({
+          ...cliente,
+          cityName: cliente.municipality || "Sin ciudad",
+        }));
+        setClientes(clientesConvertidos);
+        setFilteredClientes(clientesConvertidos);
+      }
+
+      // Procesar métodos de pago
+      if (paymentMethodsData) {
+        const metodosActivos = paymentMethodsData
+          .filter((method: any) => method.status === "ACTIVE")
+          .map((method: any) => ({
+            id: method.id,
+            description: method.description,
+          }));
+        setPaymentMethods(metodosActivos);
+      }
     } catch (error) {
-      console.error("Error al cargar clientes:", error);
-      setClientes([]);
-      setFilteredClientes([]);
+      console.error("Error al inicializar componente:", error);
+      MySwal.fire(
+        "Error",
+        "No se pudieron cargar los datos iniciales.",
+        "error"
+      );
+    } finally {
+      setCargandoClientes(false);
     }
   };
+
+  // ✅ UN SOLO useEffect PARA TODO
+  useEffect(() => {
+    inicializarComponente();
+  }, []); // Array vacío = solo se ejecuta UNA vez al montar
 
   // Función para enviar PDF por WhatsApp
   const enviarPorWhatsApp = () => {
@@ -783,36 +785,6 @@ ${companyData?.companyName || ""}`;
     // Abrir WhatsApp en nueva ventana
     window.open(urlWhatsApp, "_blank");
   };
-
-  // Ahora el useEffect queda limpio
-  useEffect(() => {
-    fetchClientes(); // ahora sí existe
-  }, []);
-
-  useEffect(() => {
-    const fetchPaymentMethods = async () => {
-      try {
-        const data = await GetAllPaymentMethodNoPage();
-        if (data) {
-          const metodosActivos = data
-            .filter((method: any) => method.status === "ACTIVE")
-            .map((method: any) => ({
-              id: method.id,
-              description: method.description,
-            }));
-          setPaymentMethods(metodosActivos);
-        }
-      } catch (error) {
-        console.error("Error al obtener los métodos de pago:", error);
-        MySwal.fire(
-          "Error",
-          "No se pudieron cargar los métodos de pago.",
-          "error"
-        );
-      }
-    };
-    fetchPaymentMethods();
-  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -1013,6 +985,7 @@ ${companyData?.companyName || ""}`;
                               });
                             }
                           }}
+                          clientes={filteredClientes}
                         />
                       </div>
                       <Button

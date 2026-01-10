@@ -1,28 +1,31 @@
 import React from 'react';
 import GenericSelect from '../../GeneralComponents/GeneralCrud/SelectGeneral';
-import { GetAllClientNoPage } from '../../Client/API/ClientAPI';
 
 interface ClientSelectProps {
   selectedValue: number | null;
   onChange: (newValue: number | null) => void;
+  clientes: any[]; // ✅ NUEVO: Recibe los clientes como prop
 }
 
-const ClientSelect: React.FC<ClientSelectProps> = ({ selectedValue, onChange }) => {
+const ClientSelect: React.FC<ClientSelectProps> = ({ 
+  selectedValue, 
+  onChange,
+  clientes // ✅ NUEVO
+}) => {
 
+  // ✅ NUEVO: En lugar de fetchear, usa los datos que ya tienes
   const fetchClients = async () => {
     try {
-      const ClientData = await GetAllClientNoPage();
-      
-      if (ClientData && Array.isArray(ClientData)) {
-        return ClientData.map(dep => ({
+      if (clientes && Array.isArray(clientes)) {
+        return clientes.map(dep => ({
           id: dep.id,
-          displayLabel: `${dep.name}-${dep.identification}`,
+          displayLabel: `${dep.identification || 'Sin ID'} - ${dep.name}`,
         }));
       }
-      return null;
+      return [];
     } catch (error) {
-      console.error('Error fetching Clients:', error);
-      return null;
+      console.error('Error processing Clients:', error);
+      return [];
     }
   };
 

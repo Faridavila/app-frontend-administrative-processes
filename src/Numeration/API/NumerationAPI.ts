@@ -58,6 +58,7 @@ export async function CreateNumeration(branchDto: NumerationTypes): Promise<void
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 

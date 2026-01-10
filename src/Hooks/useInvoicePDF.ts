@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
 
-// Interfaces (mantener igual)
+
 export interface PDFInvoiceCompanyInfo {
   name?: string;
   logo?:  string | null; 
@@ -73,7 +72,6 @@ class PDFInvoiceGenerator {
   private margin: number = 2; // ⬅️ REDUCIR margen de 3 a 2
   private currentY: number = 2; // ⬅️ REDUCIR inicio
   private centerX: number;
-  private contentHeight: number = 0;
   private labelWidth: number = 11; // ⬅️ AUMENTAR de 10 a 11
 
   constructor() {
@@ -94,7 +92,7 @@ class PDFInvoiceGenerator {
       img.crossOrigin = 'Anonymous';
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const scale = 20; // ⬅️ AUMENTAR de 2 a 3 para mejor calidad
+        const scale = 10; // ⬅️ AUMENTAR de 2 a 3 para mejor calidad
         canvas.width = img.width * scale;
         canvas.height = img.height * scale;
         
@@ -479,7 +477,8 @@ class PDFInvoiceGenerator {
     this.currentY += 1;
   }
 
-  public async generate(config: PDFInvoiceConfig): Promise<string> {
+public async generate(config: PDFInvoiceConfig): Promise<string> {
+    // 1️⃣ Primera pasada: calcular altura necesaria
     await this.addLogo(config.companyInfo);
     this.addCompanyInfo(config.companyInfo);
     this.addSeparatorLine();
@@ -491,18 +490,19 @@ class PDFInvoiceGenerator {
     this.addObservacion(config.observacion);
     this.addFooter(config.footer);
 
+    // 2️⃣ Crear documento final con altura exacta
     const finalHeight = this.currentY + 8;
-    const finalDoc = new jsPDF({
+    this.doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
       format: [this.pageWidth, finalHeight],
-      compress: false,
+      compress: true, // ✅ Mejor rendimiento
       precision: 16,
       putOnlyUsedFonts: true
     });
-    this.doc = finalDoc;
     this.currentY = 2;
 
+    // 3️⃣ Segunda pasada: generar el PDF final
     await this.addLogo(config.companyInfo);
     this.addCompanyInfo(config.companyInfo);
     this.addSeparatorLine();
@@ -514,36 +514,63 @@ class PDFInvoiceGenerator {
     this.addObservacion(config.observacion);
     this.addFooter(config.footer);
 
+    // 4️⃣ Generar blob y crear URL
     const pdfBlob = this.doc.output('blob');
     const pdfUrl = URL.createObjectURL(pdfBlob);
 
+    // ✅ Crear iframe oculto optimizado
     const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
+    iframe.style.position = 'fixed';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+    iframe.style.visibility = 'hidden';
     iframe.src = pdfUrl;
+    
     document.body.appendChild(iframe);
 
+    // ✅ Esperar a que cargue y abrir diálogo de impresión
     iframe.onload = () => {
       setTimeout(() => {
-        iframe.contentWindow?.print();
-      }, 250);
+        if (iframe.contentWindow) {
+          iframe.contentWindow.focus(); // ✅ Dar foco al iframe
+          iframe.contentWindow.print(); // ✅ Abrir diálogo en la misma pestaña
+        }
+        
+        // ✅ Limpiar después de imprimir o cancelar
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+          URL.revokeObjectURL(pdfUrl);
+        }, 1000);
+      }, 100); // ✅ Reducido de 250ms a 100ms
     };
 
     return pdfUrl;
   }
-}
+
+  }
+
 
 export const generateInvoicePDF = async (config: PDFInvoiceConfig): Promise<string> => {
   const generator = new PDFInvoiceGenerator();
   return await generator.generate(config);
 };
 
+
+
 const InvoicePDF: React.FC<{ config: PDFInvoiceConfig }> = ({ config }) => {
+  // ✅ Solo regenerar si cambia el número de factura
+  const configKey = useMemo(() => 
+    config.mainInfo.invoiceNumber, 
+    [config.mainInfo.invoiceNumber]
+  );
+
   useEffect(() => {
     const generate = async () => {
       await generateInvoicePDF(config);
     };
     generate();
-  }, [config]);
+  }, [configKey]);
 
   return null;
 };

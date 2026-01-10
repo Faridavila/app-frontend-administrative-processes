@@ -50,8 +50,7 @@ export const GetClient = async (
   }
 };
 
-
-export async function CreateClient(branchDto:ClientTypes): Promise<void> {
+export async function CreateClient(branchDto: ClientTypes): Promise<ClientTypes> {
     try {
         const response = await fetch(`${URL}/create`, {
             method: "POST",
@@ -60,9 +59,15 @@ export async function CreateClient(branchDto:ClientTypes): Promise<void> {
             },
             body: JSON.stringify(branchDto),
         });
+        
         if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
+            throw new Error(`La solicitud a la API falló ${response.status}`);
         }
+        
+        // ✅ CAMBIO PRINCIPAL: Retornar el cliente creado
+        const clienteCreado = await response.json();
+        return clienteCreado;
+        
     } catch (error) {
         console.error("Error al llamar a la API:", error);
         throw error;
