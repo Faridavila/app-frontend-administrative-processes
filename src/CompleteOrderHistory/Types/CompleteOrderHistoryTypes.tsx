@@ -15,6 +15,8 @@ export interface CompleteOrderHistoryTypes {
   totalPurchase: number;
   date: string;
   hour: string;
+  imageEvidence: string;
+  signature: string;
   observation: string;
   statusOrder: string;
   status: string;

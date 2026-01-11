@@ -27,9 +27,16 @@ import "../../app-assets/css/bootstrap-extended.css";
 interface MainMenuProps {
   isMenuCollapsed: boolean;
   toggleMenu: () => void;
+  isMobileMenuOpen?: boolean;
+  setIsMobileMenuOpen?: (value: boolean) => void;
 }
 
-const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
+const MainMenu: React.FC<MainMenuProps> = ({ 
+  isMenuCollapsed, 
+  toggleMenu,
+  isMobileMenuOpen = false,
+  setIsMobileMenuOpen 
+}) => {
   const { favoritos } = useContext(FavoritosContext) || { favoritos: [] };
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
   const [lastOpenSubMenu, setLastOpenSubMenu] = useState<string | null>(null);
@@ -63,6 +70,34 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
     }
   }, [isHovered, isMenuCollapsed, lastOpenSubMenu]);
 
+  // Cerrar menú móvil al cambiar tamaño de ventana
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1199 && isMobileMenuOpen && setIsMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobileMenuOpen, setIsMobileMenuOpen]);
+
+  // Cerrar menú al hacer click fuera (solo móvil)
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      const menu = document.querySelector('.main-menu');
+      
+      if (menu && !menu.contains(target) && window.innerWidth <= 1199 && setIsMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMobileMenuOpen, setIsMobileMenuOpen]);
+
   const menuItems = [
     {
       id: 1,
@@ -93,7 +128,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
         { id: 4.1, title: "Categorias ", route: "/category" },
         { id: 4.2, title: "Productos ", route: "/product" },
         { id: 4.3, title: "Inventario ", route: "/inventory" },
-        { id: 4.4, title: "Historial de Inventario ", route: "/inventoryHistory" },
+        { id: 4.4, title: "Historial de Inventario ", route: "/inventory-history" },
       ],
     },
     {
@@ -103,8 +138,8 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
       subItems: [
         { id: 5.1, title: "Bodegas ", route: "/warehouse" },
         { id: 5.2, title: "Proveedor ", route: "/supplier" },
-        { id: 5.3, title: "Compra a proveedores", route: "/purchaseSupplier" },
-        { id: 5.4, title: "Productos pendiente", route: "/supplierPendingProduct" },
+        { id: 5.3, title: "Compra a proveedores", route: "/purchase-supplier" },
+        { id: 5.4, title: "Productos pendiente", route: "/pending-product" },
       ],
     },
     {
@@ -113,32 +148,32 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
       icon: <FiDollarSign />,
       subItems: [
         { id: 6.1, title: "Empleados ", route: "/employee" },
-        { id: 6.2, title: "Nomina", route: "/employeePayment" },
-        { id: 6.3, title: "Consulta de pagos", route: "/employeeHistory" },
+        { id: 6.2, title: "Nomina", route: "/employee-payment" },
+        { id: 6.3, title: "Consulta de pagos", route: "/employee-history" },
       ],
     },
     {
       id: 7,
-      title: "Transportes",
-      icon: <FiTruck />,
-      subItems: [
-        { id: 7.1, title: "Tarifa por bodega", route: "/supplierRate" },
-        { id: 7.2, title: "Tarifa por barrio", route: "/neighborhoodRate" },
-        { id: 7.3, title: "Translado de bodega", route: "/warehouse-relocation" },
-        { id: 7.4, title: "Pedidos pendiente", route: "/pendingOrder" },
-        { id: 7.5, title: "Asignar pedidos", route: "/assignOrder" },
-        { id: 7.6, title: "Pedidos completos", route: "/completeOrderHistory" },
-      ],
-    },
-    {
-      id: 8,
       title: "Facturacion",
       icon: <FiFileText />,
       subItems: [
         { id: 8.1, title: "Facturas", route: "/invoice" },
-        { id: 8.2, title: "Medio de pago", route: "/paymentMethod" },
+        { id: 8.2, title: "Medio de pago", route: "/payment-method" },
         { id: 8.3, title: "Rango de numerracion", route: "/numeration" },
         { id: 8.4, title: "Terminal", route: "/terminal" },
+      ],
+    },
+    {
+      id: 8,
+      title: "Transportes",
+      icon: <FiTruck />,
+      subItems: [
+        { id: 7.1, title: "Tarifa por bodega", route: "/supplier-rate" },
+        { id: 7.2, title: "Tarifa por barrio", route: "/neighborhood-rate" },
+        { id: 7.3, title: "Translado de bodega", route: "/warehouse-relocation" },
+        { id: 7.4, title: "Pedidos pendiente", route: "/pending-order" },
+        { id: 7.5, title: "Asignar pedidos", route: "/assign-order" },
+        { id: 7.6, title: "Pedidos completos", route: "/complete-order" },
       ],
     },
     {
@@ -191,11 +226,31 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
     setSearchTerm("");
   };
 
+  // Handler para el botón toggle
+  const handleToggleClick = () => {
+    if (window.innerWidth <= 1199) {
+      // En móvil: toggle del menú móvil
+      if (setIsMobileMenuOpen) {
+        setIsMobileMenuOpen(!isMobileMenuOpen);
+      }
+    } else {
+      // En desktop: comportamiento normal
+      toggleMenu();
+    }
+  };
+
+  // Cerrar menú móvil al navegar
+  const handleLinkClick = () => {
+    if (window.innerWidth <= 1199 && setIsMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+  };
+
   return (
     <div
       className={`main-menu ${
         isMenuCollapsed && !isHovered ? "menu-collapsed" : "menu-expanded"
-      } menu-fixed menu-light menu-accordion menu-shadow`}
+      } ${isMobileMenuOpen ? "menu-mobile-open" : ""} menu-fixed menu-light menu-accordion menu-shadow`}
       data-scroll-to-active="true"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
@@ -206,7 +261,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
       <div className="navbar-header">
         <ul className="nav navbar-nav flex-row">
           <li className="nav-item me-auto">
-            <Link className="navbar-brand" to="/dashboard">
+            <Link className="navbar-brand" to="/dashboard" onClick={handleLinkClick}>
               <span style={{ position: 'relative', width: '35px', height: '35px', display: 'inline-block' }}>
                 {!imageLoaded && imgCompany && (
                   <div
@@ -267,7 +322,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
             </Link>
           </li>
           <li className="nav-item nav-toggle">
-            <a className="nav-link modern-nav-toggle pe-0" onClick={toggleMenu}>
+            <a className="nav-link modern-nav-toggle pe-0" onClick={handleToggleClick}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -301,8 +356,6 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
           <FiSearch size={24} />
         ) : (
           <div className="input-group position-relative">
-            <span className="position-absolute start-0 top-50 translate-middle-y ms-2" style={{ zIndex: 10 }}>
-            </span>
             <input
               type="text"
               className="form-control"
@@ -332,7 +385,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
             .filter((item) => item.id === 9 || item.id === 10)
             .map((item) => (
               <li key={item.id} className="nav-item">
-                <Link className="d-flex align-items-center" to={item.route || "#"}>
+                <Link className="d-flex align-items-center" to={item.route || "#"} onClick={handleLinkClick}>
                   {item.icon}
                   <span
                     className="menu-title"
@@ -389,6 +442,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
                           <Link
                             className="d-flex align-items-center"
                             to={subItem.route}
+                            onClick={handleLinkClick}
                           >
                             <FiCircle />
                             <span
@@ -458,6 +512,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
                           <Link
                             className="d-flex align-items-center"
                             to={subItem.route}
+                            onClick={handleLinkClick}
                           >
                             <FiCircle />
                             <span
@@ -485,6 +540,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ isMenuCollapsed, toggleMenu }) => {
                 <Link
                   className="d-flex align-items-center"
                   to={item.route || "#"}
+                  onClick={handleLinkClick}
                 >
                   {item.icon}
                   <span

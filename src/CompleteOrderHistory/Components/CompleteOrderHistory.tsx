@@ -506,17 +506,17 @@ const CompleteOrderHistory: React.FC<CompleteOrderHistoryProps> = ({ onRowClick 
   };
 
   const columns = [
-    { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true, },
+    { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true,hidden:true },
     {key:"userId", label:"Transportador", hidden:true},
     { key: "userName", label: "Transportador", hiddenInCreate: true, hiddenInEdit: true },
-    {key:"warehouseId", label:"Bodega", hidden:true},
-    { key: "warehouseName", label: "Bodega", hiddenInCreate: true, hiddenInEdit: true },
+    { key: "customerName", label: "Cliente", hiddenInCreate: true, hiddenInEdit: true },
     {key:"neighborhoodRateId", label:"Barrio", hidden:true},
     { key: "neighborhoodName", label: "Barrio", hiddenInCreate: true, hiddenInEdit: true },
     { key: "address", label: "Dirección", hiddenInCreate: true, hiddenInEdit: true },
     { key: "date", label: "Fecha", hiddenInCreate: true, hiddenInEdit: true },
-     { key: "hour", label: "Hora", hiddenInCreate: true, hiddenInEdit: true },
-    { key: "customerName", label: "Cliente", hiddenInCreate: true, hiddenInEdit: true },
+      { key: "hour", label: "Hora", hiddenInCreate: true, hiddenInEdit: true },
+     { key: "imageEvidence", label: "Evidencia", hiddenInCreate: true, hiddenInEdit: true },
+     { key: "signature", label: "Firma", hiddenInCreate: true, hiddenInEdit: true },
     {
       key: "statusOrder",
       label: "Estado",
@@ -548,10 +548,10 @@ const CompleteOrderHistory: React.FC<CompleteOrderHistoryProps> = ({ onRowClick 
       <div className="content-wrapper container-xxl p-0">
         <div className="content-header row"></div>
         <h3 className="content-body" style={{ margin: "0", fontSize: "21px" }}>
-          Asignación de Pedidos
+          Pedidos completos
         </h3>
         <p>
-          Asignación de pedidos a transportadores.
+          Historial de todos los pedidos que han sido completados y entregados a los clientes.
         </p>
          <div className="mb-1">
           <label className="form-label d-block mb-1">Rango de Fechas</label>
@@ -586,7 +586,7 @@ const CompleteOrderHistory: React.FC<CompleteOrderHistoryProps> = ({ onRowClick 
               itemTemplate={itemTemplate}
               columns={columns as any}
               filterButtonOrder={1}
-              pageTitle="Asignación de Pedidos"
+              pageTitle="Pedidos Completos"
               customModalClass="custom-modal-size"
               renderCustomAddModal={renderCustomAddModal}
               renderCustomValidation={renderCustomValidation}

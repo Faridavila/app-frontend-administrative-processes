@@ -653,3 +653,30 @@
 
 
 
+/* ===== FIX MENÚ MÓVIL - AGREGAR AL FINAL ===== */
+
+/* Solo en móvil/tablet */
+@media (max-width: 1199.98px) {
+  /* Menú oculto por defecto en móvil */
+  .vertical-layout.vertical-menu-modern .main-menu {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  /* Menú visible cuando está abierto */
+  .vertical-layout.vertical-menu-modern .main-menu.menu-mobile-open {
+    transform: translateX(0);
+  }
+
+  /* Overlay oscuro cuando el menú está abierto */
+  .vertical-layout.vertical-menu-modern .main-menu.menu-mobile-open::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 260px;
+    width: calc(100vw - 260px);
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+  }
+}

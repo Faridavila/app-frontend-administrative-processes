@@ -126,7 +126,7 @@ const router = createBrowserRouter([
       },
 
       {
-        path: "/inventoryHistory",
+        path: "/inventory-history",
         element: <InventoryHistory />,
       },
       {
@@ -139,11 +139,11 @@ const router = createBrowserRouter([
         element: <SuppliersCRUD />,
       },
       {
-        path: "/purchaseSupplier",
+        path: "/purchase-supplier",
         element: <ShoppingSuppliers />,
       },
       {
-        path: "/supplierPendingProduct",
+        path: "/pending-product",
         element: <SupplierPendingProduct />,
       },
       {
@@ -151,19 +151,19 @@ const router = createBrowserRouter([
         element: <EmployeeCRUD />,
       },
       {
-        path: "/employeePayment",
+        path: "/employee-payment",
         element: <EmployeePayment />,
       },
       {
-        path: "/employeeHistory",
+        path: "/employee-history",
         element: <EmployeeHistoryCRUD />,
       },
       {
-        path: "/supplierRate",
+        path: "/supplier-rate",
         element: <SupplierRateCRUD />,
       },
       {
-        path: "/neighborhoodRate",
+        path: "/neighborhood-rate",
         element: <NeighborhoodRateCRUD />,
       },
       {
@@ -171,15 +171,15 @@ const router = createBrowserRouter([
         element: <WarehouseRelocation />,
       },
       {
-        path: "/assignOrder",
+        path: "/assign-order",
         element: <AssignOrder />,
       },
       {
-        path: "/pendingOrder",
+        path: "/pending-order",
         element: <PendingOrder />,
       },
       {
-        path: "/completeOrderHistory",
+        path: "/complete-order",
         element: <CompleteOrderHistory />,
       },
       {
@@ -195,7 +195,7 @@ const router = createBrowserRouter([
         element: <InvoiceDetail />,
       },
       {
-        path: "/paymentMethod",
+        path: "/payment-method",
         element: <PaymentMethodCRUD />,
       },
       {

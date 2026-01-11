@@ -8,6 +8,7 @@ import "./vertical-menu.css";
 
 const Layout: React.FC = () => {
   const [isMenuCollapsed, setIsMenuCollapsed] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [isDesktop, setIsDesktop] = useState<boolean>(
     typeof window !== "undefined" ? window.innerWidth >= 992 : true
   );
@@ -20,6 +21,10 @@ const Layout: React.FC = () => {
 
   const toggleMenu = () => {
     setIsMenuCollapsed((prev) => !prev);
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen((prev) => !prev);
   };
 
   // Sincronizar clases en body para compatibilidad
@@ -40,14 +45,18 @@ const Layout: React.FC = () => {
   return (
     <FavoritosProvider>
       <div
-
-      className={`layout-wrapper ${
-        isMenuCollapsed ? "menu-collapsed" : "menu-expanded"
-     } ${!isMenuCollapsed ? "sidebar-visible" : ""}`}
+        className={`layout-wrapper ${
+          isMenuCollapsed ? "menu-collapsed" : "menu-expanded"
+        } ${!isMenuCollapsed ? "sidebar-visible" : ""}`}
       >
-        <Header isMenuCollapsed={isMenuCollapsed} toggleMobileMenu={toggleMenu} />
+        <Header isMenuCollapsed={isMenuCollapsed} toggleMobileMenu={toggleMobileMenu} />
         <div className="layout-body">
-          <MainMenu isMenuCollapsed={isMenuCollapsed} toggleMenu={toggleMenu} />
+          <MainMenu 
+            isMenuCollapsed={isMenuCollapsed} 
+            toggleMenu={toggleMenu}
+            isMobileMenuOpen={isMobileMenuOpen}
+            setIsMobileMenuOpen={setIsMobileMenuOpen}
+          />
           <main className="app-content">
             <Outlet />
           </main>
