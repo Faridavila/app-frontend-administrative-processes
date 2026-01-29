@@ -783,7 +783,7 @@ const CompleteOrderHistory: React.FC<CompleteOrderHistoryProps> = ({
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid p-0">
         <div className="content-header row"></div>
         <h3 className="content-body" style={{ margin: "0", fontSize: "21px" }}>
           Pedidos completos
@@ -792,22 +792,20 @@ const CompleteOrderHistory: React.FC<CompleteOrderHistoryProps> = ({
           Historial de todos los pedidos que han sido completados y entregados a
           los clientes.
         </p>
-        <div className="mb-1">
+                <div className="mb-1">
           <label className="form-label d-block mb-1">Rango de Fechas</label>
 
-          <div className="d-flex gap-2 flex-nowrap">
+          <div className="date-range-container d-flex gap-2">
             <input
               type="date"
-              className="form-control w-auto"
-              style={{ minWidth: 200 }}
+              className="form-control date-input-responsive"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
               aria-label="Fecha desde"
             />
             <input
               type="date"
-              className="form-control w-auto"
-              style={{ minWidth: 200 }}
+              className="form-control date-input-responsive"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
               aria-label="Fecha hasta"
