@@ -63,6 +63,7 @@ const EmployeePayment = () => {
     hiddenInCreate?: boolean;
     hiddenInEdit?: boolean;
     hidden?: boolean;
+     type?: "text" | "number" | "image" | "password" | "date";
     render?: (item: EmployeePaymentTypes) => React.ReactNode;
   }[] = [
     { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true },
@@ -88,6 +89,7 @@ const EmployeePayment = () => {
       key: "date",
       label: "Fecha",
       required: true,
+      type: "date",
       render: (item: EmployeePaymentTypes) => {
         if (!item.date) {
           return <div style={{ textAlign: "center", width: "100%" }}>-</div>;

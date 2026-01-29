@@ -89,6 +89,7 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
     editable?: boolean;
     dependentOn?: keyof ShoppingSuppliersTypes;
     validationMessage?: string;
+    type?: "text" | "number" | "image" | "password" | "date";
     render?: (item: ShoppingSuppliersTypes) => React.ReactNode;
     imageOptions?: {
       maxSize: number;
@@ -117,7 +118,7 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
       hiddenInEdit: true,
       hidden: true,
     },
-    { key: "date", label: "Fecha" },
+    { key: "date", label: "Fecha" , type: "date"},
 
     {
       key: "purchaseStatus",

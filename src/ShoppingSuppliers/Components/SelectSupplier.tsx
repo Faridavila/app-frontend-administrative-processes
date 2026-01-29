@@ -14,7 +14,7 @@ const SuppliersSelect: React.FC<{ selectedValue: number, onChange: (newValue: nu
       fetchData={fetchSuppliers} 
       selectedValue={selectedValue}
       onChange={onChange}
-      labelKey="name" 
+      labelKey="warehouseName" 
       valueKey="id"             
       placeholder="Seleccione una proveedor"
     />

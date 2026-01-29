@@ -1,5 +1,6 @@
 export const SupplierRateSortFieldMap: Record<string, string> = {
-  supplierName: "supplierId"
+  supplierName: "supplierId",
+  priceRate: 'rate',
 
   };
   

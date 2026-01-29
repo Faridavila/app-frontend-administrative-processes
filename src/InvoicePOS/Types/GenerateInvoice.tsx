@@ -11,6 +11,8 @@ export interface InvoiceDetail {
 
 export interface GenerateInvoiceType {
   customerId: number;
+  phone: string;
+  address: string;
   invoiceDate: string; 
   dueDate?: string | null;
   paymentTypeId: number; 
@@ -25,5 +27,7 @@ export interface GenerateInvoiceType {
   remainingBalance?: number;
   cashReceived?: number;
   changeGiven?: number;
+  userId: number;
+  statusBill: string;
   invoiceDetails: InvoiceDetail[];
 }

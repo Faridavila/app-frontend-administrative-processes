@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Button, Table, Form, Modal, Row, Col, Card } from "react-bootstrap";
+import {
+  Button,
+  Table,
+  Form,
+  Modal,
+  Row,
+  Col,
+  Card,
+  Spinner,
+} from "react-bootstrap";
 import { DeleteIcon, AddIcon, SaveIcon } from "../Icons/Icons";
 import { FiUserPlus, FiUser, FiPackage, FiArrowLeft } from "react-icons/fi";
 import { Producto, Client, NewClientData } from "../Types/InvoiceType";
@@ -22,11 +31,31 @@ import { CreateInvoice } from "../API/InvoiceApi";
 import { GenerateInvoiceType } from "../Types/GenerateInvoice";
 import ClientSelect from "./SelectClient";
 import ProductSelect from "../../Inventory/Components/SelectProduct";
+import HandLoadingSpinner from "../../Spinner/SpinnerAnimation";
 
 const MySwal = withReactContent(Swal);
 
+const getDateTime = (): string => {
+  const colombiaDate = new Date(
+    new Date().toLocaleString("en-US", {
+      timeZone: "America/Bogota",
+    })
+  );
+
+  const year = colombiaDate.getFullYear();
+  const month = String(colombiaDate.getMonth() + 1).padStart(2, "0");
+  const day = String(colombiaDate.getDate()).padStart(2, "0");
+  const hours = String(colombiaDate.getHours()).padStart(2, "0");
+  const minutes = String(colombiaDate.getMinutes()).padStart(2, "0");
+  const seconds = String(colombiaDate.getSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+};
+
 const FacturaComponent = () => {
+  const [currentUserId, setCurrentUserId] = useState<number>(0);
   const [productos, setProductos] = useState<Producto[]>([]);
+  const [generandoFactura, setGenerandoFactura] = useState(false);
   const [productosDisponibles, setProductosDisponibles] = useState<any[]>([]);
   const [clientes, setClientes] = useState<Client[]>([]);
   const [filteredClientes, setFilteredClientes] = useState<Client[]>([]);
@@ -34,12 +63,11 @@ const FacturaComponent = () => {
 
   const navigate = useNavigate();
 
-  // Nuevos estados para campos adicionales
   const [tipoPago, setTipoPago] = useState<string>("contado");
   const [fechaVencimiento, setFechaVencimiento] = useState<string>("");
   const [abono, setAbono] = useState<number>(0);
   const [entrega, setEntrega] = useState<string>("recoger");
-  const [cotizacion, setCotizacion] = useState<string>();
+  const [cotizacion, setCotizacion] = useState<string>("");
   const [costoTransporte, setCostoTransporte] = useState<number>(0);
   const [observacion, setObservacion] = useState<string>("");
   const [restante, setRestante] = useState<number>(0);
@@ -115,6 +143,13 @@ const FacturaComponent = () => {
   const [invoiceConfig, setInvoiceConfig] = useState<PDFInvoiceConfig | null>(
     null
   );
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    if (storedUserId) {
+      setCurrentUserId(parseInt(storedUserId, 10));
+    }
+  }, []);
 
   const guardarFactura = async (efectivoRecibido?: number, cambio?: number) => {
     try {
@@ -365,12 +400,18 @@ const FacturaComponent = () => {
     setErroresCliente((prev) => ({ ...prev, [key]: error || undefined }));
   };
 
-  // Handler para el botón de guardar factura
+  useEffect(() => {
+    if (companyData?.image) {
+      const img = new Image();
+      img.crossOrigin = "Anonymous";
+      img.src = companyData.image;
+    }
+  }, [companyData]);
+
   const handleGuardarFactura = async (
     efectivoRecibido?: number,
     cambio?: number
   ) => {
-    // Validaciones
     if (productos.length === 0) {
       MySwal.fire("Error", "Debes agregar al menos un producto.", "error");
       return;
@@ -403,11 +444,13 @@ const FacturaComponent = () => {
     const subtotal = valorBruto - descuentoTotal;
     const totalConTransporte =
       entrega === "llevar" ? subtotal + costoTransporte : subtotal;
-
+    setGenerandoFactura(true);
     try {
       const invoiceData: GenerateInvoiceType = {
         customerId: customerId,
-        invoiceDate: new Date().toISOString().slice(0, 19),
+        phone: formData.celular || "",
+        address: formData.direccion || "",
+        invoiceDate: getDateTime(),
         dueDate: tipoPago === "credito" ? `${fechaVencimiento}T00:00:00` : null,
         paymentTypeId:
           tipoPago === "contado" ? 1 : tipoPago === "credito" ? 2 : 3,
@@ -417,6 +460,8 @@ const FacturaComponent = () => {
         observations: observacion || "",
         totalDiscount: descuentoTotal,
         total: totalConTransporte,
+        userId: currentUserId,
+        statusBill: cotizacion === "cotizacion" ? "COTIZACION" : "",
         subtotal: valorBruto,
         initialPayment:
           tipoPago === "abono"
@@ -444,7 +489,19 @@ const FacturaComponent = () => {
         })),
       };
 
-      const response = await CreateInvoice(invoiceData);
+      const [response] = await Promise.all([
+        CreateInvoice(invoiceData),
+        // Pre-cargar imagen si existe
+        companyData?.image
+          ? new Promise((resolve) => {
+              const img = new Image();
+              img.crossOrigin = "Anonymous";
+              img.onload = () => resolve(true);
+              img.onerror = () => resolve(false);
+              img.src = companyData.image;
+            })
+          : Promise.resolve(),
+      ]);
 
       // GENERAR PDF
       setInvoiceConfig({
@@ -452,8 +509,8 @@ const FacturaComponent = () => {
           logo: "https://res.cloudinary.com/dfotyo6jc/image/upload/v1761872392/Captura_de_pantalla_2025-10-30_195850_kwda8d.png",
           logoWidth: 40,
           logoHeight: 40,
+          name: "cotizacion" === cotizacion ? "COTIZACION" : "",
           title: "DOCUMENTO NO VALIDO COMO FACTURA DE VENTA",
-          nit: companyData?.nit || "",
           direccion: companyData?.address || "",
           celular: companyData?.phone || "",
           email: companyData?.email || "",
@@ -501,11 +558,13 @@ const FacturaComponent = () => {
         fileName: `Factura_${response?.invoiceNumber || Date.now()}.pdf`,
       });
 
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       MySwal.fire({
         icon: "success",
         title: "¡Factura creada!",
         text: "La factura ha sido creada exitosamente.",
-        timer: 2500,
+        timer: 1500,
         showConfirmButton: false,
       });
 
@@ -532,6 +591,7 @@ const FacturaComponent = () => {
       setCostoTransporte(0);
       setObservacion("");
       setTotalFactura(0);
+      setCotizacion("");
       setMostrarModalEfectivo(false);
     } catch (error: any) {
       MySwal.fire(
@@ -539,6 +599,8 @@ const FacturaComponent = () => {
         error.message || "No se pudo crear la factura",
         "error"
       );
+    } finally {
+      setGenerandoFactura(false);
     }
   };
 
@@ -1329,8 +1391,12 @@ ${companyData?.companyName || ""}`;
                             onChange={(e) => {
                               if (e.target.checked) {
                                 setCotizacion("cotizacion");
+                                const nombreCliente =
+                                  formData.nombre || "Cliente";
+                                setObservacion(`COTIZACIÓN a ${nombreCliente}`);
                               } else {
                                 setCotizacion("");
+                                setObservacion("");
                               }
                             }}
                             className="py-1"
@@ -1480,6 +1546,7 @@ ${companyData?.companyName || ""}`;
                     <Button
                       className="w-100 mt-3"
                       onClick={() => handleGuardarFactura()}
+                      disabled={generandoFactura}
                       style={{
                         backgroundColor: "#27ae60",
                         border: "none",
@@ -1490,9 +1557,19 @@ ${companyData?.companyName || ""}`;
                         alignItems: "center",
                         justifyContent: "center",
                         gap: "8px",
+                        opacity: generandoFactura ? 0.7 : 1,
                       }}
                     >
-                      <SaveIcon /> Guardar Factura
+                      {generandoFactura ? (
+                        <>
+                          <Spinner animation="border" size="sm" />
+                          Generando Factura...
+                        </>
+                      ) : (
+                        <>
+                          <SaveIcon /> Guardar Factura
+                        </>
+                      )}
                     </Button>
                   </Col>
                 </Row>
@@ -2057,12 +2134,13 @@ ${companyData?.companyName || ""}`;
             totalFactura={totalFactura}
             onRegistrar={async (efectivoRecibido, cambio) => {
               setMostrarModalEfectivo(false);
-              await handleGuardarFactura(efectivoRecibido, cambio); // Aquí le pasamos los valores
+              await handleGuardarFactura(efectivoRecibido, cambio);
             }}
           />
           {invoiceConfig && <InvoicePDF config={invoiceConfig} />}
         </div>
       </div>
+      {generandoFactura && <HandLoadingSpinner />}
     </div>
   );
 };

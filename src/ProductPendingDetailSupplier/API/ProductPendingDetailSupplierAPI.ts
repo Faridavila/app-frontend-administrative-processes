@@ -69,42 +69,48 @@ export const GetProductPendingDetailSupplier = async (
 
 
 export const GetSearchProductPendingDetailSupplier  = async (
-  page: number,
-  size: number,
-  filters: Partial<ProductPendingDetailSupplierTypes>,
-  sortOrder: string = 'ASC',  
-  sortBy?: keyof ProductPendingDetailSupplierTypes 
-): Promise<ProductPendingDetailSupplierTypes[]> => {
-  const queryParams = new URLSearchParams();
-
-  queryParams.append('page', String(page));
-  queryParams.append('size', String(size));
-
-
-  const validSortOrder = sortOrder === 'ASC' || sortOrder === 'DESC' ? sortOrder : 'ASC';
-  queryParams.append('orders', validSortOrder);
-
-  if (sortBy) {
-    queryParams.append('sortBy', String(sortBy));
-  }
-
+    page: number,
+    size: number,
+    filters: Partial<ProductPendingDetailSupplierTypes>,
+    sortOrder: string = 'ASC',
+    sortBy?: keyof ProductPendingDetailSupplierTypes,
+    extraParams?: Record<string, any>
+  ): Promise<ProductPendingDetailSupplierTypes[]> => {
+    const queryParams = new URLSearchParams();
   
-  Object.keys(filters).forEach(key => {
-    const value = filters[key as keyof ProductPendingDetailSupplierTypes];
-    if (value !== undefined && value !== null && value !== '') {
-      queryParams.append(key, String(value));
+    queryParams.append('page', String(page));
+    queryParams.append('size', String(size));
+  
+    const validSortOrder = sortOrder === 'ASC' || sortOrder === 'DESC' ? sortOrder : 'ASC';
+    queryParams.append('orders', validSortOrder);
+  
+    if (sortBy) {
+      queryParams.append('sortBy', String(sortBy));
     }
-  });
+  
+    Object.keys(filters).forEach(key => {
+      const value = filters[key as keyof ProductPendingDetailSupplierTypes];
+      if (value !== undefined && value !== null && value !== '') {
+        queryParams.append(key, String(value));
+      }
+    });
+  
+    try {
+         const pendingDetailSupplierId = extraParams?.pendingDetailSupplierId;
 
-  try {
-    const response = await fetch(`${URL}/search?${queryParams.toString()}`);
-    if (!response.ok) {
-      throw new Error('Error en la respuesta del servidor');
+      if (!pendingDetailSupplierId || pendingDetailSupplierId === 0) {
+        console.error("pendingDetailSupplierId no está definido o es inválido. Verifica extraParams");
+        return [];
+      }
+      const response = await fetch(`${URL}/products/searchProductByAmountThatSupplierOwes/${pendingDetailSupplierId}?${queryParams.toString()}`);
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+      const data = await response.json();
+      return data.content;
+    } catch (error) {
+      console.error('Error al obtener los elementos:', error);
+      return [];
     }
-    const data = await response.json();
-    return data.content;
-  } catch (error) {
-    console.error('Error al obtener los elementos:', error);
-    return [];
-  }
-};
+  };
+  

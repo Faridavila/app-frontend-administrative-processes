@@ -1,4 +1,7 @@
 export const AssignOrderSortFieldMap: Record<string, string> = {
-    categoryName: 'categoryId',
+    userName: 'transporterId',
+    warehouseName: 'originWarehouseId',
+    neighborhoodName: 'destinationNeighborhoodId',
+    statusOrder: 'statusOrderAllocation',
 
 };

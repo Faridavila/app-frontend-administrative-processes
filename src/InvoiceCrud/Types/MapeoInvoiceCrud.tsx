@@ -1,4 +1,6 @@
 export const InvoiceCrudSortFieldMap: Record<string, string> = {
-    categoryName: 'categoryId',
+    customerName: 'customerId',
+    userName: 'userId',
+    paymentMethodName: 'paymentMethodId',
 
 };

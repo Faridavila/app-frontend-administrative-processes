@@ -58,6 +58,7 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({
     editable?: boolean;
     dependentOn?: keyof InventoryHistoryTypes;
     validationMessage?: string;
+    type?: "text" | "number" | "image" | "password" | "date";
     render?: (item: InventoryHistoryTypes) => React.ReactNode;
     imageOptions?: {
       maxSize: number;
@@ -69,7 +70,6 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({
       label: "ID",
       hiddenInCreate: true,
       hiddenInEdit: true,
-      hidden: true,
     },
     {
       key: "productName",
@@ -90,7 +90,12 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({
       hiddenInCreate: true,
       hiddenInEdit: true,
     },
-    { key: "date", label: "Fecha", hiddenInCreate: true, hiddenInEdit: true },
+    { key: "date", 
+      label: "Fecha", 
+      type: "date",
+      hiddenInCreate: true, 
+      hiddenInEdit: true 
+    },
 
     {
       key: "transactionType",
@@ -157,6 +162,8 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({
     switch (transactionType) {
       case "PERDIDA":
         return "#dc3545";
+      case "SALIDA":
+        return "#dc3545";
       case "ENTRADA":
         return "#28a745";
       case "ENTRADA PROVEEDOR":
@@ -190,7 +197,7 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({
 
   const loadProductDetails = async (inventoryId: number) => {
     try {
-      const details = await GetProductDetails(0, 100000, {}, "ASC", undefined, {
+      const details = await GetProductDetails(0, 6, {}, "ASC", undefined, {
         inventoryId,
       });
       setProductDetails(details || []);

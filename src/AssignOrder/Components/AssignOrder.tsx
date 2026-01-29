@@ -3,8 +3,18 @@ import React, { useState, useEffect } from "react";
 import { Row, Col, Form, Table, Alert, Button } from "react-bootstrap";
 import { AssignOrderTypes, OrderProduct } from "../Types/AssignOrderTypes";
 import SuppliersSelect from "./SelectSupplier";
+import NeighborhoodRatesSelect from "./SelectRateNeighborhood";
 import { DeleteIcon } from "../Icons/Icons";
 import SelectUser from "./SelectUser";
+import PendingOrdersSelect from "./SelectPendingOrder";
+import {
+  CreateAssignOrder,
+  DeleteAssignOrder,
+  GetAssignOrder,
+  GetSearchAssignOrder,
+  UpdateAssignOrder,
+} from "../API/AssignOrderAPI";
+import { AssignOrderSortFieldMap } from "../Types/MapeoAssignOrder";
 
 interface AssignOrderProps {
   onRowClick?: (item: AssignOrderTypes) => void;
@@ -13,6 +23,7 @@ interface AssignOrderProps {
 const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
   const [selectedAssignment, setSelectedAssignment] =
     useState<AssignOrderTypes | null>(null);
+  const [chargeInvoice, setChargeInvoice] = useState<boolean>(false);
 
   // Estados del formulario
   const [userId, setUserId] = useState<number>(0);
@@ -30,6 +41,7 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
     observation: "",
     city: "",
     phone: "",
+    neighborhood: "",
     totalPurchase: 0,
   });
 
@@ -38,6 +50,7 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
   const [currentOperation, setCurrentOperation] = useState<"add" | "edit">(
     "add"
   );
+
 
   // Validación en tiempo real
   useEffect(() => {
@@ -51,14 +64,25 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
     if (!date) newErrors["date"] = "Fecha es obligatoria.";
     if (!time) newErrors["time"] = "Hora es obligatoria.";
 
-    // Validar que todos los productos tengan cantidad por viaje
+    // Validar que al menos un producto tenga cantidad por viaje y que sea válida
     if (orderProducts.length > 0) {
-      const hasInvalidQuantities = orderProducts.some(
-        (p) => p.quantityPerTrip <= 0 || p.quantityPerTrip > p.quantity
+      const productsWithQuantity = orderProducts.filter(
+        (p) => p.quantityPerTrip > 0
       );
-      if (hasInvalidQuantities) {
+
+      // Verificar que al menos un producto tenga cantidad asignada
+      if (productsWithQuantity.length === 0) {
         newErrors["products"] =
-          "Verifique las cantidades por viaje de los productos.";
+          "Debe asignar cantidad por viaje a al menos un producto.";
+      } else {
+        // Verificar que las cantidades asignadas sean válidas
+        const hasInvalidQuantities = productsWithQuantity.some(
+          (p) => p.quantityPerTrip > p.quantity
+        );
+        if (hasInvalidQuantities) {
+          newErrors["products"] =
+            "Verifique las cantidades por viaje de los productos.";
+        }
       }
     }
 
@@ -81,6 +105,8 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
     warehouseName: "",
     neighborhoodRateId: 0,
     neighborhoodName: "",
+    paymentMethodId: 0,
+    paymentMethodName: "",
     address: "",
     orderId: 0,
     customerName: "",
@@ -113,12 +139,14 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
     setDate(getLocalDate());
     setTime("");
     setObservation("");
+    setChargeInvoice(false);
     setCustomerInfo({
       name: "",
       address: "",
       observation: "",
       city: "",
       phone: "",
+      neighborhood: "",
       totalPurchase: 0,
     });
     setOrderProducts([]);
@@ -131,6 +159,7 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
     setWarehouseId(item.warehouseId);
     setNeighborhoodRateId(item.neighborhoodRateId);
     setOrderId(item.orderId);
+    setChargeInvoice(item.chargeInvoice || false);
     setDate(item.date.split("T")[0] || "");
     setTime(item.date.split("T")[1]?.slice(0, 5) || "");
     setObservation(item.observation);
@@ -140,6 +169,7 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
       observation: item.observation,
       city: item.customerCity,
       phone: item.customerPhone,
+      neighborhood: "",
       totalPurchase: item.totalPurchase,
     });
     setOrderProducts(item.products || []);
@@ -153,7 +183,7 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
     }
   };
 
-  const handleFieldChange = (field: string, value: any) => {
+  const handleFieldChange = (field: string, value: any, extraData?: any) => {
     switch (field) {
       case "userId":
         setUserId(value);
@@ -164,10 +194,13 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
       case "neighborhoodRateId":
         setNeighborhoodRateId(value);
         break;
+      case "chargeInvoice":
+        setChargeInvoice(value);
+        break;
       case "orderId":
         setOrderId(value);
-        if (value > 0) {
-          loadOrderDetails(value);
+        if (value > 0 && extraData) {
+          loadOrderDetailsFromData(extraData);
         } else {
           setCustomerInfo({
             name: "",
@@ -175,6 +208,7 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
             observation: "",
             city: "",
             phone: "",
+            neighborhood: "",
             totalPurchase: 0,
           });
           setOrderProducts([]);
@@ -192,78 +226,33 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
     }
   };
 
-  const loadOrderDetails = async (orderId: number) => {
-    try {
-      // Aquí llamarías a tu API para obtener los detalles del pedido
-      // const orderData = await GetOrderById(orderId);
+  const loadOrderDetailsFromData = (orderData: any) => {
+    console.log("📦 Datos del pedido recibidos:", orderData);
 
-      // Simulación de datos del pedido
-      const mockOrderData = {
-        customer: {
-          name: "Ana María Torres",
-          address: "Cra 15 #25-30",
-          city: "Cali",
-          phone: "3201234567",
-        },
-        products: [
-          {
-            id: 1,
-            productName: "Ladrillo limpio 10 hueco",
-            quantity: 100,
-            price: 52,
-            total: 5200,
-          },
-          {
-            id: 2,
-            productName: "Ladrillo cálao",
-            quantity: 555,
-            price: 4,
-            total: 2220,
-          },
-          {
-            id: 3,
-            productName: "Cemento gris x 50kg",
-            quantity: 20,
-            price: 35000,
-            total: 700000,
-          },
-        ],
-        totalPurchase: 707420,
-        observation: "Entregar en horario de oficina",
-      };
+    setCustomerInfo({
+      name: orderData.customerName || "",
+      address: orderData.address || "",
+      observation: orderData.observations || "",
+      city: orderData.cityName || "",
+      phone: orderData.phone || "",
+      neighborhood: orderData.neighborhood || "",
+      totalPurchase: orderData.total || 0,
+    });
 
-      // Establecer información del cliente
-      setCustomerInfo({
-        name: mockOrderData.customer.name,
-        address: mockOrderData.customer.address,
-        observation: mockOrderData.observation,
-        city: mockOrderData.customer.city,
-        phone: mockOrderData.customer.phone,
-        totalPurchase: mockOrderData.totalPurchase,
-      });
+    const products =
+      orderData.pendingOrderDetails?.map((detail: any) => ({
+        id: detail.productId,
+        productName: detail.productName,
+        quantity: detail.quantity,
+        price: detail.unitPrice,
+        total: detail.total,
+        quantityPerTrip: 0,
+        pendingOrderDetailId: detail.id,
+      })) || [];
 
-      // Establecer productos con cantidad por viaje inicializada en 0
-      setOrderProducts(
-        mockOrderData.products.map((p) => ({
-          ...p,
-          quantityPerTrip: 0,
-        }))
-      );
-
-      // Establecer observación del pedido
-      setObservation(mockOrderData.observation);
-    } catch (error) {
-      console.error("Error al cargar detalles del pedido:", error);
-      setCustomerInfo({
-        name: "",
-        address: "",
-        observation: "",
-        city: "",
-        phone: "",
-        totalPurchase: 0,
-      });
-      setOrderProducts([]);
-    }
+    console.log("✅ Productos procesados con pendingOrderDetailId:", products);
+    setOrderProducts(products);
+    setObservation(orderData.observations || "");
   };
 
   const handleQuantityPerTripChange = (
@@ -287,11 +276,11 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
 
   const getStatusColor = (statusOrder: string) => {
     switch (statusOrder) {
-      case "Pendiente":
+      case "EN PROCESO":
         return "#ffc107";
-      case "Inicio":
-        return "#17a2b8";
-      case "Cargado":
+      case "RECHAZADO":
+        return "#db2828";
+      case "ASIGNADO":
         return "#28a745";
       default:
         return "transparent";
@@ -322,9 +311,7 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
               <Form.Label>Transportador</Form.Label>
               <SelectUser
                 selectedValue={userId}
-                    onChange={(newId: number) =>
-                      handleFieldChange("userId", newId)
-                    }
+                onChange={(newId: number) => handleFieldChange("userId", newId)}
               />
               {"userId" === firstInvalidKey && (
                 <Form.Control.Feedback type="invalid">
@@ -350,22 +337,19 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
                 </Col>
                 <Col md={6}>
                   <Form.Label>Barrio (Destino)</Form.Label>
-                  <Form.Select
-                    value={neighborhoodRateId}
-                    onChange={(e) =>
-                      handleFieldChange(
-                        "neighborhoodRateId",
-                        Number(e.target.value)
-                      )
+                  <NeighborhoodRatesSelect
+                    selectedValue={neighborhoodRateId}
+                    onChange={(newId: number) =>
+                      handleFieldChange("neighborhoodRateId", newId)
                     }
-                    isInvalid={"neighborhoodRateId" === firstInvalidKey}
-                  >
-                    <option value={0}>Seleccione un barrio</option>
-                  </Form.Select>
+                  />
                   {"neighborhoodRateId" === firstInvalidKey && (
-                    <Form.Control.Feedback type="invalid">
+                    <div
+                      className="text-danger mt-1"
+                      style={{ fontSize: "0.875rem" }}
+                    >
                       {getFieldError("neighborhoodRateId")}
-                    </Form.Control.Feedback>
+                    </div>
                   )}
                 </Col>
               </Row>
@@ -404,13 +388,14 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
             </Form.Group>
             <Form.Group className="mt-2">
               <Row>
-                <Col md={6} >
+                <Col md={6}>
                   <Form.Check
                     type="checkbox"
                     id="cobrar-factura"
                     label="Cobrar factura"
+                    checked={chargeInvoice}
                     onChange={(e) =>
-                      handleFieldChange("cobrarFactura", e.target.checked)
+                      handleFieldChange("chargeInvoice", e.target.checked)
                     }
                     className="mt-2"
                   />
@@ -421,27 +406,22 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
           <Col md={6}>
             <Form.Group className="mb-2">
               <Form.Label>Pedido</Form.Label>
-              <Form.Select
-                value={orderId}
-                onChange={(e) =>
-                  handleFieldChange("orderId", Number(e.target.value))
+              <PendingOrdersSelect
+                selectedValue={orderId}
+                onChange={(newId: number, orderData?: any) =>
+                  handleFieldChange("orderId", newId, orderData)
                 }
-                isInvalid={"orderId" === firstInvalidKey}
-              >
-                <option value={0}>Seleccione un pedido</option>
-                <option value={1}>Pedido #001 - Ana María Torres</option>
-                <option value={2}>Pedido #002 - Luis Martínez</option>
-              </Form.Select>
+              />
               {"orderId" === firstInvalidKey && (
-                <Form.Control.Feedback type="invalid">
+                <div
+                  className="text-danger mt-1"
+                  style={{ fontSize: "0.875rem" }}
+                >
                   {getFieldError("orderId")}
-                </Form.Control.Feedback>
+                </div>
               )}
             </Form.Group>
-            {/* Información del Cliente */}
-            <h6 style={{ marginBottom: "10px", fontWeight: "bold" }}>
-              Información del Cliente
-            </h6>
+
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-2">
@@ -452,12 +432,28 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
                     readOnly
                   />
                 </Form.Group>
+
                 <Form.Group className="mb-2">
                   <Form.Label>Dirección</Form.Label>
                   <Form.Control
                     type="text"
-                    value={customerInfo.address}
+                    value={`${customerInfo.address}${
+                      customerInfo.neighborhood
+                        ? " - " + customerInfo.neighborhood
+                        : ""
+                    }`}
+                    title={`${customerInfo.address}${
+                      customerInfo.neighborhood
+                        ? " - " + customerInfo.neighborhood
+                        : ""
+                    }`}
                     readOnly
+                    style={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      cursor: "help",
+                    }}
                   />
                 </Form.Group>
               </Col>
@@ -470,6 +466,7 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
                     readOnly
                   />
                 </Form.Group>
+
                 <Form.Group className="mb-2">
                   <Form.Label>Celular</Form.Label>
                   <Form.Control
@@ -479,18 +476,26 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
                   />
                 </Form.Group>
               </Col>
+
+              <Col md={12}>
+                <Form.Group className="mb-2">
+                  <Form.Label>Observación</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={customerInfo.observation}
+                    title={customerInfo.observation}
+                    readOnly
+                    style={{
+                      resize: "none",
+                      cursor: "help",
+                    }}
+                  />
+                </Form.Group>
+              </Col>
             </Row>
-            <Form.Group className="mb-2">
-              <Form.Label>Observación</Form.Label>
-              <Form.Control
-                type="text"
-                value={customerInfo.observation}
-                readOnly
-              />
-            </Form.Group>
           </Col>
         </Row>
-        {/* Tabla de productos con cantidad por viaje */}
         {orderId > 0 && customerInfo.name && (
           <Row className="mt-2">
             <Col xs={12}>
@@ -548,8 +553,7 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
                               textAlign: "center",
                             }}
                             isInvalid={
-                              product.quantityPerTrip > product.quantity ||
-                              product.quantityPerTrip <= 0
+                              product.quantityPerTrip > product.quantity
                             }
                           />
                           {product.quantityPerTrip > product.quantity && (
@@ -590,8 +594,8 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
                 </Alert>
               )}
 
-              <div className="text-end">
-                <strong className="text-error fs-2 fw-bold">
+              <div className="text-end mt-2">
+                <strong className="text-error fs-5 fw-bold">
                   Total a cobrar:{" "}
                   {new Intl.NumberFormat("es-CO", {
                     style: "currency",
@@ -621,6 +625,7 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
       return;
     }
 
+    // ✅ Construir la fecha y hora correctamente
     const fullDateTime = time ? `${date}T${time}:00` : date;
 
     const assignment: AssignOrderTypes = {
@@ -630,36 +635,42 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
       warehouseId,
       neighborhoodRateId,
       orderId,
-      date: fullDateTime,
+      date: fullDateTime, // ← Esto envía fecha + hora juntos
+      hour: time || "", // ← Hora separada para el backend
       observation,
+      chargeInvoice: chargeInvoice,
       customerName: customerInfo.name,
       customerAddress: customerInfo.address,
       customerCity: customerInfo.city,
       customerPhone: customerInfo.phone,
       totalPurchase: customerInfo.totalPurchase,
-      products: orderProducts,
+      address: customerInfo.address, // ← AGREGAR ESTA LÍNEA
+      products: orderProducts.filter((p) => p.quantityPerTrip > 0),
     };
+
+    console.log("📤 Datos a enviar:", assignment);
 
     try {
       if (currentOperation === "add") {
-        // await CreateAssignOrderAssignment(assignment);
-        console.log("Crear:", assignment);
+        await CreateAssignOrder(assignment, null);
+        console.log("✅ Creado exitosamente");
       } else {
-        // await UpdateAssignOrderAssignment(assignment.id, assignment);
-        console.log("Actualizar:", assignment);
+        await UpdateAssignOrder(assignment.id, assignment, null);
+        console.log("✅ Actualizado exitosamente");
       }
       onSuccess();
     } catch (error) {
+      console.error("❌ Error al guardar:", error);
       onError(error);
     }
   };
 
   const columns = [
-    { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true },
-    { key: "userId", label: "Transportador", hidden: true },
+    { key: "id", label: "N° Orden", hiddenInCreate: true, hiddenInEdit: true },
+    { key: "userId", label: "Conductor", hidden: true },
     {
       key: "userName",
-      label: "Transportador",
+      label: "Conductor",
       hiddenInCreate: true,
       hiddenInEdit: true,
     },
@@ -683,8 +694,54 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
       hiddenInCreate: true,
       hiddenInEdit: true,
     },
-    { key: "date", label: "Fecha", hiddenInCreate: true, hiddenInEdit: true },
-    { key: "hour", label: "Hora", hiddenInCreate: true, hiddenInEdit: true },
+    {
+      key: "paymentMethodName" as keyof AssignOrderTypes,
+      label: "Método de pago",
+      hiddenInCreate: true,
+      hiddenInEdit: true,
+      render: (item: AssignOrderTypes) => {
+        return item.paymentMethodName || "Sin método de pago";
+      },
+    },
+// Reemplaza las dos columnas separadas de "date" y "hour" por esta única columna:
+
+{
+  key: "date",
+  label: "Fecha",
+  type: "date",
+  hiddenInCreate: true,
+  hiddenInEdit: true,
+  render: (item: AssignOrderTypes) => {
+    // Formatear fecha
+    let formattedDate = "Sin fecha";
+    if (item.date) {
+      // ✅ Usar split para evitar problemas de zona horaria
+      const [year, month, day] = item.date.split('-');
+      formattedDate = `${day}/${month}/${year}`;
+    }
+
+    // Formatear hora
+    let formattedHour = "Sin hora";
+    if (item.hour) {
+      const [hours, minutes] = item.hour.split(":");
+      const hour24 = parseInt(hours, 10);
+      const hour12 = hour24 % 12 || 12;
+      const ampm = hour24 >= 12 ? "PM" : "AM";
+      formattedHour = `${hour12}:${minutes} ${ampm}`;
+    }
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <span style={{ fontWeight: '500' }}>
+          {formattedDate}
+        </span>
+        <span style={{ fontSize: '0.9em', color: '#6c757d' }}>
+          {formattedHour}
+        </span>
+      </div>
+    );
+  },
+},
     {
       key: "customerName",
       label: "Cliente",
@@ -697,19 +754,30 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
       hiddenInCreate: true,
       hiddenInEdit: true,
       render: (item: AssignOrderTypes) => {
-        const statusColor = getStatusColor(item.status);
+        const statusColor = getStatusColor(item.statusOrder);
         return (
-          <span
+          <div
             style={{
-              backgroundColor: statusColor,
-              padding: "5px 10px",
-              borderRadius: "5px",
-              color: "#fff",
-              fontWeight: "bold",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            {item.status}
-          </span>
+            <span
+              style={{
+                backgroundColor: statusColor,
+                padding: "6px 13px",
+                borderRadius: "80px",
+                color: "#fff",
+                fontWeight: "500",
+                display: "inline-block",
+                textAlign: "center",
+                minWidth: "80px",
+              }}
+            >
+              {item.statusOrder}
+            </span>
+          </div>
         );
       },
     },
@@ -719,7 +787,7 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid p-0">
         <div className="content-header row"></div>
         <h3 className="content-body" style={{ margin: "0", fontSize: "21px" }}>
           Asignación de Pedidos
@@ -728,14 +796,15 @@ const AssignOrder: React.FC<AssignOrderProps> = ({ onRowClick }) => {
         <div className="card">
           <div className="card-datatable table-responsive">
             <CRUDForm<AssignOrderTypes>
-              fetchItems={async () => []}
-              searchItem={async () => []}
-              createItem={async () => {}}
-              updateItem={async () => {}}
-              deleteItem={async () => {}}
+              fetchItems={GetAssignOrder}
+              searchItem={GetSearchAssignOrder}
+              createItem={CreateAssignOrder}
+              updateItem={UpdateAssignOrder}
+              deleteItem={DeleteAssignOrder}
               itemTemplate={itemTemplate}
               columns={columns as any}
               filterButtonOrder={1}
+              sortFieldMap={AssignOrderSortFieldMap}
               pageTitle="Asignación de Pedidos"
               customModalClass="custom-modal-size"
               renderCustomAddModal={renderCustomAddModal}

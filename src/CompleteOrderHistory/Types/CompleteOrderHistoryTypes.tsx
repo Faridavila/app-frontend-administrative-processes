@@ -1,7 +1,7 @@
 export interface CompleteOrderHistoryTypes {
   id: number;
   userId: number;
-  userName: string;
+  transporterName: string;
   warehouseId: number;
   warehouseName: string;
   neighborhoodRateId: number;
@@ -15,10 +15,10 @@ export interface CompleteOrderHistoryTypes {
   totalPurchase: number;
   date: string;
   hour: string;
-  imageEvidence: string;
+  image: string;
   signature: string;
   observation: string;
-  statusOrder: string;
+  statusOrderAllocation: string;
   status: string;
   products: OrderProduct[];
 }

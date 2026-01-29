@@ -1,202 +1,48 @@
 import {CompleteOrderHistoryTypes } from "../Types/CompleteOrderHistoryTypes";
-//import { BASE_URL_APIS_CORE } from "../../constants";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/supplier';
-//const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/cash-register`;
+//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/supplier';
+const URL: string = `${BASE_URL_APIS_CORE}/order-allocation`;
 
 export const GetCompleteOrderHistory = async (
-  page: number,
-  size: number,
-  filters: Partial<CompleteOrderHistoryTypes>,
-  sortOrder: string = '',  
-  sortBy?: keyof CompleteOrderHistoryTypes
-): Promise<CompleteOrderHistoryTypes[]> => {
-  const queryParams = new URLSearchParams();
-
-  queryParams.append('page', String(page));
-  queryParams.append('size', String(size));
-
-  const validSortOrder = sortOrder === 'ASC' || sortOrder === 'DESC' ? sortOrder : 'ASC';
-  queryParams.append('orders', validSortOrder);
-
-  if (sortBy) {
-    queryParams.append('sortBy', String(sortBy)); 
-  }
-
-  Object.keys(filters).forEach(key => {
-    const value = filters[key as keyof CompleteOrderHistoryTypes];
-    if (value) {
-      queryParams.append(key, String(value));
-    }
-  });
-
-  try {
-    const response = await fetch(`${URL}?${queryParams.toString()}`);
-    if (!response.ok) {
-      throw new Error('Error en la respuesta del servidor');
-    }
-    const data = await response.json();
-    return data.content; 
-  } catch (error) {
-    console.error('Error al obtener los elementos:', error);
-    return [];
-  }
-};
-
-
-export async function CreateCompleteOrderHistory(
-  CompleteOrderHistoryDto: CompleteOrderHistoryTypes,
-  imageFile: File | null
-): Promise<void> {
-  try {
-    const formData = new FormData();
-    formData.append("CompleteOrderHistoryName", CompleteOrderHistoryDto.productName);
-    formData.append("quantity", String(Number(CompleteOrderHistoryDto.quantity)));
-
-    if (imageFile) {
-      formData.append("image", imageFile); 
-    }
-
-    console.log("Data:", CompleteOrderHistoryDto);
-    const response = await fetch(`${URL}/create`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error(`La solicitud a la API falló ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log("CompleteOrderHistoryo creado:", data);
-  } catch (error) {
-    console.error("Error al llamar a la API:", error);
-    throw error;
-  }
-}
-
-export async function UpdateIntorySubtract( branchDto: CompleteOrderHistoryTypes): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/subtract-quantity`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(branchDto),
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        throw error;  
-    }
-}
-
-export async function UpdateIntoryAdd( branchDto: CompleteOrderHistoryTypes): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/add-quantity`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(branchDto),
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        throw error;  
-    }
-}
-
-export const GetSearchCompleteOrderHistory = async (
-  page: number,
-  size: number,
-  filters: Partial<CompleteOrderHistoryTypes>,
-  sortOrder: string = 'ASC',  
-  sortBy?: keyof CompleteOrderHistoryTypes 
-): Promise<CompleteOrderHistoryTypes[]> => {
-  const queryParams = new URLSearchParams();
-
-  queryParams.append('page', String(page));
-  queryParams.append('size', String(size));
-
-
-  const validSortOrder = sortOrder === 'ASC' || sortOrder === 'DESC' ? sortOrder : 'ASC';
-  queryParams.append('orders', validSortOrder);
-
-  if (sortBy) {
-    queryParams.append('sortBy', String(sortBy));
-  }
-
+   page: number,
+    size: number,
+    filters: Partial<CompleteOrderHistoryTypes>,
+    sortOrder: string = '',  
+    sortBy?: keyof CompleteOrderHistoryTypes
+  ): Promise<CompleteOrderHistoryTypes[]> => {
+    const queryParams = new URLSearchParams();
   
-  Object.keys(filters).forEach(key => {
-    const value = filters[key as keyof CompleteOrderHistoryTypes];
-    if (value !== undefined && value !== null && value !== '') {
-      queryParams.append(key, String(value));
+    queryParams.append('page', String(page));
+    queryParams.append('size', String(size));
+  
+    const validSortOrder = sortOrder === 'ASC' || sortOrder === 'DESC' ? sortOrder : 'ASC';
+    queryParams.append('orders', validSortOrder);
+  
+    if (sortBy) {
+      queryParams.append('sortBy', String(sortBy)); 
     }
-  });
-
-  try {
-    const response = await fetch(`${URL}/search?${queryParams.toString()}`);
-    if (!response.ok) {
-      throw new Error('Error en la respuesta del servidor');
-    }
-    const data = await response.json();
-    return data.content;
-  } catch (error) {
-    console.error('Error al obtener los elementos:', error);
-    return [];
-  }
-};
-
-
-export async function UpdateCompleteOrderHistory(
-  id: number,
-  CompleteOrderHistoryDto: CompleteOrderHistoryTypes,
-  imageFile: File | null
-): Promise<void> {
-  try {
-    const formData = new FormData();
-    
-    formData.append("CompleteOrderHistoryName", CompleteOrderHistoryDto.productName);
-    formData.append("quantity", String(Number(CompleteOrderHistoryDto.quantity)));
-
-    if (imageFile) {
-      formData.append("image", imageFile); 
-    }
-    const response = await fetch(`${URL}/update/${id}`, {
-      method: "PUT",
-      body: formData, 
+  
+    Object.keys(filters).forEach(key => {
+      const value = filters[key as keyof CompleteOrderHistoryTypes];
+      if (value) {
+        queryParams.append(key, String(value));
+      }
     });
-
-    if (!response.ok) {
-      throw new Error(`La solicitud a la API falló ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log("Categoría actualizada:", data);
-  } catch (error) {
-    console.error("Error al llamar a la API:", error);
-    throw error;  
-  }
-}
-
-export async function DeleteCompleteOrderHistory(id: number): Promise<void> {
+  
     try {
-        const response = await fetch(`${URL}/delete/${id}`, {
-            method: "DELETE",
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
+      const response = await fetch(`${URL}/get-all-complete?${queryParams.toString()}`);
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+      const data = await response.json();
+      return data.content; 
     } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        throw error;
+      console.error('Error al obtener los elementos:', error);
+      return [];
     }
-}
+  };
+
 
 
 export async function GetAllCompleteOrderHistoryNoPage(): Promise<CompleteOrderHistoryTypes[] | null> {

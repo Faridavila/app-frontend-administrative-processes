@@ -5,13 +5,19 @@ import { PendingOrderTypes } from "../Types/PendingOrderTypes";
 import ClientsSelect from "./SelectClient";
 import SelectProduct from "./SelectProduct";
 import { AddIcon, DeleteIcon } from "../Icons/Icons";
-
-// Importamos los tipos y APIs necesarias
 import { GetAllProductNoPage } from "../../Product/API/ProductAPI";
 import { GetAllClientNoPage } from "../../Client/API/ClientAPI";
 import { ProductTypes } from "../../Product/Types/ProductTypes";
 import { ClientTypes } from "../../Client/Types/ClientTypes";
-import ProductDetailSupplierCRUD from "../../ProductDetailSupplier/Components/ProductDetailSupplier";
+import {
+  CreatePendingOrder,
+  GetPendingOrder,
+  UpdatePendingOrder,
+  DeletePendingOrder,
+  GetSearchPendingOrder,
+} from "../API/PendingOrderAPI";
+import { PendingOrderSortFieldMap } from "../Types/MapeoShoppingPendingOrder";
+import ProductDetailPendingOrderCRUD from "../../ProductDetailPendingOrder/Components/ProductDetailPendingOrder";
 
 interface PendingOrderProps {
   onRowClick?: (item: PendingOrderTypes) => void;
@@ -21,8 +27,9 @@ interface ProductLine {
   tempId: string;
   productId: number;
   productName: string;
-  purchasePrice: number;
+  salePrice: number;
   quantity: number;
+  discount: number;
   total: number;
 }
 
@@ -35,7 +42,7 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
 
   const [customerId, setCustomerId] = useState<number>(0);
   const [date, setDate] = useState<string>("");
-  const [observation, setObservation] = useState<string>("");
+  const [observations, setobservations] = useState<string>("");
 
   const [customerInfo, setCustomerInfo] = useState({
     name: "",
@@ -70,7 +77,7 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
     }
   }, [currentOperation]);
 
-  // Validación en tiempo real (sin tocar nada)
+  // Validación en tiempo real
   useEffect(() => {
     const newErrors: { [key: string]: string } = {};
 
@@ -80,7 +87,7 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
 
     if (productLines.length > 0) {
       const hasInvalidProducts = productLines.some(
-        (p) => p.productId <= 0 || p.quantity <= 0 || p.purchasePrice <= 0
+        (p) => p.productId <= 0 || p.quantity <= 0 || p.salePrice <= 0
       );
       if (hasInvalidProducts) {
         newErrors["products"] =
@@ -95,81 +102,142 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
 
   const itemTemplate = (): PendingOrderTypes => ({
     id: 0,
+    billId: null,
     customerId: 0,
     customerName: "",
-    customerAddress: "",
-    customerCity: "",
-    customerPhone: "",
-    totalPurchase: 0,
+    paymentMethodId: 0,
+    paymentMethodName: "",
+    address: "",
+    cityName: "",
+    neighborhood: "",
+    phone: "",
+    total: 0,
     date: "",
-    observation: "",
+    observations: "",
     statusOrder: "",
     status: "",
     products: [],
   });
 
   const columns = [
-    { key: "id", label: "N° Pedido", hiddenInCreate: true, hiddenInEdit: true },
-    { key: "customerId", label: "Cliente", hidden: true },
     {
-      key: "customerName",
+      key: "id" as keyof PendingOrderTypes,
+      label: "N° Pedido",
+      hiddenInCreate: true,
+      hiddenInEdit: true,
+    },
+    {
+      key: "customerId" as keyof PendingOrderTypes,
+      label: "Cliente",
+      hidden: true,
+    },
+    {
+      key: "customerName" as keyof PendingOrderTypes,
       label: "Cliente",
       hiddenInCreate: true,
       hiddenInEdit: true,
     },
     {
-      key: "customerCity",
+      key: "cityName" as keyof PendingOrderTypes,
       label: "Ciudad",
       hiddenInCreate: true,
       hiddenInEdit: true,
+      render: (item: PendingOrderTypes) => {
+        return item.cityName || "Sin ciudad";
+      },
     },
     {
-      key: "customerAddress",
+      key: "address" as keyof PendingOrderTypes,
       label: "Dirección",
       hiddenInCreate: true,
       hiddenInEdit: true,
+      render: (item: PendingOrderTypes) => {
+        return `${item.address} - ${item.neighborhood}`;
+      },
     },
     {
-      key: "customerPhone",
+      key: "phone" as keyof PendingOrderTypes,
       label: "Celular",
       hiddenInCreate: true,
       hiddenInEdit: true,
     },
-    { key: "date", label: "Fecha", hiddenInCreate: true, hiddenInEdit: true },
-
+      {
+      key: "paymentMethodName" as keyof PendingOrderTypes,
+      label: "Método de pago",
+      hiddenInCreate: true,
+      hiddenInEdit: true,
+       render: (item: PendingOrderTypes) => {
+        return item.paymentMethodName || "Sin método de pago";
+      },
+    },
     {
-      key: "statusOrder",
+      key: "date" as keyof PendingOrderTypes,
+      label: "Fecha",
+      type: "date",
+      hiddenInCreate: true,
+      hiddenInEdit: true,
+      render: (item: PendingOrderTypes) => {
+        if (!item.date) return "N/A";
+        // ✅ CORREGIDO: Usar split para evitar problemas de zona horaria
+        const [year, month, day] = item.date.split('-');
+        return `${day}/${month}/${year}`;
+      },
+    },
+    {
+      key: "statusOrder" as keyof PendingOrderTypes,
       label: "Estado",
       hiddenInCreate: true,
       hiddenInEdit: true,
       render: (item: PendingOrderTypes) => {
-        const statusColor = getStatusColor(item.status);
+        const statusColor = getStatusColor(item.statusOrder);
         return (
-          <span
+          <div
             style={{
-              backgroundColor: statusColor,
-              padding: "5px 10px",
-              borderRadius: "5px",
-              color: "#fff",
-              fontWeight: "bold",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            {item.status}
-          </span>
+            <span
+              style={{
+                backgroundColor: statusColor,
+                padding: "6px 10px",
+                borderRadius: "80px",
+                color: "#fff",
+                fontWeight: "500",
+                display: "inline-block",
+                textAlign: "center",
+                minWidth: "70px",
+              }}
+            >
+              {item.statusOrder}
+            </span>
+          </div>
         );
       },
     },
     {
-      key: "observation",
-      label: "Observacion",
+      key: "observations" as keyof PendingOrderTypes,
+      label: "Observación",
       hiddenInCreate: true,
       hiddenInEdit: true,
+      render: (item: PendingOrderTypes) => {
+        return item.observations || "Sin observaciones";
+      },
     },
     {
-      key: "totalPurchase",
+      key: "total" as keyof PendingOrderTypes,
       label: "Total a cobrar",
       hiddenInCreate: true,
       hiddenInEdit: true,
+      render: (item: PendingOrderTypes) => {
+        return new Intl.NumberFormat("es-CO", {
+          style: "currency",
+          currency: "COP",
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        }).format(item.total);
+      },
     },
   ];
 
@@ -185,15 +253,16 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
     setCurrentOperation("add");
     setCustomerId(0);
     setDate(getLocalDate());
-    setObservation("");
+    setobservations("");
     setCustomerInfo({ name: "", address: "", city: "", phone: "" });
     setProductLines([
       {
         tempId: Date.now().toString(),
         productId: 0,
         productName: "",
-        purchasePrice: 0,
+        salePrice: 0,
         quantity: 0,
+        discount: 0,
         total: 0,
       },
     ]);
@@ -203,21 +272,22 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
   const onEditModalOpen = (item: PendingOrderTypes) => {
     setCurrentOperation("edit");
     setCustomerId(item.customerId);
-    setDate(item.date.split("T")[0] || "");
-    setObservation(item.observation);
+    setDate(item.date ? item.date.split("T")[0] : getLocalDate());
+    setobservations(item.observations || "");
     setCustomerInfo({
       name: item.customerName,
-      address: item.customerAddress,
-      city: item.customerCity,
-      phone: item.customerPhone,
+      address: item.address,
+      city: item.cityName,
+      phone: item.phone,
     });
 
     const lines: ProductLine[] = item.products.map((p, index) => ({
       tempId: `${Date.now()}-${index}`,
       productId: p.productId,
       productName: "",
-      purchasePrice: p.purchasePrice,
+      salePrice: p.purchasePrice,
       quantity: p.quantity,
+      discount: p.discount,
       total: p.total,
     }));
     setProductLines(lines);
@@ -226,6 +296,7 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
 
   const handleRowSelection = (assignment: PendingOrderTypes) => {
     setSelectedAssignment(assignment);
+    setSelectedPendingOrderId(assignment.id);
     if (onRowClick) {
       onRowClick(assignment);
     }
@@ -236,8 +307,9 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
       tempId: Date.now().toString(),
       productId: 0,
       productName: "",
-      purchasePrice: 0,
+      salePrice: 0,
       quantity: 0,
+      discount: 0,
       total: 0,
     };
     setProductLines([...productLines, newLine]);
@@ -249,7 +321,7 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
 
   const handleLineChange = (
     tempId: string,
-    field: "purchasePrice" | "quantity",
+    field: "salePrice" | "quantity",
     value: number
   ) => {
     setProductLines((prevLines) =>
@@ -259,9 +331,9 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
               ...line,
               [field]: value,
               total:
-                field === "purchasePrice"
+                field === "salePrice"
                   ? line.quantity * value
-                  : value * line.purchasePrice,
+                  : value * line.salePrice,
             }
           : line
       )
@@ -278,7 +350,7 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
               ...line,
               productId,
               productName: selectedProduct?.productName || "",
-              purchasePrice: selectedProduct?.price || 0,
+              salePrice: selectedProduct?.price || 0,
               total: (selectedProduct?.price || 0) * line.quantity,
             }
           : line
@@ -288,14 +360,14 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
 
   const getStatusColor = (statusOrder: string) => {
     switch (statusOrder) {
-      case "Pendiente":
-        return "#ffc107";
-      case "Inicio":
-        return "#17a2b8";
-      case "Cargado":
+      case "PENDIENTE":
         return "#28a745";
+      case "EN_PROCESO":
+        return "#17a2b8";
+      case "COMPLETADO":
+        return "#dc3545";
       default:
-        return "transparent";
+        return "#6c757d";
     }
   };
 
@@ -322,7 +394,6 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
                   setCustomerId(newId);
                   const client = clientsCache.find((c) => c.id === newId);
                   if (client) {
-                    // Construir dirección completa con barrio
                     const fullAddress = client.neighborhood
                       ? `${client.address}, ${client.neighborhood}`
                       : client.address || "";
@@ -424,8 +495,8 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
               <Form.Control
                 as="textarea"
                 rows={3}
-                value={observation}
-                onChange={(e) => setObservation(e.target.value)}
+                value={observations}
+                onChange={(e) => setobservations(e.target.value)}
                 placeholder="Observaciones del pedido..."
               />
             </Form.Group>
@@ -474,11 +545,11 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
                         <Form.Control
                           type="number"
                           placeholder="Precio"
-                          value={line.purchasePrice || ""}
+                          value={line.salePrice || ""}
                           onChange={(e) =>
                             handleLineChange(
                               line.tempId,
-                              "purchasePrice",
+                              "salePrice",
                               parseFloat(e.target.value) || 0
                             )
                           }
@@ -579,40 +650,42 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
       return;
     }
 
-    const totalPurchase = productLines.reduce(
-      (sum, line) => sum + line.total,
-      0
-    );
+    const total = productLines.reduce((sum, line) => sum + line.total, 0);
 
     const pendingOrder: PendingOrderTypes = {
       ...itemTemplate(),
       id: currentOperation === "edit" ? selectedAssignment?.id || 0 : 0,
+      billId: null,
       customerId,
       customerName: customerInfo.name,
-      customerAddress: customerInfo.address,
-      customerCity: customerInfo.city,
-      customerPhone: customerInfo.phone,
+      address: customerInfo.address,
+      cityName: customerInfo.city,
+      phone: customerInfo.phone,
       date,
-      observation,
-      totalPurchase,
-      status: "Pendiente",
-      statusOrder: "Pendiente",
+      observations,
+      total,
+      status: "ACTIVE",
+      statusOrder: "PENDIENTE",
       products: productLines.map((line) => ({
         productId: line.productId,
-        purchasePrice: line.purchasePrice,
+        salePrice: line.salePrice,
         quantity: line.quantity,
+        discount: line.discount,
         total: line.total,
       })),
     };
 
     try {
       if (currentOperation === "add") {
-        console.log("Crear Pedido:", pendingOrder);
+        await CreatePendingOrder(pendingOrder);
+        console.log("✅ Pedido creado:", pendingOrder);
       } else {
-        console.log("Actualizar Pedido:", pendingOrder);
+        await UpdatePendingOrder(pendingOrder.id, pendingOrder);
+        console.log("✅ Pedido actualizado:", pendingOrder);
       }
       onSuccess();
     } catch (error) {
+      console.error("❌ Error al guardar:", error);
       onError(error);
     }
   };
@@ -620,7 +693,7 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
   const onAddModalClose = () => {
     setProductLines([]);
     setDate("");
-    setObservation("");
+    setobservations("");
     setCustomerId(0);
     setCustomerInfo({ name: "", address: "", city: "", phone: "" });
   };
@@ -629,7 +702,7 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
     <div className="app-content content">
       <div className="content-overlay"></div>
       <div className="header-navbar-shadow"></div>
-      <div className="content-wrapper container-xxl p-0">
+      <div className="content-wrapper container-fluid p-0">
         <div className="content-header row"></div>
         <h3 className="content-body" style={{ margin: "0", fontSize: "21px" }}>
           Pedidos Pendientes
@@ -641,13 +714,14 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
         <div className="card">
           <div className="card-datatable table-responsive">
             <CRUDForm<PendingOrderTypes>
-              fetchItems={async () => []}
-              searchItem={async () => []}
-              createItem={async () => {}}
-              updateItem={async () => {}}
-              deleteItem={async () => {}}
+              fetchItems={GetPendingOrder}
+              searchItem={GetSearchPendingOrder}
+              createItem={CreatePendingOrder}
+              updateItem={UpdatePendingOrder}
+              deleteItem={DeletePendingOrder}
               itemTemplate={itemTemplate}
-              columns={columns as any}
+              columns={columns}
+              sortFieldMap={PendingOrderSortFieldMap}
               filterButtonOrder={1}
               pageTitle="Pedidos Pendientes"
               renderCustomAddModal={renderCustomAddModal}
@@ -664,8 +738,8 @@ const PendingOrder: React.FC<PendingOrderProps> = ({ onRowClick }) => {
       <style>{`.selected-row { background-color: #cc322d !important; color: white; }`}</style>
 
       <div className="card mt-1">
-        <ProductDetailSupplierCRUD
-          extraParams={{ shoppingSupplierId: selectedPendingOrderId ?? 0 }}
+        <ProductDetailPendingOrderCRUD
+          extraParams={{ pendingOrderId: selectedPendingOrderId }}
           setSelectedPendingOrderId={setSelectedPendingOrderId}
         />
       </div>

@@ -16,11 +16,20 @@ const InvoiceModalEfective: React.FC<RecibirEfectivoModalProps> = ({
   onRegistrar,
 }) => {
   const [efectivoRecibido, setEfectivoRecibido] = useState<number>(0);
-  const [displayValue, setDisplayValue] = useState<string>("");
+  const [displayValue, setDisplayValue] = useState<string>(""); // ✅ Iniciado vacío
   const [cambio, setCambio] = useState<number>(0);
 
   const handleEfectivoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/\./g, "");
+    
+    // ✅ Si está vacío, resetear todo
+    if (rawValue === "" || rawValue === "0") {
+      setEfectivoRecibido(0);
+      setDisplayValue("");
+      setCambio(0);
+      return;
+    }
+    
     const valor = Number(rawValue) || 0;
     setEfectivoRecibido(valor);
     setDisplayValue(valor.toLocaleString("es-CO"));
@@ -29,7 +38,7 @@ const InvoiceModalEfective: React.FC<RecibirEfectivoModalProps> = ({
 
   const handleCancelar = () => {
     setEfectivoRecibido(0);
-    setDisplayValue("0");
+    setDisplayValue(""); // ✅ Vacío en lugar de "0"
     setCambio(0);
     onHide();
   };
@@ -41,14 +50,15 @@ const InvoiceModalEfective: React.FC<RecibirEfectivoModalProps> = ({
     }
     onRegistrar(efectivoRecibido, cambio);
     setEfectivoRecibido(0);
-    setDisplayValue("0");
+    setDisplayValue(""); // ✅ Vacío en lugar de "0"
     setCambio(0);
     onHide();
   };
 
-  React.useEffect(() => {
-    setDisplayValue(efectivoRecibido.toLocaleString("es-CO"));
-  }, [efectivoRecibido]);
+  // ✅ ELIMINADO el useEffect que forzaba el formato al montar
+  // React.useEffect(() => {
+  //   setDisplayValue(efectivoRecibido.toLocaleString("es-CO"));
+  // }, [efectivoRecibido]);
 
   return (
     <Modal show={show} onHide={handleCancelar} centered size="sm">
@@ -67,19 +77,18 @@ const InvoiceModalEfective: React.FC<RecibirEfectivoModalProps> = ({
         <Row className="mb-3">
           <Col md={12}>
             <Form.Group>
-              <Form.Label style={{ fontSize: "13px", fontWeight: "600",  }}>
+              <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
                 PRECIO TOTAL
               </Form.Label>
               <div
                 style={{
-                  backgroundColor: "#f8f9fa",
-                  border: "1px solid #dee2e6",
+                  border: "1px solid #fb373e",
                   borderRadius: "0.375rem",
                   padding: "12px",
                   textAlign: "right",
                   fontSize: "16px",
                   fontWeight: "600",
-                  color: "#0b0b0bff",
+                  color: "#050505",
                 }}
               >
                 ${totalFactura.toLocaleString("es-CO")}
@@ -91,15 +100,15 @@ const InvoiceModalEfective: React.FC<RecibirEfectivoModalProps> = ({
         <Row className="mb-3">
           <Col md={12}>
             <Form.Group>
-              <Form.Label style={{ fontSize: "13px", fontWeight: "600"}}>
+              <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
                 EFECTIVO RECIBIDO
               </Form.Label>
               <Form.Control
                 type="text" 
-                placeholder="0"
+                placeholder="Ingresa el efectivo recibido" 
                 value={displayValue}
                 onChange={handleEfectivoChange}
-                style={{ fontSize: "16px",fontWeight: "600", textAlign: "right" }}
+                style={{ fontSize: "16px", fontWeight: "400", textAlign: "right" }}
               />
             </Form.Group>
           </Col>
@@ -108,13 +117,12 @@ const InvoiceModalEfective: React.FC<RecibirEfectivoModalProps> = ({
         <Row className="mb-3">
           <Col md={12}>
             <Form.Group>
-              <Form.Label style={{ fontSize: "13px", fontWeight: "600"}}>
+              <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
                 CAMBIO
               </Form.Label>
               <div
                 style={{
-                  backgroundColor: "#f8f9fa",
-                  border: "1px solid #dee2e6",
+                  border: "1px solid #fb373e",
                   borderRadius: "0.375rem",
                   padding: "12px",
                   textAlign: "right",
@@ -123,7 +131,12 @@ const InvoiceModalEfective: React.FC<RecibirEfectivoModalProps> = ({
                   color: cambio >= 0 ? "#27ae60" : "#e74c3c",
                 }}
               >
-                {cambio < 0 ? "-" : cambio > 0 ? "+" : ""}${Math.abs(cambio).toLocaleString("es-CO")}
+                {/* ✅ Mostrar $0 cuando no hay valor */}
+                {cambio === 0 ? "$0" : (
+                  <>
+                    {cambio < 0 ? "-" : "+"}${Math.abs(cambio).toLocaleString("es-CO")}
+                  </>
+                )}
               </div>
             </Form.Group>
           </Col>
@@ -136,7 +149,6 @@ const InvoiceModalEfective: React.FC<RecibirEfectivoModalProps> = ({
           justifyContent: "space-between",
         }}
       >
-
         <Button
           variant="success"
           onClick={handleRegistrar}
@@ -170,8 +182,6 @@ const InvoiceModalEfective: React.FC<RecibirEfectivoModalProps> = ({
         >
           Cancelar
         </Button>
-
-
       </Modal.Footer>
     </Modal>
   );

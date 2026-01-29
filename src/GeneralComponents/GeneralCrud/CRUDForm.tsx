@@ -18,7 +18,7 @@ import "./CRUDGeneral.css";
 
 const MySwal = withReactContent(Swal);
 
-type Orders = "ASC" | "DESC" | "neutral";
+type Orders = "ASC" | "DESC" ;
 
 interface CRUDIcon {
   icon: React.ReactNode;
@@ -41,7 +41,7 @@ export interface ColumnDefinition<T> {
   hiddenInEdit?: boolean;
   formHidden?: (item: T) => boolean;
   tableHidden?: (item: T) => boolean;
-  type?: "text" | "number" | "image" | "password";
+  type?: "text" | "number" | "image" | "password" | "date";
   imageOptions?: {
     maxSize?: number;
     acceptedFormats?: string[];
@@ -250,13 +250,16 @@ const CRUDForm = <T extends { id: number }>({
   const [pageSize] = useState(6);
   const [filters, setFilters] = useState<Partial<T>>({});
   const [showFilters, setShowFilters] = useState(false);
-  const [sortField, setSortField] = useState<keyof T | null>(null);
   const [allItems, setAllItems] = useState<T[]>([]);
-  const [sortOrder, setSortOrder] = useState<Orders>("neutral");
+  const [sortOrder, setSortOrder] = useState<Orders>("ASC");
   const [isLoading, setIsLoading] = useState(false);
   const tableRef = useRef<HTMLDivElement>(null);
   const headerTopRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const [maxHeaderTop, setMaxHeaderTop] = useState<number>(0);
+  const [sortField, setSortField] = useState<keyof T | null>(() => {
+  const firstVisibleColumn = columns.find(col => !col.hidden);
+  return firstVisibleColumn ? firstVisibleColumn.key : null;
+});
 
   const handleFieldUpdate = useCallback(
     (update: Partial<T>) => {
@@ -344,7 +347,7 @@ const CRUDForm = <T extends { id: number }>({
         sortField !== null
           ? sortFieldMap[sortField as string] || String(sortField)
           : undefined;
-      const sortOrderParam = sortOrder !== "neutral" ? sortOrder : undefined;
+      const sortOrderParam = sortOrder;
       const activeFilters: Partial<T> = {};
       Object.keys(filters).forEach((key) => {
         if (filters[key as keyof T]) {
@@ -834,16 +837,14 @@ const CRUDForm = <T extends { id: number }>({
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
-  const handleSortChange = (key: keyof T) => {
-    if (sortField === key) {
-      setSortOrder((prevOrder) =>
-        prevOrder === "ASC" ? "DESC" : prevOrder === "DESC" ? "neutral" : "ASC"
-      );
-    } else {
-      setSortField(key);
-      setSortOrder("ASC");
-    }
-  };
+const handleSortChange = (key: keyof T) => {
+  if (sortField === key) {
+    setSortOrder((prevOrder) => (prevOrder === "ASC" ? "DESC" : "ASC"));
+  } else {
+    setSortField(key);
+    setSortOrder("ASC");
+  }
+};
   const editableColumns = columns.filter((col) => {
     if (currentItem && col.formHidden && col.formHidden(currentItem))
       return false;
@@ -1088,14 +1089,26 @@ const CRUDForm = <T extends { id: number }>({
                             </div>
                             {showFilters && (
                               <div className="th-filter">
-                                <Form.Control
-                                  type="text"
-                                  name={String(col.key)}
-                                  placeholder={`Filtrar por ${col.label}`}
-                                  onChange={handleFilterChange}
-                                  className="filter-input"
-                                  disabled={isLoading}
-                                />
+                                {/* 🔥 CAMBIO PRINCIPAL: Renderizar input tipo date si col.type === "date" */}
+                                {col.type === "date" ? (
+                                  <Form.Control
+                                    type="date"
+                                    name={String(col.key)}
+                                    placeholder={`Filtrar por ${col.label}`}
+                                    onChange={handleFilterChange}
+                                    className="filter-input"
+                                    disabled={isLoading}
+                                  />
+                                ) : (
+                                  <Form.Control
+                                    type="text"
+                                    name={String(col.key)}
+                                    placeholder={`Filtrar por ${col.label}`}
+                                    onChange={handleFilterChange}
+                                    className="filter-input"
+                                    disabled={isLoading}
+                                  />
+                                )}
                               </div>
                             )}
                           </div>
@@ -1333,6 +1346,8 @@ const CRUDForm = <T extends { id: number }>({
                                       type={
                                         col.key === "password"
                                           ? "password"
+                                          : col.type === "date"
+                                          ? "date"
                                           : "text"
                                       }
                                       name={String(col.key)}
@@ -1437,6 +1452,8 @@ const CRUDForm = <T extends { id: number }>({
                                       type={
                                         col.key === "password"
                                           ? "password"
+                                          : col.type === "date"
+                                          ? "date"
                                           : "text"
                                       }
                                       name={String(col.key)}

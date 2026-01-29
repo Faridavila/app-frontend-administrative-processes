@@ -15,7 +15,7 @@ export const GetClient = async (
   page: number,
   size: number,
   filters: Partial<ClientTypes>,
-  sortOrder: string = '',  
+ sortOrder: string = 'ASC',  
   sortBy?: keyof ClientTypes
 ): Promise<ClientTypes[]> => {
   const queryParams = new URLSearchParams();
@@ -64,7 +64,6 @@ export async function CreateClient(branchDto: ClientTypes): Promise<ClientTypes>
             throw new Error(`La solicitud a la API falló ${response.status}`);
         }
         
-        // ✅ CAMBIO PRINCIPAL: Retornar el cliente creado
         const clienteCreado = await response.json();
         return clienteCreado;
         

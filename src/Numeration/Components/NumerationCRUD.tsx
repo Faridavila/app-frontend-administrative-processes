@@ -34,6 +34,7 @@ const NumerationCRUD = () => {
     regex?: RegExp;
     hiddenInCreate?: boolean;
     hiddenInEdit?: boolean;
+     type?: "text" | "number" | "image" | "password" | "date";
     render?: (item: NumerationTypes) => React.ReactNode;
   }[] = [
       { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true },
@@ -41,17 +42,27 @@ const NumerationCRUD = () => {
       { key: "authNumber", label: "Número de autorización", },
 
       {
-        key: "startDate", label: "Fecha de autorización", required: true,
+        key: "startDate", 
+        label: "Fecha de autorización", 
+        required: true,
+        type: "date",
         render: (item) => {
-          const date = item.startDate ? new Date(item.startDate).toLocaleDateString() : "No disponible";
-          return <span>{date}</span>;
+          if (!item.startDate) return "No disponible";
+          // ✅ CORREGIDO: Usar split para evitar problemas de zona horaria
+          const [year, month, day] = item.startDate.split('-');
+          return <span>{`${day}/${month}/${year}`}</span>;
         }
       },
       {
-        key: "finishDate", label: "Fecha de venciemiento", required: true,
+        key: "finishDate", 
+        label: "Fecha de venciemiento", 
+        required: true,
+        type: "date",
         render: (item) => {
-          const date = item.finishDate ? new Date(item.finishDate).toLocaleDateString() : "No disponible";
-          return <span>{date}</span>;
+          if (!item.finishDate) return "No disponible";
+          // ✅ CORREGIDO: Usar split para evitar problemas de zona horaria
+          const [year, month, day] = item.finishDate.split('-');
+          return <span>{`${day}/${month}/${year}`}</span>;
         }
       },
 
@@ -62,26 +73,13 @@ const NumerationCRUD = () => {
 
     ];
 
+  // El campo "startDate" y "finishDate" ahora son manejados automáticamente por CRUDForm
+  // ya que tienen type: "date" en la definición de columnas
   const renderCustomFormField = (
     colKey: keyof NumerationTypes,
     value: any,
     onUpdate: (update: Partial<NumerationTypes>) => void,
   ) => {
-    if (colKey === "startDate" || colKey === "finishDate") {
-      return (
-        <input
-          type="date"
-          className="form-control"
-          value={value || ""}
-          onChange={(e) => {
-            const newValue = e.target.value;
-            onUpdate({ [colKey]: newValue } as Partial<NumerationTypes>);
-          }}
-          aria-label="Fecha"
-        />
-      );
-    }
-
     return null;
   };
 

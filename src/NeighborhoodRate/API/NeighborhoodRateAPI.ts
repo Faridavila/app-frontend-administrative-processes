@@ -160,7 +160,7 @@ export async function DeleteNeighborhoodRate(id: number): Promise<void> {
 
 export async function GetAllNeighborhoodRateNoPage(): Promise<NeighborhoodRateTypes[] | null> {
   try {
-      const response = await fetch(`${URL}/get-all-without-page`);
+      const response = await fetch(`${URL}/no-page/getAll`);
       if (response.ok) {
           const data: NeighborhoodRateTypes[] = await response.json();
           return data;

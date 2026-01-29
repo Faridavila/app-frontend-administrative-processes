@@ -1,26 +1,31 @@
 import { InvoiceCrudTypes } from "../Types/InvoiceCrudTypes";
 import { BASE_URL_APIS_CORE } from "../../constants";
+import { ObjectResponse } from "../../SupplierRate/Types/TypesDTO/ObjectResponse";
 
 //const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/supplier';
 const URL: string = `${BASE_URL_APIS_CORE}/generate-invoice`;
 
 
-export async function GetGenerateInvoiceById(id: number): Promise<any> {
-  await new Promise(r => setTimeout(r, 600)); 
-  console.log("Buscando factura con ID:", id);
-  const invoice = id;
-  if (!invoice) {
-    console.warn("Factura no encontrada en mock:", id);
+export async function GetGenerateInvoiceById(id: number): Promise<ObjectResponse<InvoiceCrudTypes> | null> {
+  try {
+    const response = await fetch(`${URL}/get/${id}`);
+    if (response.ok) {
+      const data: ObjectResponse<InvoiceCrudTypes> = await response.json();
+      return data;
+    } else {
+      throw new Error(`La solicitud a la API falló ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error al llamar a la API:", error);
     return null;
   }
-  return invoice;
 }
 
 export const GetInvoice = async (
   page: number,
   size: number,
   filters: Partial<InvoiceCrudTypes>,
-  sortOrder: string = '',  
+  sortOrder: string = 'ASC',  
   sortBy?: keyof InvoiceCrudTypes
 ): Promise<InvoiceCrudTypes[]> => {
   const queryParams = new URLSearchParams();
@@ -54,7 +59,6 @@ export const GetInvoice = async (
     return [];
   }
 };
-
 
 export async function CreateInvoiceCrud(
   InvoiceCrudDto: InvoiceCrudTypes,

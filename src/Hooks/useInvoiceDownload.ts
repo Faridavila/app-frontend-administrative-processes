@@ -91,35 +91,31 @@ class PDFInvoiceGenerator {
       img.crossOrigin = 'Anonymous';
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const scale = 4;
+        const scale = 3; // ⬅️ REDUCIDO de 10 a 3 para más velocidad
         canvas.width = img.width * scale;
         canvas.height = img.height * scale;
-        
-        const ctx = canvas.getContext('2d', {
-          alpha: false,
-          willReadFrequently: true
-        });
-        
+
+        const ctx = canvas.getContext('2d');
         if (!ctx) {
           reject(new Error('No se pudo obtener el contexto del canvas'));
           return;
         }
-        
+
         ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'medium';
+        ctx.imageSmoothingQuality = 'high';
         ctx.scale(scale, scale);
         ctx.drawImage(img, 0, 0);
-        
+
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imageData.data;
-        
+
         for (let i = 0; i < data.length; i += 4) {
-          const gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
+          const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
           data[i] = data[i + 1] = data[i + 2] = gray;
         }
-        
+
         ctx.putImageData(imageData, 0, 0);
-        resolve(canvas.toDataURL('image/png', 0.8));
+        resolve(canvas.toDataURL('image/png', 0.8)); // ⬅️ Calidad de 1.0 a 0.8
       };
       img.onerror = () => reject(new Error('Error al cargar la imagen'));
       img.src = imageUrl;
@@ -179,37 +175,29 @@ class PDFInvoiceGenerator {
     this.doc.text(info.invoiceNumber, numberX, this.currentY, { align: 'right' });
     this.currentY += 4;
 
-    this.addLabeledText('Fecha', info.fecha);
+    this.addLabeledText('Fecha:', info.fecha);
 
     if (info.cashier) {
-      this.addLabeledText('Cajero', info.cashier);
+      this.addLabeledText('Cajero:', info.cashier);
     }
 
     if (info.clientIdentification) {
-      this.addLabeledText('C.C / NIT', info.clientIdentification);
+      this.addLabeledText('C.C / NIT:', info.clientIdentification);
     }
 
     if (info.cliente) {
-      this.addLabeledText('Cliente', info.cliente, true);
+      this.addLabeledText('Cliente:', info.cliente, true);
     }
 
     this.currentY += 0.5;
   }
 
   private addLabeledText(label: string, value: string, wrap: boolean = false) {
-    this.doc.setFontSize(7);
     this.doc.setFont('helvetica', 'bold');
-    
-    const cleanLabel = label.endsWith(':') ? label.slice(0, -1) : label;
-    this.doc.text(cleanLabel, this.margin, this.currentY);
-    
-    const colonX = this.margin + this.labelWidth;
-    this.doc.text(':', colonX, this.currentY);
-    
+    this.doc.text(label, this.margin, this.currentY);
     this.doc.setFont('helvetica', 'normal');
-    const valueX = colonX + 2;
+    const valueX = this.margin + this.labelWidth;
     const availableWidth = this.pageWidth - valueX - this.margin;
-    
     if (wrap) {
       const lines = this.doc.splitTextToSize(value, availableWidth);
       lines.forEach((line: string, idx: number) => {
@@ -241,23 +229,10 @@ class PDFInvoiceGenerator {
   private addEntrega(entrega: string): void {
     this.doc.setFontSize(7);
     this.doc.setFont('helvetica', 'bold');
-    
-    this.doc.text('Domicilio', this.margin, this.currentY);
-    
-    const colonX = this.margin + this.labelWidth;
-    this.doc.text(':', colonX, this.currentY);
-    
+    this.doc.text('Domicilio:', this.margin, this.currentY);
     this.doc.setFont('helvetica', 'normal');
-    const valueX = colonX + 2;
-    
-    const availableWidth = this.pageWidth - valueX - this.margin;
-    const lines = this.doc.splitTextToSize(entrega, availableWidth);
-    
-    lines.forEach((line: string, idx: number) => {
-      this.doc.text(line, valueX, this.currentY + (idx * 3.5));
-    });
-    
-    this.currentY += lines.length * 3.5 + 0.5;
+    this.doc.text(entrega, this.margin + this.labelWidth, this.currentY);
+    this.currentY += 4;
     this.addSeparatorLine();
   }
 
@@ -466,7 +441,7 @@ class PDFInvoiceGenerator {
 
   private addCompanyInfo(info: PDFInvoiceCompanyInfo): void {
     if (info.name) {
-      this.doc.setFontSize(8);
+      this.doc.setFontSize(9);
       this.doc.setFont('helvetica', 'bold');
       this.doc.text(info.name.toUpperCase(), this.centerX, this.currentY, { align: 'center' });
       this.currentY += 3.5;
@@ -498,36 +473,9 @@ class PDFInvoiceGenerator {
     this.currentY += 1;
   }
 
-  private calculateEstimatedHeight(config: PDFInvoiceConfig): number {
-    let height = 70;
-    height += config.products.length * 12;
-    height += config.observacion ? 20 : 0;
-    height += config.payment.tipoPago === 'abono' ? 12 : 0;
-    height += config.payment.tipoPago === 'credito' ? 8 : 0;
-    height += config.summary.costoTransporte ? 8 : 0;
-    // ✅ CAMBIO 1: Aumentar margen de seguridad y altura mínima
-    height = Math.ceil(height * 1.4); // Margen de seguridad del 40%
-    return Math.max(240, Math.min(height, 297)); // Mínimo 240mm
-  }
-
-  public async generate(config: PDFInvoiceConfig): Promise<string> {
-    // ✅ CAMBIO 2: Limpiar iframes anteriores
-    const existingFrames = document.querySelectorAll('iframe[data-pdf-invoice]');
-    existingFrames.forEach(frame => frame.parentNode?.removeChild(frame));
-    await new Promise(resolve => setTimeout(resolve, 200));
-
-    const estimatedHeight = this.calculateEstimatedHeight(config);
-    
-    this.doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: [this.pageWidth, estimatedHeight],
-      compress: true,
-      precision: 16,
-      putOnlyUsedFonts: true
-    });
-    this.currentY = 2;
-
+  // ✅ OPTIMIZADO: Solo UNA generación
+  public async generate(config: PDFInvoiceConfig): Promise<void> {
+    // Generar contenido una sola vez
     await this.addLogo(config.companyInfo);
     this.addCompanyInfo(config.companyInfo);
     this.addSeparatorLine();
@@ -539,69 +487,23 @@ class PDFInvoiceGenerator {
     this.addObservacion(config.observacion);
     this.addFooter(config.footer);
 
-    // ✅ CAMBIO 3: Esperar antes de generar blob
-    await new Promise(resolve => setTimeout(resolve, 200));
-
-    const pdfBlob = this.doc.output('blob');
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-
-    // ✅ CAMBIO 4: Agregar identificador al iframe
-    const printFrame = document.createElement('iframe');
-    printFrame.setAttribute('data-pdf-invoice', 'true');
-    printFrame.style.cssText = 'position:fixed;width:0;height:0;border:0;visibility:hidden';
-    printFrame.src = pdfUrl;
-    
-    document.body.appendChild(printFrame);
-
-    return new Promise((resolve) => {
-      printFrame.onload = () => {
-        // ✅ CAMBIO 5: Aumentar tiempo de espera
-        setTimeout(() => {
-          if (printFrame.contentWindow) {
-            printFrame.contentWindow.focus();
-            printFrame.contentWindow.print();
-          }
-          
-          const checkPrintDialog = () => {
-            // ✅ CAMBIO 6: Aumentar tiempo de limpieza
-            setTimeout(() => {
-              if (document.body.contains(printFrame)) {
-                document.body.removeChild(printFrame);
-              }
-              URL.revokeObjectURL(pdfUrl);
-              resolve(pdfUrl);
-            }, 3000); // 3 segundos
-          };
-
-          setTimeout(checkPrintDialog, 500);
-        }, 800); // 800ms para cargar
-      };
-    });
+    // Descargar directamente
+    const fileName = config.fileName || `Factura_${config.mainInfo.invoiceNumber}.pdf`;
+    this.doc.save(fileName);
   }
 }
 
-export const generateInvoicePDF = async (config: PDFInvoiceConfig): Promise<string> => {
-  // ✅ CAMBIO 7: Crear nueva instancia cada vez
+export const generateInvoicePDF = async (config: PDFInvoiceConfig): Promise<void> => {
   const generator = new PDFInvoiceGenerator();
-  return await generator.generate(config);
+  await generator.generate(config);
 };
 
+// ✅ EJECUTA INMEDIATAMENTE al montar
 const InvoicePDF: React.FC<{ config: PDFInvoiceConfig }> = ({ config }) => {
-  const hasGenerated = useRef(false);
-  const lastInvoiceNumber = useRef<string>("");
-
   useEffect(() => {
-    if (lastInvoiceNumber.current === config.mainInfo.invoiceNumber) {
-      return;
-    }
-
-    lastInvoiceNumber.current = config.mainInfo.invoiceNumber;
-
-    const generate = async () => {
-      await generateInvoicePDF(config);
-    };
-    generate();
-  }, [config.mainInfo.invoiceNumber]);
+    // ✅ Ejecutar inmediatamente sin verificaciones
+    generateInvoicePDF(config);
+  }, [config]); // ✅ Ejecutar cuando cambie config
 
   return null;
 };

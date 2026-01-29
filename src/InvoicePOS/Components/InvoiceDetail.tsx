@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Row, Col, Table, Form, Alert, Spinner } from 'react-bootstrap';
+import { Card, Row, Col, Table, Form, Alert, Spinner, Badge } from 'react-bootstrap';
 import { FiUser, FiPackage, FiArrowLeft } from "react-icons/fi";
 import { GetGenerateInvoiceById } from '../../InvoiceCrud/API/InvoiceCrudAPI';
 
@@ -19,6 +19,7 @@ const InvoiceDetail = () => {
 
       try {
         const data = await GetGenerateInvoiceById(Number(id));
+        console.log("Datos recibidos:", data); // Debug
         setInvoice(data);
       } catch (error) {
         console.error("Error:", error);
@@ -50,51 +51,77 @@ const InvoiceDetail = () => {
     );
   }
 
-  // Mapeo de datos
-  const mapped = {
-    invoiceNumber: invoice.invoiceNumber || `FAC-${id}`,
-    fecha: invoice.date || invoice.createdAt,
-    cliente: invoice.customerName || "Cliente",
-    identificacion: invoice.customerIdentification || invoice.customerNit || "-",
-    celular: invoice.customerPhone || "-",
-    direccion: invoice.customerAddress || "-",
-    ciudad: invoice.customerCity || "-",
-    cajero: invoice.cashierName || "Administrador",
+// Mapeo de datos - CORREGIDO CON TODOS LOS CAMPOS
+const mapped = {
+  invoiceNumber: invoice.invoiceNumber || `FAC-${id}`,
+  fecha: invoice.invoiceDate || invoice.createdAt,
+  cliente: invoice.customerName || "Cliente",
+  
+  // CAMPOS CORREGIDOS DEL CLIENTE
+  identificacion: invoice.identification || "-",  // ← CAMBIO: era customerIdentification
+  celular: invoice.phone || "-",                  // ← CAMBIO: era customerPhone
+  direccion: invoice.address || "-",              // ← CAMBIO: era customerAddress
+  ciudad: invoice.neighborhood || "-",            // ← NUEVO: neighborhood (barrio/ciudad)
+  
+  cajero: invoice.userName || "Administrador",
+  statusBill: invoice.statusBill || "PENDIENTE",
 
-    productos: (invoice.details || []).map((d: any) => ({
-      nombre: d.productName || "Producto",
-      quantity: d.quantity || 0,
-      price: Number(d.unitPrice) || 0,
-      totalDiscount: Number(d.totalDiscount) || 0,
-      total: Number(d.total) || (Number(d.unitPrice) * Number(d.quantity)),
-    })),
+  // CAMBIO CRÍTICO: usar invoiceDetails en lugar de details
+  productos: (invoice.invoiceDetails || []).map((d: any) => ({
+    nombre: d.productName || "Producto sin nombre",
+    quantity: d.quantity || 0,
+    price: Number(d.unitPrice) || 0,
+    totalDiscount: Number(d.totalDiscount) || 0,
+    total: Number(d.total) || 0,
+  })),
 
-    valorBruto: Number(invoice.subtotal) || 0,
-    descuentoTotal: Number(invoice.totalDiscount) || 0,
-    costoTransporte: Number(invoice.deliveryCost) || 0,
-    total: Number(invoice.total) || 0,
+  valorBruto: Number(invoice.subtotal) || 0,
+  descuentoTotal: Number(invoice.totalDiscount) || 0,
+  costoTransporte: Number(invoice.deliveryCost) || 0,
+  total: Number(invoice.total) || 0,
 
-    entrega: (invoice.deliveryType || "").toLowerCase() === 'llevar' ? 'llevar' : 'recoger',
-    metodoPago: invoice.paymentMethodName || "Efectivo",
-    tipoPago: (invoice.paymentType || "contado").toLowerCase() as any,
-    fechaVencimiento: invoice.dueDate,
-    abono: Number(invoice.initialPayment) || 0,
-    restante: Number(invoice.remainingBalance) || 0,
-    observacion: invoice.observations || "",
-  };
+  entrega: (invoice.deliveryType || "").toLowerCase() === 'llevar' ? 'llevar' : 'recoger',
+  metodoPago: invoice.paymentMethodName || "Efectivo",
+  
+  // Determinar tipo de pago basado en statusBill
+  tipoPago: invoice.statusBill === "PAGADO" ? "contado" : 
+            invoice.statusBill === "ABONO" ? "abono" : 
+            invoice.statusBill === "PENDIENTE" ? "credito" : "contado",
+  
+  fechaVencimiento: invoice.dueDate,
+  abono: Number(invoice.initialPayment) || 0,
+  restante: Number(invoice.remainingBalance) || 0,
+  observacion: invoice.observations || "",
+  
+  // NUEVOS CAMPOS
+  cashReceived: Number(invoice.cashReceived) || 0,
+  changeGiven: Number(invoice.changeGiven) || 0,
+};
 
   const {
     invoiceNumber, cliente, identificacion, celular, direccion, ciudad,
     productos, valorBruto, descuentoTotal, costoTransporte, total,
-    entrega, metodoPago, tipoPago, fechaVencimiento, abono, restante, observacion
+    entrega, metodoPago, tipoPago, fechaVencimiento, abono, restante, observacion,
+    statusBill
   } = mapped;
+
+  // Badge de estado
+  const getBadgeVariant = () => {
+    switch (statusBill) {
+      case "PAGADO": return "danger";
+      case "ABONO": return "info";
+      case "PENDIENTE": return "success";
+      case "INACTIVO": return "warning";
+      default: return "secondary";
+    }
+  };
 
   return (
     <div className="app-content content">
       <div className="content-wrapper container-fluid p-0">
         <div className="content-body">
 
-          {/* FLECHA DE VOLVER + TÍTULO */}
+          {/* FLECHA DE VOLVER + TÍTULO + BADGE */}
           <div className="d-flex align-items-center mb-2">
             <button
               onClick={() => navigate('/invoice')}
@@ -104,11 +131,14 @@ const InvoiceDetail = () => {
             >
               <FiArrowLeft />
             </button>
-            <h3 className="mb-0">Detalle de Factura #{invoiceNumber}</h3>
+            <h3 className="mb-0 me-3">Detalle de Factura {invoiceNumber}</h3>
+            <Badge bg={getBadgeVariant()} style={{ fontSize: '14px', padding: '8px 12px' }}>
+              {statusBill}
+            </Badge>
           </div>
 
           {/* Información del Cliente */}
-          <Card  style={{ borderRadius: '0.375rem', boxShadow: '0 0.125rem 0.25rem rgba(0, 0, 0, 0.075)' }}>
+          <Card style={{ borderRadius: '0.375rem', boxShadow: '0 0.125rem 0.25rem rgba(0, 0, 0, 0.075)' }}>
             <Card.Header style={{ borderBottom: '2px solid #cc322d', padding: '12px 20px' }}>
               <h6 className="mb-0" style={{ fontWeight: '600' }}>
                 <FiUser style={{ marginRight: '8px' }} /> Información del Cliente
@@ -142,7 +172,7 @@ const InvoiceDetail = () => {
                     <Form.Control type="text" value={direccion} readOnly />
                   </Form.Group>
                   <Form.Group className="mb-3">
-                    <Form.Label style={{ fontSize: '13px', fontWeight: '600' }}>Ciudad</Form.Label>
+                    <Form.Label style={{ fontSize: '13px', fontWeight: '600' }}>Barrio</Form.Label>
                     <Form.Control type="text" value={ciudad} readOnly />
                   </Form.Group>
                 </Col>
@@ -157,6 +187,7 @@ const InvoiceDetail = () => {
               <h6 className="mb-0">
                 <FiPackage style={{ marginRight: '8px' }} /> Productos de la Factura
               </h6>
+              <Badge bg="info">{productos.length} productos</Badge>
             </Card.Header>
             <Card.Body style={{ padding: '0' }}>
               <div style={{ overflowX: 'auto' }}>
@@ -218,16 +249,7 @@ const InvoiceDetail = () => {
                       <Form.Control type="text" value={metodoPago} readOnly />
                     </Form.Group>
                   </Col>
-                  <Col md={2}>
-                    <Form.Group>
-                      <Form.Label style={{ fontSize: '13px', fontWeight: '600' }}>Método de Pago</Form.Label>
-                      <Form.Control 
-                        type="text" 
-                        value={tipoPago === 'contado' ? 'Contado' : tipoPago === 'credito' ? 'Crédito' : 'Abono'} 
-                        readOnly 
-                      />
-                    </Form.Group>
-                  </Col>
+
                   <Col md={2}>
                     {tipoPago === 'credito' && fechaVencimiento && (
                       <Form.Group>
@@ -238,7 +260,7 @@ const InvoiceDetail = () => {
                     {tipoPago === 'abono' && (
                       <Form.Group>
                         <Form.Label style={{ fontSize: '13px', fontWeight: '600' }}>Abono ($)</Form.Label>
-                        <Form.Control type="text" value={abono.toLocaleString('es-CO')} readOnly />
+                        <Form.Control type="text" value={`$${abono.toLocaleString('es-CO')}`} readOnly />
                       </Form.Group>
                     )}
                   </Col>
@@ -248,7 +270,7 @@ const InvoiceDetail = () => {
                   <Col md={12}>
                     <Form.Group>
                       <Form.Label style={{ fontSize: '13px', fontWeight: '800' }}>Observación</Form.Label>
-                      <Form.Control as="textarea" rows={4} value={observacion} readOnly style={{ resize: 'none' }} />
+                      <Form.Control as="textarea" rows={4} value={observacion || "Sin observaciones"} readOnly style={{ resize: 'none' }} />
                     </Form.Group>
                   </Col>
                 </Row>
@@ -263,32 +285,44 @@ const InvoiceDetail = () => {
                         <span style={{ fontSize: '16px', fontWeight: '700' }}>Valor Bruto:</span>
                         <span style={{ fontSize: '16px', fontWeight: '600' }}>${valorBruto.toLocaleString()}</span>
                       </div>
-                      <div className="d-flex justify-content-between mb-2">
-                        <span style={{ fontSize: '16px', fontWeight: '700' }}>Descuento:</span>
-                        <span style={{ fontSize: '16px', fontWeight: '600', color: '#e74c3c' }}>-${descuentoTotal.toLocaleString()}</span>
-                      </div>
+                      {descuentoTotal > 0 && (
+                        <div className="d-flex justify-content-between mb-2">
+                          <span style={{ fontSize: '16px', fontWeight: '700' }}>Descuento:</span>
+                          <span style={{ fontSize: '16px', fontWeight: '600', color: '#e74c3c' }}>-${descuentoTotal.toLocaleString()}</span>
+                        </div>
+                      )}
                       {costoTransporte > 0 && (
                         <div className="d-flex justify-content-between mb-2">
                           <span style={{ fontSize: '16px', fontWeight: '700' }}>Transporte:</span>
                           <span style={{ fontSize: '16px', fontWeight: '600', color: '#27ae60' }}>+${costoTransporte.toLocaleString()}</span>
                         </div>
                       )}
-                      {tipoPago === 'abono' && (
-                        <>
-                          <div className="d-flex justify-content-between mb-2">
-                            <span style={{ fontSize: '16px', fontWeight: '700' }}>Abono:</span>
-                            <span style={{ fontSize: '16px', fontWeight: '600' }}>${abono.toLocaleString()}</span>
-                          </div>
-                          <div className="d-flex justify-content-between mb-2">
-                            <span style={{ fontSize: '16px', fontWeight: '700' }}>Resta:</span>
-                            <span style={{ fontSize: '16px', fontWeight: '600', color: '#e74c3c' }}>${restante.toLocaleString()}</span>
-                          </div>
-                        </>
-                      )}
-                      <div className="d-flex justify-content-between pt-3" style={{ borderTop: '2px solid #cc322d' }}>
+                      <div className="d-flex justify-content-between pt-3 mb-3" style={{ borderTop: '2px solid #cc322d' }}>
                         <span style={{ fontSize: '20px', fontWeight: '700' }}>TOTAL:</span>
                         <span style={{ fontSize: '20px', fontWeight: '700', color: '#27ae60' }}>${total.toLocaleString()}</span>
                       </div>
+                      
+                      {/* Mostrar ABONO Y RESTANTE si statusBill es ABONO */}
+                      {statusBill === 'ABONO' && (
+                        <>
+                          <div className="d-flex justify-content-between mb-2" style={{ borderTop: '1px dashed #dee2e6', paddingTop: '10px' }}>
+                            <span style={{ fontSize: '16px', fontWeight: '700' }}>Abono Pagado:</span>
+                            <span style={{ fontSize: '16px', fontWeight: '600', color: '#3498db' }}>${abono.toLocaleString()}</span>
+                          </div>
+                          <div className="d-flex justify-content-between mb-2">
+                            <span style={{ fontSize: '18px', fontWeight: '700', color: '#e74c3c' }}>Saldo Restante:</span>
+                            <span style={{ fontSize: '18px', fontWeight: '700', color: '#e74c3c' }}>${restante.toLocaleString()}</span>
+                          </div>
+                        </>
+                      )}
+                      
+                      {/* Mostrar PENDIENTE si statusBill es PENDIENTE */}
+                      {statusBill === 'PENDIENTE' && (
+                        <div className="d-flex justify-content-between mb-2" style={{ borderTop: '1px dashed #dee2e6', paddingTop: '10px' }}>
+                          <span style={{ fontSize: '18px', fontWeight: '700', color: '#e74c3c' }}>Saldo Pendiente:</span>
+                          <span style={{ fontSize: '18px', fontWeight: '700', color: '#e74c3c' }}>${total.toLocaleString()}</span>
+                        </div>
+                      )}
                     </div>
                   </Col>
                 </Row>

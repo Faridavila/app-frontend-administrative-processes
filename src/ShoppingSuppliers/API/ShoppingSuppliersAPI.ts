@@ -98,7 +98,7 @@ export const GetSearchShoppingSuppliers = async (
   });
 
   try {
-    const response = await fetch(`${URL}/search?${queryParams.toString()}`);
+    const response = await fetch(`${URL}/purchase/search?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }

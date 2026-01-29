@@ -14,15 +14,15 @@ const Dashboard: React.FC = () => {
   const metrics = useMemo(() => ([
     { title: "Ventas Hoy", value: "$2,450,000", caption: "↑ +12% vs ayer", accent: "var(--home-green-100)", icon: FiTrendingUp, route: "/ventas" },
     { title: "Entregas Pendientes", value: "24", caption: "3 urgentes", accent: "var(--home-amber-100)", icon: FiTruck, route: "/entregas" },
-     { title: "Facturas Pendientes", value: "100", caption: "10 urgentes", accent: "var(--home-amber-100)", icon: FiFileText , route: "/factutas" },
+     { title: "Facturas Pendientes", value: "100", caption: "10 urgentes", accent: "var(--home-amber-100)", icon: FiFileText , route: "/invoice" },
   ]), []);
 
   const modules = useMemo(() => ([
-    { title: "Gestión de Inventarios", subtitle: "Administra productos, stock y movimientos de inventario", kpi: "1,245", kpiCaption: "15 productos con stock bajo", accent: "var(--home-indigo-500)", icon: FiPackage, route: "/inventarios" },
-    { title: "Administración de Nómina", subtitle: "Empleados, salarios y reportes de nómina", kpi: "42", kpiCaption: "Nómina mensual pendiente", accent: "var(--home-green-500)", icon: FiUserCheck, route: "/nomina" },
+    { title: "Gestión de Inventarios", subtitle: "Administra productos, stock y movimientos de inventario", kpi: "1,245", kpiCaption: "15 productos con stock bajo", accent: "var(--home-indigo-500)", icon: FiPackage, route: "/inventory" },
+    { title: "Administración de Nómina", subtitle: "Empleados, salarios y reportes de nómina", kpi: "42", kpiCaption: "Nómina mensual pendiente", accent: "var(--home-green-500)", icon: FiUserCheck, route: "/employee-payment" },
     { title: "Coordinación de Entregas", subtitle: "Rutas, asignación y confirmaciones", kpi: "89", kpiCaption: "12 entregas pendientes hoy", accent: "var(--home-orange-500)", icon: FiMapPin, route: "/coordinacion" },
-    { title: "Gestión de Proveedores", subtitle: "Proveedores, compras y órdenes", kpi: "28", kpiCaption: "3 órdenes vencidas", accent: "var(--home-violet-500)", icon: FiShoppingBag, route: "/proveedores" },
-    { title: "Información de Clientes", subtitle: "Clientes, historial y facturación", kpi: "2,456", kpiCaption: "15 facturas pendientes", accent: "var(--home-pink-500)", icon: FiUsers, route: "/clientes" },
+    { title: "Gestión de Proveedores", subtitle: "Proveedores, compras y órdenes", kpi: "28", kpiCaption: "3 órdenes vencidas", accent: "var(--home-violet-500)", icon: FiShoppingBag, route: "/supplier" },
+    { title: "Información de Clientes", subtitle: "Clientes, historial y facturación", kpi: "2,456", kpiCaption: "15 facturas pendientes", accent: "var(--home-pink-500)", icon: FiUsers, route: "/client" },
   ]), []);
 
   return (

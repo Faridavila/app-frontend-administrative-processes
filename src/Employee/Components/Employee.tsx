@@ -65,6 +65,7 @@ const EmployeeCRUD = () => {
     {
       key: "date",
       label: "Fecha de ingreso",
+      type: "date",
       required: true,
       render: (item: EmployeeTypes) => {
         if (!item.date) {
@@ -139,16 +140,8 @@ const EmployeeCRUD = () => {
       );
     }
 
-    if (colKey === "date") {
-      return (
-        <Form.Control
-          type="date"
-          value={value || ""}
-          onChange={(e) => onUpdate({ date: e.target.value })}
-          aria-label="Fecha de ingreso"
-        />
-      );
-    }
+    // El campo "date" ahora es manejado automáticamente por CRUDForm
+    // ya que tiene type: "date" en la definición de columnas
 
     if (colKey === "hasBaseSalary") {
       return (

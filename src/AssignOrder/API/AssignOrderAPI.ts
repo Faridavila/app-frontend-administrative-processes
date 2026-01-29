@@ -1,14 +1,50 @@
-import {AssignOrderTypes } from "../Types/AssignOrderTypes";
-//import { BASE_URL_APIS_CORE } from "../../constants";
+import { AssignOrderTypes } from "../Types/AssignOrderTypes";
+import { BASE_URL_APIS_CORE } from "../../constants";
 
-const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/supplier';
-//const URL: string = `${BASE_URL_APIS_CORE}/api/v1/back-app-catalog-core-service/cash-register`;
+const URL: string = `${BASE_URL_APIS_CORE}/order-allocation`;
+
+// Función auxiliar para mapear del backend al frontend
+const mapBackendToFrontend = (backendData: any): AssignOrderTypes => {
+  return {
+    id: backendData.id,
+    userId: backendData.transporterId || backendData.userId,
+    userName: backendData.transporterName || backendData.userName || "",
+    warehouseId: backendData.originWarehouseId || backendData.warehouseId,
+    warehouseName: backendData.warehouseName || "",
+    neighborhoodRateId: backendData.destinationNeighborhoodId || backendData.neighborhoodRateId,
+    neighborhoodName: backendData.neighborhoodName || "",
+    address: backendData.address || "",
+    orderId: backendData.pendingOrderId || backendData.orderId,
+    customerName: backendData.customerName || "",
+    customerAddress: backendData.address || backendData.customerAddress || "",
+    customerCity: backendData.customerCity || "",
+    customerPhone: backendData.phone || backendData.customerPhone || "",
+    totalPurchase: backendData.total || backendData.totalAmount || backendData.totalPurchase || 0,
+    paymentMethodId: backendData.paymentMethodId || 0,
+    paymentMethodName: backendData.paymentMethodName || "",
+    date: backendData.date ? backendData.date.toString() : "",
+    hour: backendData.hour ? backendData.hour.toString() : "",
+    observation: backendData.observations || backendData.observation || "",
+    statusOrder: backendData.statusOrderAllocation || backendData.statusOrder || "",
+    status: backendData.status || "",
+    chargeInvoice: backendData.chargeInvoice || false,
+    products: (backendData.products || []).map((p: any) => ({
+      id: p.productId || p.id,
+      productName: p.productName || "",
+      quantity: p.quantity || 0,
+      quantityPerTrip: p.assignedQuantity || p.quantityPerTrip || 0,
+      price: p.unitPrice || p.price || 0,
+      total: p.total || 0,
+      pendingOrderDetailId: p.pendingOrderDetailId || p.id,
+    })),
+  };
+};
 
 export const GetAssignOrder = async (
   page: number,
   size: number,
   filters: Partial<AssignOrderTypes>,
-  sortOrder: string = '',  
+  sortOrder: string = '',
   sortBy?: keyof AssignOrderTypes
 ): Promise<AssignOrderTypes[]> => {
   const queryParams = new URLSearchParams();
@@ -20,7 +56,7 @@ export const GetAssignOrder = async (
   queryParams.append('orders', validSortOrder);
 
   if (sortBy) {
-    queryParams.append('sortBy', String(sortBy)); 
+    queryParams.append('sortBy', String(sortBy));
   }
 
   Object.keys(filters).forEach(key => {
@@ -31,96 +67,68 @@ export const GetAssignOrder = async (
   });
 
   try {
+    console.log("🔍 Llamando a GetAssignOrder:", `${URL}?${queryParams.toString()}`);
+    
     const response = await fetch(`${URL}?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }
     const data = await response.json();
-    return data.content; 
+    
+    console.log("📥 Datos recibidos del backend:", data);
+    
+    // Mapear los datos del backend al formato del frontend
+    const mappedData = (data.content || []).map(mapBackendToFrontend);
+    
+    console.log("✅ Datos mapeados:", mappedData);
+    
+    return mappedData;
   } catch (error) {
-    console.error('Error al obtener los elementos:', error);
+    console.error('❌ Error al obtener los elementos:', error);
     return [];
   }
 };
 
-
 export async function CreateAssignOrder(
-  AssignOrderDto: AssignOrderTypes,
+  assignOrderDto: AssignOrderTypes,
   imageFile: File | null
 ): Promise<void> {
   try {
-    const formData = new FormData();
+    console.log("📤 Datos a enviar (sin mapeo):", assignOrderDto);
 
-    if (imageFile) {
-      formData.append("image", imageFile); 
-    }
-
-    console.log("Data:", AssignOrderDto);
     const response = await fetch(`${URL}/create`, {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(assignOrderDto),
     });
 
     if (!response.ok) {
-      throw new Error(`La solicitud a la API falló ${response.status}`);
+      const errorText = await response.text();
+      console.error("❌ Error del servidor:", errorText);
+      throw new Error(`Error ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
-    console.log("AssignOrdero creado:", data);
+    console.log("✅ Orden de asignación creada:", data);
   } catch (error) {
-    console.error("Error al llamar a la API:", error);
+    console.error("❌ Error al crear la orden de asignación:", error);
     throw error;
   }
-}
-
-export async function UpdateIntorySubtract( branchDto: AssignOrderTypes): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/subtract-quantity`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(branchDto),
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        throw error;  
-    }
-}
-
-export async function UpdateIntoryAdd( branchDto: AssignOrderTypes): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/add-quantity`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(branchDto),
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        throw error;  
-    }
 }
 
 export const GetSearchAssignOrder = async (
   page: number,
   size: number,
   filters: Partial<AssignOrderTypes>,
-  sortOrder: string = 'ASC',  
-  sortBy?: keyof AssignOrderTypes 
+  sortOrder: string = 'ASC',
+  sortBy?: keyof AssignOrderTypes
 ): Promise<AssignOrderTypes[]> => {
   const queryParams = new URLSearchParams();
 
   queryParams.append('page', String(page));
   queryParams.append('size', String(size));
-
 
   const validSortOrder = sortOrder === 'ASC' || sortOrder === 'DESC' ? sortOrder : 'ASC';
   queryParams.append('orders', validSortOrder);
@@ -129,7 +137,6 @@ export const GetSearchAssignOrder = async (
     queryParams.append('sortBy', String(sortBy));
   }
 
-  
   Object.keys(filters).forEach(key => {
     const value = filters[key as keyof AssignOrderTypes];
     if (value !== undefined && value !== null && value !== '') {
@@ -138,111 +145,84 @@ export const GetSearchAssignOrder = async (
   });
 
   try {
+    console.log("🔍 Buscando con filtros:", `${URL}/search?${queryParams.toString()}`);
+    
     const response = await fetch(`${URL}/search?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }
     const data = await response.json();
-    return data.content;
+    
+    console.log("📥 Resultados de búsqueda:", data);
+    
+    // Mapear los datos del backend al formato del frontend
+    const mappedData = (data.content || []).map(mapBackendToFrontend);
+    
+    return mappedData;
   } catch (error) {
-    console.error('Error al obtener los elementos:', error);
+    console.error('❌ Error al buscar:', error);
     return [];
   }
 };
 
-
 export async function UpdateAssignOrder(
   id: number,
-  AssignOrderDto: AssignOrderTypes,
+  assignOrderDto: AssignOrderTypes,
   imageFile: File | null
 ): Promise<void> {
   try {
-    const formData = new FormData();
-    
+    console.log("📤 Datos a actualizar (sin mapeo):", assignOrderDto);
 
-    if (imageFile) {
-      formData.append("image", imageFile); 
-    }
     const response = await fetch(`${URL}/update/${id}`, {
-      method: "PUT",
-      body: formData, 
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(assignOrderDto),
     });
 
     if (!response.ok) {
-      throw new Error(`La solicitud a la API falló ${response.status}`);
+      const errorText = await response.text();
+      console.error("❌ Error del servidor:", errorText);
+      throw new Error(`Error ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
-    console.log("Categoría actualizada:", data);
+    console.log("✅ Orden de asignación actualizada:", data);
   } catch (error) {
-    console.error("Error al llamar a la API:", error);
-    throw error;  
+    console.error("❌ Error al actualizar la orden de asignación:", error);
+    throw error;
   }
 }
 
 export async function DeleteAssignOrder(id: number): Promise<void> {
-    try {
-        const response = await fetch(`${URL}/delete/${id}`, {
-            method: "DELETE",
-        });
-        if (!response.ok) {
-            throw new Error(`La solicitud a la API fallo ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error al llamar a la API:", error);
-        throw error;
+  try {
+    const response = await fetch(`${URL}/delete/${id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Error al eliminar: ${response.status} - ${errorText}`);
     }
+    console.log("✅ Orden de asignación eliminada");
+  } catch (error) {
+    console.error("❌ Error al eliminar la orden de asignación:", error);
+    throw error;
+  }
 }
-
 
 export async function GetAllAssignOrderNoPage(): Promise<AssignOrderTypes[] | null> {
   try {
-      const response = await fetch(`${URL}/no-page/getAllAssignOrder`);
-      if (response.ok) {
-          const data:AssignOrderTypes[] = await response.json();
-          return data;
-      } else {
-          throw new Error(`La solicitud a la API falló ${response.status}`);
-      }
+    const response = await fetch(`${URL}/no-page/getAllOrderAllocations`);
+    if (response.ok) {
+      const data = await response.json();
+      const mappedData = data.map(mapBackendToFrontend);
+      return mappedData;
+    } else {
+      throw new Error(`Error ${response.status}`);
+    }
   } catch (error) {
-      console.error("Error al llamar a la API:", error);
-      return null;
+    console.error("Error al obtener todas las órdenes:", error);
+    return null;
   }
 }
-
-export const GetPurchasePrice = async (
-  supplierId: number,
-  productId: number
-): Promise<number> => {
-  try {
-    const endpoint = `${URL}/get-purchase-price/${supplierId}/${productId}`;
-    console.log(`Llamando al endpoint: ${endpoint}`); 
-
-    const response = await fetch(endpoint, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error en la respuesta del servidor: ${response.status} - ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    console.log('Respuesta de la API:', data);
-    const price = typeof data === 'number' ? data : parseFloat(data.toString());
-    
-    if (isNaN(price)) {
-      throw new Error('El valor devuelto no es un número válido');
-    }
-
-    return price;
-  } catch (error) {
-    console.error('Error al obtener el precio de compra:', error);
-    throw error; 
-  }
-};
-
-
-

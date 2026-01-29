@@ -64,45 +64,51 @@ export const GetProductDetailSupplier = async (
 
 
 export const GetSearchProductDetailSupplier = async (
-  page: number,
-  size: number,
-  filters: Partial<ProductDetailSupplierTypes>,
-  sortOrder: string = 'ASC',  
-  sortBy?: keyof ProductDetailSupplierTypes 
-): Promise<ProductDetailSupplierTypes[]> => {
-  const queryParams = new URLSearchParams();
-
-  queryParams.append('page', String(page));
-  queryParams.append('size', String(size));
-
-
-  const validSortOrder = sortOrder === 'ASC' || sortOrder === 'DESC' ? sortOrder : 'ASC';
-  queryParams.append('orders', validSortOrder);
-
-  if (sortBy) {
-    queryParams.append('sortBy', String(sortBy));
-  }
-
+    page: number,
+    size: number,
+    filters: Partial<ProductDetailSupplierTypes>,
+    sortOrder: string = 'ASC',
+    sortBy?: keyof ProductDetailSupplierTypes,
+    extraParams?: Record<string, any>
+  ): Promise<ProductDetailSupplierTypes[]> => {
+    const queryParams = new URLSearchParams();
   
-  Object.keys(filters).forEach(key => {
-    const value = filters[key as keyof ProductDetailSupplierTypes];
-    if (value !== undefined && value !== null && value !== '') {
-      queryParams.append(key, String(value));
+    queryParams.append('page', String(page));
+    queryParams.append('size', String(size));
+  
+    const validSortOrder = sortOrder === 'ASC' || sortOrder === 'DESC' ? sortOrder : 'ASC';
+    queryParams.append('orders', validSortOrder);
+  
+    if (sortBy) {
+      queryParams.append('sortBy', String(sortBy));
     }
-  });
+  
+    Object.keys(filters).forEach(key => {
+      const value = filters[key as keyof ProductDetailSupplierTypes];
+      if (value !== undefined && value !== null && value !== '') {
+        queryParams.append(key, String(value));
+      }
+    });
+  
+    try {
+         const shoppingSupplierId = extraParams?.shoppingSupplierId;
 
-  try {
-    const response = await fetch(`${URL}/search?${queryParams.toString()}`);
-    if (!response.ok) {
-      throw new Error('Error en la respuesta del servidor');
+      if (!shoppingSupplierId || shoppingSupplierId === 0) {
+        console.error("shoppingSupplierId no está definido o es inválido. Verifica extraParams");
+        return [];
+      }
+      const response = await fetch(`${URL}/products/searchProductByPurchase/${shoppingSupplierId}?${queryParams.toString()}`);
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+      const data = await response.json();
+      return data.content;
+    } catch (error) {
+      console.error('Error al obtener los elementos:', error);
+      return [];
     }
-    const data = await response.json();
-    return data.content;
-  } catch (error) {
-    console.error('Error al obtener los elementos:', error);
-    return [];
-  }
-};
+  };
+  
 
 
 export async function GetAllProductDetailSupplierNoPage(): Promise<ProductDetailSupplierTypes[] | null> {

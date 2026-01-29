@@ -71,6 +71,7 @@ const InventoryCRUD = () => {
     dependentOn?: keyof ProductTypes;
     validationMessage?: string;
     render?: (item: ProductTypes) => React.ReactNode;
+    type?: "text" | "number" | "image" | "password" | "date";
     imageOptions?: {
       maxSize: number;
       acceptedFormats: string[];
@@ -105,6 +106,7 @@ const InventoryCRUD = () => {
     {
       key: "date",
       label: "Fecha",
+      type: "date",
       hidden: true,
       render: (item) => {
         const date = item.date
@@ -192,17 +194,8 @@ const InventoryCRUD = () => {
         />
       );
     }
-    if (colKey === "date") {
-      return (
-        <input
-          type="date"
-          className="form-control"
-          value={value || ""}
-          onChange={(e) => onChange(e.target.value)}
-          aria-label="Fecha"
-        />
-      );
-    }
+    // El campo "date" ahora es manejado automáticamente por CRUDForm
+    // ya que tiene type: "date" en la definición de columnas
     return null;
   };
 
@@ -713,6 +706,7 @@ const customSave = async (
         userId: currentUserId,
       });
     });
+
 
     if (currentAction === "add") {
       await (UpdateIntoryAdd as any)({ productQuantity });

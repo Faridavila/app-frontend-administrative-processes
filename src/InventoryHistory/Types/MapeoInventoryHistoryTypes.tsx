@@ -1,5 +1,6 @@
 export const InventoryHistorySortFieldMap: Record<string, string> = {
-    typeUser: 'rolId',
+    typeUser: 'id',
     userName: 'userId',
+    date: 'transactionDate',
 
 };

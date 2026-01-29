@@ -170,7 +170,7 @@ const MainMenu: React.FC<MainMenuProps> = ({
       subItems: [
         { id: 7.1, title: "Tarifa por bodega", route: "/supplier-rate" },
         { id: 7.2, title: "Tarifa por barrio", route: "/neighborhood-rate" },
-        { id: 7.3, title: "Translado de bodega", route: "/warehouse-relocation" },
+        //{ id: 7.3, title: "Translado de bodega", route: "/warehouse-relocation" },
         { id: 7.4, title: "Pedidos pendiente", route: "/pending-order" },
         { id: 7.5, title: "Asignar pedidos", route: "/assign-order" },
         { id: 7.6, title: "Pedidos completos", route: "/complete-order" },

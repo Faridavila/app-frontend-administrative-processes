@@ -31,7 +31,7 @@ const ClientCRUD = () => {
     departmentName: "",
     municipalityId: 0,
     municipality: "",
-    neighborhoodName: "",
+    neighborhood: "",
     address: "",
     email: "",
     phone: "",
@@ -39,7 +39,7 @@ const ClientCRUD = () => {
   });
 
   const columns: {
-    key: keyof ClientTypes;
+    key: keyof ClientTypes; 
     label: string;
     hidden?: boolean;
     required?: boolean;
@@ -50,7 +50,7 @@ const ClientCRUD = () => {
     hiddenInEdit?: boolean;
     render?: (item: ClientTypes) => React.ReactNode;
     formHidden?: (item: ClientTypes) => boolean;
-    type?: "text" | "number" | "image" | "password";
+    type?: "text" | "number" | "image" | "password" | "date";
   }[] = [
     {
       key: "id",
@@ -169,11 +169,11 @@ const ClientCRUD = () => {
       },
     },
     {
-      key: "neighborhoodName",
+      key: "neighborhood",
       label: "Barrio",
       required: true,
       render: (item) => {
-        const observation = item.neighborhoodName || "No disponible";
+        const observation = item.neighborhood || "No disponible";
         return <span>{observation}</span>;
       },
     },

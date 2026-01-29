@@ -73,7 +73,7 @@ export const GetSearchSupplierPendingProduct = async (
   });
 
   try {
-    const response = await fetch(`${URL}/search?${queryParams.toString()}`);
+    const response = await fetch(`${URL}/search-supplier-with-debt?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }

@@ -6,6 +6,8 @@ export interface AssignOrderTypes {
   warehouseName: string;
   neighborhoodRateId: number;
   neighborhoodName: string;
+  paymentMethodId: number;
+  paymentMethodName: string;
   address: string;
   orderId: number;
   customerName: string;
@@ -18,19 +20,16 @@ export interface AssignOrderTypes {
   observation: string;
   statusOrder: string;
   status: string;
+  chargeInvoice?: boolean;
   products: OrderProduct[];
 }
 
 export interface OrderProduct {
-  id: number;
+  id: number; // productId
   productName: string;
-  quantity: number;
-  quantityPerTrip: number; 
-  price: number;
+  quantity: number; // Cantidad total del pedido original
+  quantityPerTrip: number; // assignedQuantity en backend
+  price: number; // unitPrice
   total: number;
+  pendingOrderDetailId?: number; // ⚠️ IMPORTANTE: debe venir del pedido original
 }
-
-
-
-
-
