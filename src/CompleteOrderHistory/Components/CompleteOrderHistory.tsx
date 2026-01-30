@@ -672,34 +672,43 @@ const CompleteOrderHistory: React.FC<CompleteOrderHistoryProps> = ({
       hiddenInCreate: true,
       hiddenInEdit: true,
     },
-    {
-      key: "date",
-      label: "Fecha",
-      hiddenInCreate: true,
-      hiddenInEdit: true,
-      type: "date",
-      render: (item: CompleteOrderHistoryTypes) => {
-        if (!item.date) return "N/A";
-        const dateObj = new Date(item.date);
-        return dateObj.toLocaleDateString("es-CO");
-      },
-    },
-    {
-      key: "hour",
-      label: "Hora",
-      hiddenInCreate: true,
-      hiddenInEdit: true,
-      render: (item: CompleteOrderHistoryTypes) => {
-        if (!item.hour) return "N/A";
+{
+  key: "date",
+  label: "Fecha",
+  type: "date",
+  hiddenInCreate: true,
+  hiddenInEdit: true,
+  render: (item: CompleteOrderHistoryTypes) => {
+    // Formatear fecha
+    let formattedDate = "Sin fecha";
+    if (item.date) {
+      // ✅ Usar split para evitar problemas de zona horaria
+      const [year, month, day] = item.date.split('-');
+      formattedDate = `${day}/${month}/${year}`;
+    }
 
-        const [hours, minutes] = item.hour.split(":");
-        const hour24 = parseInt(hours, 10);
-        const hour12 = hour24 % 12 || 12;
-        const ampm = hour24 >= 12 ? "PM" : "AM";
+    // Formatear hora
+    let formattedHour = "Sin hora";
+    if (item.hour) {
+      const [hours, minutes] = item.hour.split(":");
+      const hour24 = parseInt(hours, 10);
+      const hour12 = hour24 % 12 || 12;
+      const ampm = hour24 >= 12 ? "PM" : "AM";
+      formattedHour = `${hour12}:${minutes} ${ampm}`;
+    }
 
-        return `${hour12}:${minutes} ${ampm}`;
-      },
-    },
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <span style={{ fontWeight: '500' }}>
+          {formattedDate}
+        </span>
+        <span style={{ fontSize: '0.9em', color: '#6c757d' }}>
+          {formattedHour}
+        </span>
+      </div>
+    );
+  },
+},
    {
       key: "image",
       label: "Evidencia",
@@ -713,7 +722,7 @@ const CompleteOrderHistory: React.FC<CompleteOrderHistoryProps> = ({
           <img
             src={item.image}
             alt="Imagen"
-            style={{ width: "110px", height: "90px", objectFit: "cover" }}
+            style={{ width: "130px", height: "90px", objectFit: "cover" }}
           />
         ) : (
           "sin imagen"
@@ -735,7 +744,7 @@ const CompleteOrderHistory: React.FC<CompleteOrderHistoryProps> = ({
           <img
             src={item.signature}
             alt="Firma"
-            style={{ width: "110px", height: "90px", objectFit: "cover" }}
+            style={{ width: "130px", height: "90px", objectFit: "cover" }}
           />
         ) : (
           "sin firma"

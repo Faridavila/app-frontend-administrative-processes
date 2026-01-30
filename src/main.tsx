@@ -22,7 +22,7 @@ import CityCRUD from "./City/Components/City.tsx";
 import CurrencyTipeCRUD from "./CurrencyType/Components/CurrencyType.tsx";
 import ForgotPassword from "./Login/Components/ForgotPassword.tsx";
 import LoginPage from "./Login/Components/login.tsx";
-import Dashboard from "./Dashboard/Dashboard.tsx";
+import Dashboard from "./Dashboard/Components/Dashboard.tsx";
 import SolicitudForm from "./RadicarSolicitud/Components/SolicitudForm.tsx";
 import WarehouseForm from "./Warehouse/Components/WarehouseForm.tsx";
 import RegistroProductoWizard from "./RegistrarProducto/Components/RegistrarProducto.tsx";
