@@ -84,7 +84,12 @@ const EmployeeCRUD = () => {
     { key: "areaName", label: "Área", hiddenInCreate: true, hiddenInEdit: true },
     { key: "positionId", label: "Cargo", required: true, regex: /^\d+$/, hidden: true },
     { key: "positionName", label: "Cargo", hiddenInCreate: true, hiddenInEdit: true },
-    { key: "email", label: "Correo" },
+    {
+      key: "email", label: "Correo",
+      render: (item: EmployeeTypes) => {
+        return item.email || "Sin correo";
+      },
+    },
     { key: "address", label: "Dirección" },
     { key: "phone", label: "Celular", regex: /^\d+$/ },
     {
@@ -161,36 +166,36 @@ const EmployeeCRUD = () => {
         />
       );
     }
-if (colKey === "baseSalary") {
-  if (!currentItem.hasBaseSalary) {
+    if (colKey === "baseSalary") {
+      if (!currentItem.hasBaseSalary) {
+        return null;
+      }
+
+      const displayValue = currentItem.baseSalary != null && !isNaN(currentItem.baseSalary)
+        ? currentItem.baseSalary.toLocaleString('es-ES', { minimumFractionDigits: 0 })
+        : "";
+
+      return (
+        <Form.Control
+          type="text"
+          value={displayValue}
+          onChange={(e) => {
+            const input = e.target.value.replace(/\./g, '');
+
+            if (!/^\d*\.?\d*$/.test(input)) {
+              return;
+            }
+
+            const numericValue = input === "" || input === "." ? undefined : parseFloat(input);
+            onUpdate({ baseSalary: numericValue });
+          }}
+          placeholder="Ej: 1.500.000"
+          aria-label="Salario base"
+          className="fw-medium "
+        />
+      );
+    }
     return null;
-  }
-
-  const displayValue = currentItem.baseSalary != null && !isNaN(currentItem.baseSalary)
-    ? currentItem.baseSalary.toLocaleString('es-ES', { minimumFractionDigits: 0 })
-    : "";
-
-  return (
-    <Form.Control
-      type="text"
-      value={displayValue}
-      onChange={(e) => {
-        const input = e.target.value.replace(/\./g, '');
-
-        if (!/^\d*\.?\d*$/.test(input)) {
-          return;
-        }
-
-        const numericValue = input === "" || input === "." ? undefined : parseFloat(input);
-        onUpdate({ baseSalary: numericValue });
-      }}
-      placeholder="Ej: 1.500.000"
-      aria-label="Salario base"
-      className="fw-medium "
-    />
-  );
-}
-  return null;
   };
 
   return (

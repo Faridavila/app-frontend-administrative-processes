@@ -97,26 +97,32 @@ const ProductCRUD = () => {
       hiddenInCreate: true,
       hiddenInEdit: true,
     },
-    {
-      key: "image",
-      label: "Imagen",
-      required: true,
-      imageOptions: {
-        maxSize: 2 * 1024 * 1024,
-        acceptedFormats: ["image/jpeg", "image/png", "image/webp"],
-      },
-      render: (item) =>
-        item.image ? (
-          <img
-            src={item.image}
-            alt="Imagen"
-            style={{ width: "80px", height: "80px", objectFit: "cover" }}
-          />
-        ) : (
-          "N/A"
-        ),
-      editable: true,
-    },
+   {
+  key: "image",
+  label: "Imagen",
+  required: true,
+  imageOptions: {
+    maxSize: 2 * 1024 * 1024,
+    acceptedFormats: ["image/jpeg", "image/png", "image/webp"],
+  },
+  render: (item) =>
+    item.image ? (
+      <img
+        src={item.image}
+        alt="Imagen"
+        style={{ 
+          width: "80px", 
+          height: "80px", 
+          objectFit: "cover",
+          display: "block",
+          margin: "0 auto"
+        }}
+      />
+    ) : (
+      "N/A"
+    ),
+  editable: true,
+},
   ];
 
   const renderCustomFormField = (

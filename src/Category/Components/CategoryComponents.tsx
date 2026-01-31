@@ -83,7 +83,13 @@ const CategoryCRUD = () => {
             <img
               src={item.image}
               alt="Imagen"
-              style={{ width: "80px", height: "80px", objectFit: "cover" }}
+              style={{
+                width: "80px",
+                height: "80px",
+                objectFit: "cover",
+                display: "block",
+                margin: "0 auto"
+              }}
             />
           ) : (
             "N/A"
