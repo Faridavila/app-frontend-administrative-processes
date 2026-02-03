@@ -33,7 +33,7 @@ export interface NewClientData {
   departmentName: string;
   municipalityId: number | null;
   municipality: string;
-  neighborhoodName: string;
+  neighborhood: string;
   address: string;
   phone: string;
   email:string;

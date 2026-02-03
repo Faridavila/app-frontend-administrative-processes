@@ -57,7 +57,6 @@ const ClientCRUD = () => {
       label: "ID",
       hiddenInCreate: true,
       hiddenInEdit: true,
-      hidden: true,
     },
     { key: "name", label: "Nombre y apellidos", required: true },
     {

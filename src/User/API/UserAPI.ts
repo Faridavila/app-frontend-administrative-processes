@@ -1,4 +1,3 @@
-import { ObjectResponse } from "../Types/TypesDTO/ObjectResponse";
 import { UserTypes } from "../Types/UserTypes";
 import { BASE_URL_APIS_USER } from "../../constants";
 

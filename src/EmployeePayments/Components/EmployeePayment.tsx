@@ -385,10 +385,28 @@ const EmployeePayment = () => {
             style={{ margin: "0", fontSize: "21px" }}
           >
             Gestión de ingresos, préstamos y pagos a empleados
-          </h3>
+          </h3>        
           <FavoritoButton path="/EmployeePayment" label="Pagos a Empleados" />
         </div>
         <p>Administre la nómina, ingresos, préstamos y pagos a empleados.</p>
+
+        <div className="mb-1">
+          <label className="form-label d-block mb-1">Rango de Fechas</label>
+
+          <div className="date-range-container d-flex gap-2">
+            <input
+              type="date"
+              className="form-control date-input-responsive"
+
+              aria-label="Fecha desde"
+            />
+            <input
+              type="date"
+              className="form-control date-input-responsive"
+              aria-label="Fecha hasta"
+            />
+          </div>
+        </div>
         <div className="card">
           <div className="card-datatable table-responsive">
             <CRUDForm<EmployeePaymentTypes>

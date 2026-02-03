@@ -1,16 +1,16 @@
 import {InventoryHistoryTypes } from "../Types/InventoryHistoryTypes";
 import { BASE_URL_APIS_CORE } from "../../constants";
 
-//const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/transaction';
 const URL: string = `${BASE_URL_APIS_CORE}/transaction`;
-
 
 export const GetInventoryHistory = async (
   page: number,
   size: number,
   filters: Partial<InventoryHistoryTypes>,
   sortOrder: string = '',  
-  sortBy?: keyof InventoryHistoryTypes
+  sortBy?: keyof InventoryHistoryTypes,
+  startDate?: string,  // 🔥 NUEVO
+  endDate?: string     // 🔥 NUEVO
 ): Promise<InventoryHistoryTypes[]> => {
   const queryParams = new URLSearchParams();
 
@@ -22,6 +22,14 @@ export const GetInventoryHistory = async (
 
   if (sortBy) {
     queryParams.append('sortBy', String(sortBy)); 
+  }
+
+  // 🔥 AGREGAR FECHAS SI EXISTEN
+  if (startDate) {
+    queryParams.append('startDate', startDate);
+  }
+  if (endDate) {
+    queryParams.append('endDate', endDate);
   }
 
   Object.keys(filters).forEach(key => {
@@ -44,19 +52,19 @@ export const GetInventoryHistory = async (
   }
 };
 
-
 export const GetSearchInventoryHistory = async (
   page: number,
   size: number,
   filters: Partial<InventoryHistoryTypes>,
   sortOrder: string = 'ASC',  
-  sortBy?: keyof InventoryHistoryTypes 
+  sortBy?: keyof InventoryHistoryTypes,
+  startDate?: string,  // 🔥 NUEVO
+  endDate?: string     // 🔥 NUEVO
 ): Promise<InventoryHistoryTypes[]> => {
   const queryParams = new URLSearchParams();
 
   queryParams.append('page', String(page));
   queryParams.append('size', String(size));
-
 
   const validSortOrder = sortOrder === 'ASC' || sortOrder === 'DESC' ? sortOrder : 'ASC';
   queryParams.append('orders', validSortOrder);
@@ -65,7 +73,14 @@ export const GetSearchInventoryHistory = async (
     queryParams.append('sortBy', String(sortBy));
   }
 
-  
+  // 🔥 AGREGAR FECHAS SI EXISTEN
+  if (startDate) {
+    queryParams.append('startDate', startDate);
+  }
+  if (endDate) {
+    queryParams.append('endDate', endDate);
+  }
+
   Object.keys(filters).forEach(key => {
     const value = filters[key as keyof InventoryHistoryTypes];
     if (value !== undefined && value !== null && value !== '') {
@@ -85,9 +100,3 @@ export const GetSearchInventoryHistory = async (
     return [];
   }
 };
-
-
-
-
-
-

@@ -115,7 +115,7 @@ const FacturaComponent = () => {
     departmentName: "",
     municipalityId: 0,
     municipality: "",
-    neighborhoodName: "",
+    neighborhood: "",
     address: "",
     email: "",
     phone: "",
@@ -364,7 +364,7 @@ const FacturaComponent = () => {
 
     const camposObligatorios: (keyof NewClientData)[] = [
       "name",
-      "neighborhoodName",
+      "neighborhood",
       "phone",
       "address",
     ];
@@ -630,7 +630,7 @@ const FacturaComponent = () => {
       departmentName: "",
       municipalityId: null,
       municipality: "",
-      neighborhoodName: "",
+      neighborhood: "",
       address: "",
       email: "",
       phone: "",
@@ -2007,9 +2007,9 @@ ${companyData?.companyName || ""}`;
                       </Form.Label>
                       <Form.Control
                         type="text"
-                        name="neighborhoodName"
+                        name="neighborhood"
                         placeholder="Nombre del barrio"
-                        value={nuevoCliente.neighborhoodName}
+                        value={nuevoCliente.neighborhood}
                         onChange={handleChangeCliente}
                         disabled={guardandoCliente}
                       />

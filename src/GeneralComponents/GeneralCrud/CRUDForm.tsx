@@ -94,7 +94,9 @@ export interface CRUDFormProps<T> {
     filters: Partial<T>,
     sortOrder?: string,
     sortBy?: keyof T,
-    extraParams?: Record<string, any>
+    extraParams?: Record<string, any>,
+    startDate?: string,  
+    endDate?: string 
   ) => Promise<T[]>;
   searchItem?: (
     page: number,

@@ -36,15 +36,16 @@ export const GetWarehouses = async (
 
   try {
     const response = await fetch(`${URL}?${queryParams.toString()}`);
-    if (!response.ok) throw new Error("Error en la respuesta del servidor");
+    if (!response.ok) {
+      throw new Error('Error en la respuesta del servidor');
+    }
     const data = await response.json();
-    return data.content;
+    return data.content; 
   } catch (error) {
-    console.error("Error al obtener los elementos:", error);
+    console.error('Error al obtener los elementos:', error);
     return [];
   }
 };
-
 
 export async function CreateWarehouse(warehouseDto: WarehouseTypes): Promise<void> {
   try {
@@ -106,7 +107,7 @@ export async function UpdateWarehouse(
 ): Promise<void> {
   try {
     const response = await fetch(`${URL}/update/${id}`, {
-      method: "POST", 
+      method: "PUT", 
       headers: {
         "Content-Type": "application/json",
       },

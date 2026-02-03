@@ -90,13 +90,13 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({
       hiddenInCreate: true,
       hiddenInEdit: true,
     },
-    { key: "date", 
-      label: "Fecha", 
+    {
+      key: "date",
+      label: "Fecha",
       type: "date",
-      hiddenInCreate: true, 
-      hiddenInEdit: true 
+      hiddenInCreate: true,
+      hiddenInEdit: true,
     },
-
     {
       key: "transactionType",
       label: "Tipo de transacción",
@@ -171,6 +171,59 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({
       default:
         return "transparent";
     }
+  };
+
+  // 🔥 Función para convertir fecha de yyyy-MM-dd a dd/MM/yyyy
+  const formatDateForBackend = (date: string): string => {
+    if (!date) return "";
+    const [year, month, day] = date.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
+  // 🔥 Wrapper para fetchItems con fechas
+  const fetchWithDates = async (
+    page: number,
+    size: number,
+    filters: Partial<InventoryHistoryTypes>,
+    sortOrder?: string,
+    sortBy?: keyof InventoryHistoryTypes,
+    extraParams?: Record<string, any>
+  ) => {
+    const formattedStartDate = fromDate ? formatDateForBackend(fromDate) : undefined;
+    const formattedEndDate = toDate ? formatDateForBackend(toDate) : undefined;
+
+    return await GetInventoryHistory(
+      page,
+      size,
+      filters,
+      sortOrder,
+      sortBy,
+      formattedStartDate,
+      formattedEndDate
+    );
+  };
+
+  // 🔥 Wrapper para searchItem con fechas
+  const searchWithDates = async (
+    page: number,
+    size: number,
+    filters: Partial<InventoryHistoryTypes>,
+    sortOrder?: string,
+    sortBy?: keyof InventoryHistoryTypes,
+    extraParams?: Record<string, any>
+  ) => {
+    const formattedStartDate = fromDate ? formatDateForBackend(fromDate) : undefined;
+    const formattedEndDate = toDate ? formatDateForBackend(toDate) : undefined;
+
+    return await GetSearchInventoryHistory(
+      page,
+      size,
+      filters,
+      sortOrder,
+      sortBy,
+      formattedStartDate,
+      formattedEndDate
+    );
   };
 
   useEffect(() => {
@@ -380,9 +433,10 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({
               </Button>
             </div>
 
+            {/* 🔥 CAMBIOS PRINCIPALES AQUÍ */}
             <CRUDForm<InventoryHistoryTypes>
-              fetchItems={GetInventoryHistory}
-              searchItem={GetSearchInventoryHistory}
+              fetchItems={fetchWithDates}
+              searchItem={searchWithDates}
               createItem={async () => {}}
               updateItem={async () => {}}
               deleteItem={async () => {}}
@@ -401,6 +455,7 @@ const InventoryHistory: React.FC<InventoryHistoryCRUDProps> = ({
               rowClassName={(item: InventoryHistoryTypes) =>
                 selectedInventoryId === item.id ? "selected-row" : ""
               }
+              key={`${fromDate}-${toDate}`}
             />
           </div>
         </div>
