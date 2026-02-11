@@ -78,7 +78,6 @@ const ProductCRUD = () => {
     },
     {
       key: "quantity",
-      hidden: true,
       label: "Cantidad inicial",
       required: true,
       regex: /^\d+$/,

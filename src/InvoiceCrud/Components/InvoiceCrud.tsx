@@ -264,7 +264,7 @@ const InvoiceCrud = () => {
       payment: {
         metodoPago: invoiceData.paymentMethodName || "Efectivo",
         efectivoRecibido: invoiceData.cashReceived || undefined,
-        cambio: invoiceData.changeGiven || undefined,
+        
         tipoPago,
         abono: invoiceData.initialPayment || 0,
         restante: invoiceData.remainingBalance || 0,

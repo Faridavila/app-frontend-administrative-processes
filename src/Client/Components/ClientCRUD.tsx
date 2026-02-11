@@ -146,7 +146,6 @@ const ClientCRUD = () => {
     {
       key: "departmentName",
       label: "Departamento",
-      required: true,
       hiddenInCreate: true,
       hiddenInEdit: true,
       hidden: true,
@@ -170,14 +169,13 @@ const ClientCRUD = () => {
     {
       key: "neighborhood",
       label: "Barrio",
-      required: true,
       render: (item) => {
         const observation = item.neighborhood || "No disponible";
         return <span>{observation}</span>;
       },
     },
-    { key: "address", label: "Direccion", required: true },
-    { key: "phone", label: "Celular", required: true },
+    { key: "address", label: "Direccion"},
+    { key: "phone", label: "Celular" },
     {
       key: "email",
       label: "Correo",

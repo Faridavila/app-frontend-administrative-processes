@@ -364,9 +364,6 @@ const FacturaComponent = () => {
 
     const camposObligatorios: (keyof NewClientData)[] = [
       "name",
-      "neighborhood",
-      "phone",
-      "address",
     ];
 
     const esNIT = String(nuevoCliente.typeIdentificationId) === "6";
@@ -541,8 +538,6 @@ const FacturaComponent = () => {
           metodoPago:
             paymentMethods.find((m) => m.id === formData.metodoPago)
               ?.description || "Desconocido",
-          efectivoRecibido,
-          cambio,
           tipoPago,
           abono,
           restante: restante,
