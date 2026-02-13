@@ -3,6 +3,7 @@ import { Form, Button, InputGroup, Spinner, Alert } from "react-bootstrap";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
 import { login, forgotPassword } from "../API/LoginAPI.tsx";
+import { useLoading } from "../../GeneralComponents/GeneralCrud/LoadingContext.tsx";
 import "./login.css";
 
 const LoginPage = () => {
@@ -13,6 +14,7 @@ const LoginPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [isForgotPassword, setIsForgotPassword] = useState<boolean>(false);
   const navigate = useNavigate();
+  const { setIsLoading } = useLoading(); // 🔥 USAR HOOK
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +24,17 @@ const LoginPage = () => {
     const response = await login(username, password);
 
     if (response && response.statusCode === 200) {
-      const { id, token, tokenDateExpired, name, rolName,imageCompany,positionName} = response.data;
+      const { 
+        id, 
+        token, 
+        tokenDateExpired, 
+        name, 
+        rolName, 
+        imageCompany, 
+        positionName,
+        permissions
+      } = response.data;
+      
       localStorage.setItem("userId", id.toString());
       localStorage.setItem("jwt_token", token);
       localStorage.setItem("token_expiry", tokenDateExpired);
@@ -30,13 +42,38 @@ const LoginPage = () => {
       localStorage.setItem("rol", rolName);
       localStorage.setItem("imageCompany", imageCompany);
       localStorage.setItem("positionName", positionName);
+      localStorage.setItem("permissions", JSON.stringify(permissions || []));
 
-      navigate("/dashboard");
+      // 🔥 ACTIVAR LOADING GLOBAL (tu HandLoadingSpinner)
+      setIsLoading(true);
+
+      const firstAllowedRoute = getFirstAllowedRoute(permissions, rolName);
+      
+      // Pequeño delay para que se vea el loading
+      setTimeout(() => {
+        navigate(firstAllowedRoute, { replace: true });
+      }, 300);
     } else {
       setError(response?.message || "Usuario o contraseña incorrectos.");
+      setLoading(false);
+    }
+  };
+
+  const getFirstAllowedRoute = (permissions: any[], rolName: string): string => {
+    if (rolName === 'Administrador') {
+      return '/dashboard';
     }
 
-    setLoading(false);
+    const hasDashboard = permissions.some((p: any) => p.permissionPath === '/dashboard');
+    if (hasDashboard) {
+      return '/dashboard';
+    }
+
+    if (permissions.length > 0) {
+      return permissions[0].permissionPath;
+    }
+
+    return '/no-access';
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -60,6 +97,7 @@ const LoginPage = () => {
 
     setLoading(false);
   };
+
   return (
     <div className="login-shell light-page">
       <aside className="brand-panel d-none d-lg-flex">

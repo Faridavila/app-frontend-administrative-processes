@@ -24,7 +24,7 @@ import { GetCompanyById } from "../../Company/API/CompanyAPI";
 
 const InvoiceCrud = () => {
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(
-    null
+    null,
   );
   const navigate = useNavigate();
   const [loadingDetail, setLoadingDetail] = useState(false);
@@ -35,22 +35,22 @@ const InvoiceCrud = () => {
     if (!dateString) return { date: "", time: "" };
 
     const date = new Date(dateString);
-    
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear();
     const formattedDate = `${day}/${month}/${year}`;
 
     let hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
     hours = hours % 12;
-    hours = hours ? hours : 12; 
+    hours = hours ? hours : 12;
     const formattedTime = `${hours}:${minutes} ${ampm}`;
 
     return {
       date: formattedDate,
-      time: formattedTime
+      time: formattedTime,
     };
   };
 
@@ -74,7 +74,7 @@ const InvoiceCrud = () => {
     hidden?: boolean;
     hiddenInCreate?: boolean;
     hiddenInEdit?: boolean;
-     type?: "text" | "number" | "image" | "password" | "date";
+    type?: "text" | "number" | "image" | "password" | "date";
     render?: (item: InvoiceCrudTypes) => React.ReactNode;
   }[] = [
     {
@@ -127,12 +127,8 @@ const InvoiceCrud = () => {
               gap: "4px",
             }}
           >
-            <span style={{ fontWeight: "500", fontSize: "14px" }}>
-              {date}
-            </span>
-            <span style={{ fontSize: "12px", color: "#6c757d" }}>
-              {time}
-            </span>
+            <span style={{ fontWeight: "500", fontSize: "14px" }}>{date}</span>
+            <span style={{ fontSize: "12px", color: "#6c757d" }}>{time}</span>
           </div>
         );
       },
@@ -210,97 +206,121 @@ const InvoiceCrud = () => {
   };
 
   const handleDescargarPDF = async () => {
-  if (!selectedInvoiceId || loadingPDF) return;
-  
-  setLoadingPDF(true);
-  
-  // ✅ Esperar antes de empezar
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  try {
-    console.log('=== INICIANDO GENERACIÓN DE PDF ===');
-    console.log('Invoice ID:', selectedInvoiceId);
-    
-    const response = await GetGenerateInvoiceById(selectedInvoiceId);
-    const invoiceData = response as unknown as InvoiceDetailResponse;
-    const companyData = await GetCompanyById(1);
+    if (!selectedInvoiceId || loadingPDF) return;
 
-    const valorBruto = invoiceData.subtotal || 0;
-    const descuentoTotal = invoiceData.totalDiscount || 0;
-    const costoTransporte = invoiceData.deliveryCost || 0;
-    const total = invoiceData.total || 0;
+    setLoadingPDF(true);
 
-    let tipoPago = "contado";
-    if (invoiceData.statusBill === "ABONO") tipoPago = "abono";
-    else if (invoiceData.statusBill === "PENDIENTE") tipoPago = "credito";
+    // ✅ Esperar antes de empezar
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
-    const config: PDFInvoiceConfig = {
-      companyInfo: {
-        logo: companyData?.image || "https://res.cloudinary.com/dfotyo6jc/image/upload/v1761872392/Captura_de_pantalla_2025-10-30_195850_kwda8d.png",
-        logoWidth: 40,
-        logoHeight: 40,
-        name: invoiceData.statusBill === "COTIZACION" ? "COTIZACION" : "",
-        title: "DOCUMENTO NO VALIDO COMO FACTURA DE VENTA",
-        direccion: companyData?.address || "",
-        celular: companyData?.phone || "",
-        email: companyData?.email || "",
-      },
-      mainInfo: {
-        fecha: invoiceData.invoiceDate
-          ? new Date(invoiceData.invoiceDate).toLocaleString("es-CO", { timeZone: "America/Bogota" })
-          : new Date().toLocaleString("es-CO", { timeZone: "America/Bogota" }),
-        invoiceNumber: invoiceData.invoiceNumber || "",
-        cashier: invoiceData.userName || "Administrador",
-        clientIdentification: invoiceData.identification || "Sin identificación",
-        cliente: invoiceData.customerName || "",
-      },
-      products: (invoiceData.invoiceDetails || []).map((detail) => ({
-        nombre: detail.productName || "Producto",
-        cantidad: detail.quantity || 0,
-        precio: detail.unitPrice || 0,
-        total: detail.total || 0,
-      })),
-      summary: { valorBruto, descuentoTotal, costoTransporte, ibua: 0, total },
-      payment: {
-        metodoPago: invoiceData.paymentMethodName || "Efectivo",
-        efectivoRecibido: invoiceData.cashReceived || undefined,
-        
-        tipoPago,
-        abono: invoiceData.initialPayment || 0,
-        restante: invoiceData.remainingBalance || 0,
-        fechaVencimiento: invoiceData.dueDate || undefined,
-      },
-      entrega: invoiceData.deliveryType?.toLowerCase() === "llevar" ? "llevar" : "recoger",
-      observacion: invoiceData.observations || "",
-      footer: {
-        showGeneratedBy: true,
-        generatedByText: `Hecho en Colombia por ${companyData?.companyName || ""}`,
-        showPageNumber: false,
-      },
-      fileName: `Factura_${invoiceData.invoiceNumber || selectedInvoiceId}.pdf`,
-    };
+    try {
+      console.log("=== INICIANDO GENERACIÓN DE PDF ===");
+      console.log("Invoice ID:", selectedInvoiceId);
 
-    console.log('Config del PDF:', config);
-    await generateInvoicePDF(config);
-    console.log('=== PDF GENERADO EXITOSAMENTE ===');
+      const response = await GetGenerateInvoiceById(selectedInvoiceId);
+      const invoiceData = response as unknown as InvoiceDetailResponse;
+      const companyData = await GetCompanyById(1);
 
-    setTimeout(() => {
-      MySwal.fire({
-        icon: "success",
-        title: "PDF Generado",
-        text: "El PDF se ha abierto para imprimir",
-        timer: 1000,
-        showConfirmButton: false,
-      });
-    }, 500);
-    
-  } catch (error: any) {
-    console.error("=== ERROR AL GENERAR PDF ===", error);
-    MySwal.fire("Error", error?.message || "No se pudo generar el PDF de la factura", "error");
-  } finally {
-    setTimeout(() => setLoadingPDF(false), 1500);
-  }
-};
+      const valorBruto = invoiceData.subtotal || 0;
+      const descuentoTotal = invoiceData.totalDiscount || 0;
+      const costoTransporte = invoiceData.deliveryCost || 0;
+      const total = invoiceData.total || 0;
+
+      let tipoPago = "contado";
+      if (invoiceData.statusBill === "ABONO") tipoPago = "abono";
+      else if (invoiceData.statusBill === "PENDIENTE") tipoPago = "credito";
+
+      const config: PDFInvoiceConfig = {
+        companyInfo: {
+          logo:
+            companyData?.image ||
+            "https://res.cloudinary.com/dfotyo6jc/image/upload/v1761872392/Captura_de_pantalla_2025-10-30_195850_kwda8d.png",
+          logoWidth: 40,
+          logoHeight: 40,
+          name: invoiceData.statusBill === "COTIZACION" ? "COTIZACION" : "",
+          title: "DOCUMENTO NO VALIDO COMO FACTURA DE VENTA",
+          direccion: companyData?.address || "",
+          celular: companyData?.phone || "",
+          email: companyData?.email || "",
+        },
+        mainInfo: {
+          fecha: invoiceData.invoiceDate
+            ? new Date(invoiceData.invoiceDate).toLocaleString("es-CO", {
+                timeZone: "America/Bogota",
+              })
+            : new Date().toLocaleString("es-CO", {
+                timeZone: "America/Bogota",
+              }),
+          invoiceNumber: invoiceData.invoiceNumber || "",
+          cashier: invoiceData.userName || "Administrador",
+          clientIdentification:
+            invoiceData.identification || "Sin identificación",
+          cliente: invoiceData.customerName || "",
+          ...( invoiceData.deliveryType?.toLowerCase() === "llevar" && {
+            direccion: invoiceData.address || "Sin dirección",
+            barrio: invoiceData.neighborhood || "Sin barrio",
+            celular: invoiceData.phone || "Sin celular",
+          }),
+        },
+        products: (invoiceData.invoiceDetails || []).map((detail) => ({
+          nombre: detail.productName || "Producto",
+          cantidad: detail.quantity || 0,
+          precio: detail.unitPrice || 0,
+          total: detail.total || 0,
+        })),
+        summary: {
+          valorBruto,
+          descuentoTotal,
+          costoTransporte,
+          ibua: 0,
+          total,
+        },
+        payment: {
+          metodoPago: invoiceData.paymentMethodName || "Efectivo",
+          efectivoRecibido: invoiceData.cashReceived || undefined,
+
+          tipoPago,
+          abono: invoiceData.initialPayment || 0,
+          restante: invoiceData.remainingBalance || 0,
+          fechaVencimiento: invoiceData.dueDate || undefined,
+        },
+        entrega:
+          invoiceData.deliveryType?.toLowerCase() === "llevar"
+            ? "llevar"
+            : "recoger",
+        observacion: invoiceData.observations || "",
+        footer: {
+          showGeneratedBy: true,
+          generatedByText: `Hecho en Colombia por ${companyData?.companyName || ""}`,
+          showPageNumber: false,
+        },
+        fileName: `Factura_${invoiceData.invoiceNumber || selectedInvoiceId}.pdf`,
+      };
+
+      console.log("Config del PDF:", config);
+      await generateInvoicePDF(config);
+      console.log("=== PDF GENERADO EXITOSAMENTE ===");
+
+      setTimeout(() => {
+        MySwal.fire({
+          icon: "success",
+          title: "PDF Generado",
+          text: "El PDF se ha abierto para imprimir",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+      }, 500);
+    } catch (error: any) {
+      console.error("=== ERROR AL GENERAR PDF ===", error);
+      MySwal.fire(
+        "Error",
+        error?.message || "No se pudo generar el PDF de la factura",
+        "error",
+      );
+    } finally {
+      setTimeout(() => setLoadingPDF(false), 1500);
+    }
+  };
   return (
     <div className="app-content content">
       <div className="content-overlay"></div>

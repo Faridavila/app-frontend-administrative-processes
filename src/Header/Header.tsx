@@ -158,7 +158,7 @@ const Header: React.FC<HeaderProps> = ({
             </a>
 
             <div className="dropdown-menu dropdown-menu-end">
-              <NavLink className="dropdown-item" to="/company">
+              <NavLink className="dropdown-item" to="/config">
                 <BsGear className="me-50" /> Configuración
               </NavLink>
               <div className="dropdown-divider"></div>

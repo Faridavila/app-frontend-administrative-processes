@@ -6,10 +6,12 @@ import EconomicActivitySelect from "./EconomicActivitySelect";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 import HandLoadingSpinner from "../../Spinner/SpinnerAnimation";
+import { useLoading } from "../../GeneralComponents/GeneralCrud/LoadingContext"; // 🔥 IMPORTAR
 
 const MySwal = withReactContent(Swal);
 
 const CompanyPresentation: React.FC = () => {
+  const { setIsLoading: setGlobalLoading } = useLoading(); // 🔥 USAR HOOK
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [company, setCompany] = useState<CompanyType>({
@@ -30,9 +32,7 @@ const CompanyPresentation: React.FC = () => {
     null
   );
 
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof CompanyType, string>>
-  >({});
+  const [errors, setErrors] = useState<Partial<Record<keyof CompanyType, string>>>({});
   const [isSaveDisabled, setIsSaveDisabled] = useState(true);
 
   const [imagePreview, setImagePreview] = useState<string>("");
@@ -55,10 +55,11 @@ const CompanyPresentation: React.FC = () => {
         }
       } finally {
         setIsLoading(false);
+        setGlobalLoading(false); // 🔥 DESACTIVAR LOADING GLOBAL
       }
     };
     fetchCompanyData();
-  }, []);
+  }, [setGlobalLoading]); // 🔥 AGREGAR DEPENDENCIA
 
   useEffect(() => {
     if (company && company.id !== 0) {
@@ -322,13 +323,11 @@ const CompanyPresentation: React.FC = () => {
                   style={{ minHeight: "400px" }}
                 >
                   {isLoading ? (
-                    // Mientras carga: NO mostrar ninguna imagen, solo el spinner
                     <div className="text-center">
                       <HandLoadingSpinner />
                       <p className="mt-3 text-muted">Cargando logo...</p>
                     </div>
                   ) : (
-                    // Cuando ya terminó de cargar: mostrar imagen real o por defecto
                     <img
                       src={
                         imagePreview ||

@@ -20,6 +20,7 @@ export interface Client {
   phone: string;
   identification: number | null;
   address: string;
+  neighborhood: string;
   cityName: string;
 }   
 

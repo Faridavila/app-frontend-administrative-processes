@@ -16,6 +16,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 import { FavoritosContext } from "../FavoritoButton/components/FavoritosContext";
+import { usePermissions } from "../Hooks/usePermissions";
 import "../../app-assets/css/bootstrap.css";
 import "../../app-assets/css/bootstrap-extended.min.css";
 import "../../app-assets/css/components.css";
@@ -31,14 +32,17 @@ interface MainMenuProps {
   setIsMobileMenuOpen?: (value: boolean) => void;
 }
 
-const MainMenu: React.FC<MainMenuProps> = ({ 
-  isMenuCollapsed, 
+const MainMenu: React.FC<MainMenuProps> = ({
+  isMenuCollapsed,
   toggleMenu,
   isMobileMenuOpen = false,
-  setIsMobileMenuOpen 
+  setIsMobileMenuOpen,
 }) => {
   const { favoritos } = useContext(FavoritosContext) || { favoritos: [] };
-  const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
+  const { hasPermission } = usePermissions();
+  const [openSubMenu, setOpenSubMenu] = useState<string | string[] | null>(
+    null,
+  );
   const [lastOpenSubMenu, setLastOpenSubMenu] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -70,32 +74,35 @@ const MainMenu: React.FC<MainMenuProps> = ({
     }
   }, [isHovered, isMenuCollapsed, lastOpenSubMenu]);
 
-  // Cerrar menú móvil al cambiar tamaño de ventana
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 1199 && isMobileMenuOpen && setIsMobileMenuOpen) {
         setIsMobileMenuOpen(false);
       }
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [isMobileMenuOpen, setIsMobileMenuOpen]);
 
-  // Cerrar menú al hacer click fuera (solo móvil)
   useEffect(() => {
     if (!isMobileMenuOpen) return;
 
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      const menu = document.querySelector('.main-menu');
-      
-      if (menu && !menu.contains(target) && window.innerWidth <= 1199 && setIsMobileMenuOpen) {
+      const menu = document.querySelector(".main-menu");
+
+      if (
+        menu &&
+        !menu.contains(target) &&
+        window.innerWidth <= 1199 &&
+        setIsMobileMenuOpen
+      ) {
         setIsMobileMenuOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobileMenuOpen, setIsMobileMenuOpen]);
 
   const menuItems = [
@@ -114,21 +121,47 @@ const MainMenu: React.FC<MainMenuProps> = ({
       title: "Seguridad",
       icon: <FiShield />,
       subItems: [
-        { id: 3.3, title: "Area ", route: "/area" },
-        { id: 3.4, title: "Cargo ", route: "/position" },
-        { id: 3.1, title: "Roles", route: "/rol" },
-        { id: 3.2, title: "Usuarios", route: "/user" },
+        { id: 3.3, title: "Area ", route: "/area", requiredPath: "/area" },
+        {
+          id: 3.4,
+          title: "Cargo ",
+          route: "/position",
+          requiredPath: "/position",
+        },
+        { id: 3.1, title: "Roles", route: "/rol", requiredPath: "/rol" },
+        { id: 3.2, title: "Usuarios", route: "/user", requiredPath: "/user" },
       ],
     },
     {
       id: 4,
       title: "Inventario",
       icon: <FiDatabase />,
+      requiredPath: "/inventory",
       subItems: [
-        { id: 4.1, title: "Categorias ", route: "/category" },
-        { id: 4.2, title: "Productos ", route: "/product" },
-        { id: 4.3, title: "Inventario ", route: "/inventory" },
-        { id: 4.4, title: "Historial de Inventario ", route: "/inventory-history" },
+        {
+          id: 4.1,
+          title: "Categorias ",
+          route: "/category",
+          requiredPath: "/category",
+        },
+        {
+          id: 4.2,
+          title: "Productos ",
+          route: "/product",
+          requiredPath: "/product",
+        },
+        {
+          id: 4.3,
+          title: "Inventario ",
+          route: "/inventory",
+          requiredPath: "/inventory",
+        },
+        {
+          id: 4.4,
+          title: "Historial de Inventario ",
+          route: "/inventory-history",
+          requiredPath: "/inventory-history",
+        },
       ],
     },
     {
@@ -136,10 +169,30 @@ const MainMenu: React.FC<MainMenuProps> = ({
       title: "Proveedores",
       icon: <FiUser />,
       subItems: [
-        { id: 5.1, title: "Bodegas ", route: "/warehouse" },
-        { id: 5.2, title: "Proveedor ", route: "/supplier" },
-        { id: 5.3, title: "Compra a proveedores", route: "/purchase-supplier" },
-        { id: 5.4, title: "Productos pendiente", route: "/pending-product" },
+        {
+          id: 5.1,
+          title: "Bodegas ",
+          route: "/warehouse",
+          requiredPath: "/warehouse",
+        },
+        {
+          id: 5.2,
+          title: "Proveedor ",
+          route: "/supplier",
+          requiredPath: "/supplier",
+        },
+        {
+          id: 5.3,
+          title: "Compra a proveedores",
+          route: "/purchase-supplier",
+          requiredPath: "/purchase-supplier",
+        },
+        {
+          id: 5.4,
+          title: "Productos pendiente",
+          route: "/pending-product",
+          requiredPath: "/pending-product",
+        },
       ],
     },
     {
@@ -147,9 +200,24 @@ const MainMenu: React.FC<MainMenuProps> = ({
       title: "Nomina",
       icon: <FiDollarSign />,
       subItems: [
-        { id: 6.1, title: "Empleados ", route: "/employee" },
-        { id: 6.2, title: "Nomina", route: "/employee-payment" },
-        { id: 6.3, title: "Consulta de pagos", route: "/employee-history" },
+        {
+          id: 6.1,
+          title: "Empleados ",
+          route: "/employee",
+          requiredPath: "/employee",
+        },
+        {
+          id: 6.2,
+          title: "Nomina",
+          route: "/employee-payment",
+          requiredPath: "/employee-payment",
+        },
+        {
+          id: 6.3,
+          title: "Consulta de pagos",
+          route: "/employee-history",
+          requiredPath: "/employee-history",
+        },
       ],
     },
     {
@@ -157,10 +225,30 @@ const MainMenu: React.FC<MainMenuProps> = ({
       title: "Facturacion",
       icon: <FiFileText />,
       subItems: [
-        { id: 8.1, title: "Facturas", route: "/invoice" },
-        { id: 8.2, title: "Medio de pago", route: "/payment-method" },
-        { id: 8.3, title: "Rango de numerracion", route: "/numeration" },
-        { id: 8.4, title: "Terminal", route: "/terminal" },
+        {
+          id: 8.1,
+          title: "Facturas",
+          route: "/invoice",
+          requiredPath: "/invoice",
+        },
+        {
+          id: 8.2,
+          title: "Medio de pago",
+          route: "/payment-method",
+          requiredPath: "/payment-method",
+        },
+        {
+          id: 8.3,
+          title: "Rango de numerracion",
+          route: "/numeration",
+          requiredPath: "/numeration",
+        },
+        {
+          id: 8.4,
+          title: "Terminal",
+          route: "/terminal",
+          requiredPath: "/terminal",
+        },
       ],
     },
     {
@@ -168,59 +256,141 @@ const MainMenu: React.FC<MainMenuProps> = ({
       title: "Transportes",
       icon: <FiTruck />,
       subItems: [
-        { id: 7.1, title: "Tarifa por bodega", route: "/supplier-rate" },
-        { id: 7.2, title: "Tarifa por barrio", route: "/neighborhood-rate" },
-        //{ id: 7.3, title: "Translado de bodega", route: "/warehouse-relocation" },
-        { id: 7.4, title: "Pedidos pendiente", route: "/pending-order" },
-        { id: 7.5, title: "Asignar pedidos", route: "/assign-order" },
-        { id: 7.6, title: "Pedidos completos", route: "/complete-order" },
+        {
+          id: 7.1,
+          title: "Tarifa por bodega",
+          route: "/supplier-rate",
+          requiredPath: "/supplier-rate",
+        },
+        {
+          id: 7.2,
+          title: "Tarifa por barrio",
+          route: "/neighborhood-rate",
+          requiredPath: "/neighborhood-rate",
+        },
+        {
+          id: 7.4,
+          title: "Pedidos pendiente",
+          route: "/pending-order",
+          requiredPath: "/pending-order",
+        },
+        {
+          id: 7.5,
+          title: "Asignar pedidos",
+          route: "/assign-order",
+          requiredPath: "/assign-order",
+        },
+        {
+          id: 7.6,
+          title: "Pedidos completos",
+          route: "/complete-order",
+          requiredPath: "/complete-order",
+        },
       ],
     },
     {
       id: 9,
       title: "Presentación",
       icon: <FiGrid />,
-      route: "/company",
+      route: "/config",
+      requiredPath: "/config",
     },
     {
       id: 10,
       title: "Dashboard ",
       icon: <FiBarChart2 />,
       route: "/dashboard",
+      requiredPath: "/dashboard",
     },
     {
       id: 11,
       title: "Cliente",
       icon: <FiUsers />,
       route: "/client",
+      requiredPath: "/cliente",
     },
   ];
 
-  const filteredMenuItems = menuItems.filter((item) => {
-    if (item.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+  const filteredMenuItems = menuItems
+    .filter((item) => {
+      // Favoritos siempre visible
+      if (item.id === 1) return true;
+
+      // Verificar permiso del menú principal
+      if (item.requiredPath && !hasPermission(item.requiredPath)) {
+        return false;
+      }
+
+      // Sin búsqueda: mostrar todo (con permisos)
+      if (!searchTerm) {
+        return true;
+      }
+
+      // Con búsqueda: filtrar por título del menú o subitems
+      if (item.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return true;
+      }
+
+      if (
+        item.subItems &&
+        item.subItems.some((subItem: any) =>
+          subItem.title.toLowerCase().includes(searchTerm.toLowerCase()),
+        )
+      ) {
+        return true;
+      }
+
+      return false;
+    })
+    .map((item) => {
+      // Filtrar subitems por permisos
+      if (item.subItems) {
+        const filteredSubItems = item.subItems.filter((subItem: any) => {
+          // Verificar permiso del subitem
+          if (subItem.requiredPath && !hasPermission(subItem.requiredPath)) {
+            return false;
+          }
+          return true;
+        });
+
+        return {
+          ...item,
+          subItems: filteredSubItems,
+        };
+      }
+      return item;
+    })
+    // Eliminar menús sin subitems visibles
+    .filter((item) => {
+      if (item.subItems) {
+        return item.subItems.length > 0;
+      }
       return true;
-    }
-    if (
-      item.subItems &&
-      item.subItems.some((subItem) =>
-        subItem.title.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    ) {
-      return true;
-    }
-    return false;
-  });
+    });
 
   useEffect(() => {
     if (searchTerm) {
-      const visibleSubMenus = filteredMenuItems.map((item) => item.title);
-      if (visibleSubMenus.length > 0) {
-        setOpenSubMenu(visibleSubMenus[0]);
+      // Buscar TODOS los menús que contienen subitems con coincidencias
+      const menusWithMatches = filteredMenuItems
+        .filter((item) => {
+          if (!item.subItems) return false;
+          return item.subItems.some((subItem: any) =>
+            subItem.title.toLowerCase().includes(searchTerm.toLowerCase()),
+          );
+        })
+        .map((item) => item.title);
+
+      // Abrir TODOS los menús con coincidencias
+      if (menusWithMatches.length > 0) {
+        setOpenSubMenu(menusWithMatches);
+      } else {
+        setOpenSubMenu(null);
       }
     } else {
+      // Sin búsqueda, restaurar el último menú abierto (solo uno)
       setOpenSubMenu(lastOpenSubMenu);
     }
-  }, [searchTerm, filteredMenuItems]);
+  }, [searchTerm, filteredMenuItems, lastOpenSubMenu]);
 
   const clearSearch = () => {
     setSearchTerm("");
@@ -261,24 +431,36 @@ const MainMenu: React.FC<MainMenuProps> = ({
       <div className="navbar-header">
         <ul className="nav navbar-nav flex-row">
           <li className="nav-item me-auto">
-            <Link className="navbar-brand" to="/dashboard" onClick={handleLinkClick}>
-              <span style={{ position: 'relative', width: '35px', height: '35px', display: 'inline-block' }}>
+            <Link
+              className="navbar-brand"
+              to="/dashboard"
+              onClick={handleLinkClick}
+            >
+              <span
+                style={{
+                  position: "relative",
+                  width: "35px",
+                  height: "35px",
+                  display: "inline-block",
+                }}
+              >
                 {!imageLoaded && imgCompany && (
                   <div
                     style={{
-                      width: '35px',
-                      height: '35px',
-                      background: 'linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)',
-                      backgroundSize: '200% 100%',
-                      animation: 'loading 1.5s infinite',
-                      borderRadius: '4px',
-                      position: 'absolute',
+                      width: "35px",
+                      height: "35px",
+                      background:
+                        "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
+                      backgroundSize: "200% 100%",
+                      animation: "loading 1.5s infinite",
+                      borderRadius: "4px",
+                      position: "absolute",
                       top: 0,
                       left: 0,
                     }}
                   />
                 )}
-                
+
                 {imgCompany && (
                   <img
                     src={imgCompany}
@@ -286,30 +468,30 @@ const MainMenu: React.FC<MainMenuProps> = ({
                     height="35"
                     onLoad={() => setImageLoaded(true)}
                     onError={(e) => {
-                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.style.display = "none";
                       setImageLoaded(true);
                     }}
                     style={{
                       opacity: imageLoaded ? 1 : 0,
-                      transition: 'opacity 0.3s ease-in-out',
-                      display: 'block',
+                      transition: "opacity 0.3s ease-in-out",
+                      display: "block",
                     }}
                   />
                 )}
-                
+
                 {!imgCompany && (
                   <div
                     style={{
-                      width: '35px',
-                      height: '35px',
-                      background: '#cc322d',
-                      borderRadius: '4px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'white',
-                      fontWeight: 'bold',
-                      fontSize: '14px',
+                      width: "35px",
+                      height: "35px",
+                      background: "#cc322d",
+                      borderRadius: "4px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: "14px",
                     }}
                   >
                     L
@@ -322,7 +504,10 @@ const MainMenu: React.FC<MainMenuProps> = ({
             </Link>
           </li>
           <li className="nav-item nav-toggle">
-            <a className="nav-link modern-nav-toggle pe-0" onClick={handleToggleClick}>
+            <a
+              className="nav-link modern-nav-toggle pe-0"
+              onClick={handleToggleClick}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -385,7 +570,11 @@ const MainMenu: React.FC<MainMenuProps> = ({
             .filter((item) => item.id === 9 || item.id === 10)
             .map((item) => (
               <li key={item.id} className="nav-item">
-                <Link className="d-flex align-items-center" to={item.route || "#"} onClick={handleLinkClick}>
+                <Link
+                  className="d-flex align-items-center"
+                  to={item.route || "#"}
+                  onClick={handleLinkClick}
+                >
                   {item.icon}
                   <span
                     className="menu-title"
@@ -406,7 +595,15 @@ const MainMenu: React.FC<MainMenuProps> = ({
             .map((item) => (
               <li
                 key={item.id}
-                className={`nav-item ${openSubMenu === item.title ? "open" : ""}`}
+                className={`nav-item ${
+                  Array.isArray(openSubMenu)
+                    ? openSubMenu.includes(item.title)
+                      ? "open"
+                      : ""
+                    : openSubMenu === item.title
+                      ? "open"
+                      : ""
+                }`}
               >
                 <a
                   className="d-flex align-items-center"
@@ -428,14 +625,20 @@ const MainMenu: React.FC<MainMenuProps> = ({
                 {item.subItems && (
                   <ul
                     className={`menu-content ${
-                      openSubMenu === item.title ? "menu-open" : "menu-close"
+                      Array.isArray(openSubMenu)
+                        ? openSubMenu.includes(item.title)
+                          ? "menu-open"
+                          : "menu-close"
+                        : openSubMenu === item.title
+                          ? "menu-open"
+                          : "menu-close"
                     }`}
                   >
                     {item.subItems
                       .filter((subItem) =>
                         subItem.title
                           .toLowerCase()
-                          .includes(searchTerm.toLowerCase())
+                          .includes(searchTerm.toLowerCase()),
                       )
                       .map((subItem) => (
                         <li key={subItem.id}>
@@ -471,12 +674,20 @@ const MainMenu: React.FC<MainMenuProps> = ({
                 item.id === 5 ||
                 item.id === 6 ||
                 item.id === 7 ||
-                item.id === 8
+                item.id === 8,
             )
             .map((item) => (
               <li
                 key={item.id}
-                className={`nav-item ${openSubMenu === item.title ? "open" : ""}`}
+                className={`nav-item ${
+                  Array.isArray(openSubMenu)
+                    ? openSubMenu.includes(item.title)
+                      ? "open"
+                      : ""
+                    : openSubMenu === item.title
+                      ? "open"
+                      : ""
+                }`}
               >
                 <a
                   className="d-flex align-items-center"
@@ -498,16 +709,22 @@ const MainMenu: React.FC<MainMenuProps> = ({
                 {item.subItems && (
                   <ul
                     className={`menu-content ${
-                      openSubMenu === item.title ? "menu-open" : "menu-close"
+                      Array.isArray(openSubMenu)
+                        ? openSubMenu.includes(item.title)
+                          ? "menu-open"
+                          : "menu-close"
+                        : openSubMenu === item.title
+                          ? "menu-open"
+                          : "menu-close"
                     }`}
                   >
                     {item.subItems
-                      .filter((subItem) =>
+                      .filter((subItem: any) =>
                         subItem.title
                           .toLowerCase()
-                          .includes(searchTerm.toLowerCase())
+                          .includes(searchTerm.toLowerCase()),
                       )
-                      .map((subItem) => (
+                      .map((subItem: any) => (
                         <li key={subItem.id}>
                           <Link
                             className="d-flex align-items-center"

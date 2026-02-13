@@ -14,6 +14,7 @@ import {
   Entrada,
   Perdidas,
 } from "../Icons/Icons";
+import { useLoading } from "./LoadingContext";
 import "./CRUDGeneral.css";
 
 const MySwal = withReactContent(Swal);
@@ -256,6 +257,7 @@ const CRUDForm = <T extends { id: number }>({
   const [sortOrder, setSortOrder] = useState<Orders>("ASC");
   const [isLoading, setIsLoading] = useState(false);
   const tableRef = useRef<HTMLDivElement>(null);
+  const { setIsLoading: setGlobalLoading } = useLoading();
   const headerTopRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const [maxHeaderTop, setMaxHeaderTop] = useState<number>(0);
   const [sortField, setSortField] = useState<keyof T | null>(() => {
@@ -343,7 +345,7 @@ const CRUDForm = <T extends { id: number }>({
   const fetchAndSetData = async () => {
     try {
       if (extraParams) {
-        console.log("Parametros adicionales555:", extraParams);
+        console.log("Parametros adicionales:", extraParams);
       }
       const sortFieldParam =
         sortField !== null
@@ -381,7 +383,9 @@ const CRUDForm = <T extends { id: number }>({
       console.error("Error al obtener los datos:", error);
       MySwal.fire("Error", "Error al obtener los datos", "error");
       setItems([]);
-    }
+    } finally {
+    setGlobalLoading(false); 
+  }
   };
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,

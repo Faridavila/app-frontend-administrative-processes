@@ -19,6 +19,9 @@ export interface PDFInvoiceMainInfo {
   cashier?: string;
   clientIdentification?: string;
   cliente?: string;
+  direccion?: string;
+  barrio?: string;
+  celular?: string;
 }
 
 export interface PDFInvoiceProduct {
@@ -192,6 +195,18 @@ class PDFInvoiceGenerator {
     if (info.cliente) {
       this.addLabeledText('Cliente', info.cliente, true);
     }
+
+      if (info.celular) {
+      this.addLabeledText('Celular', info.celular, true);
+    }
+
+    if (info.barrio) {
+      this.addLabeledText('Barrio', info.barrio, true);
+    }
+    if (info.direccion) {
+      this.addLabeledText('Dirección', info.direccion, true);
+    }
+  
 
     this.currentY += 0.5;
   }

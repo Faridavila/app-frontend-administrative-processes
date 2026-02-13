@@ -27,7 +27,6 @@ const Layout: React.FC = () => {
     setIsMobileMenuOpen((prev) => !prev);
   };
 
-  // Sincronizar clases en body para compatibilidad
   useEffect(() => {
     const bodyClassList = document.body.classList;
     if (isMenuCollapsed) {

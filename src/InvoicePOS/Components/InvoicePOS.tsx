@@ -39,7 +39,7 @@ const getDateTime = (): string => {
   const colombiaDate = new Date(
     new Date().toLocaleString("en-US", {
       timeZone: "America/Bogota",
-    })
+    }),
   );
 
   const year = colombiaDate.getFullYear();
@@ -134,6 +134,7 @@ const FacturaComponent = () => {
     identificacion: "",
     direccion: "",
     ciudad: "",
+    barrio: "",
     caja: "",
     factura: "",
     vendedor: "",
@@ -141,7 +142,7 @@ const FacturaComponent = () => {
   });
 
   const [invoiceConfig, setInvoiceConfig] = useState<PDFInvoiceConfig | null>(
-    null
+    null,
   );
 
   useEffect(() => {
@@ -188,6 +189,9 @@ const FacturaComponent = () => {
           cashier: cashRegisterDescription || "Administrador",
           clientIdentification: formData.identificacion,
           cliente: formData.nombre,
+          direccion: formData.direccion,
+          barrio: formData.barrio,
+          celular: formData.celular,
         },
         products: productos.map((p) => ({
           nombre: p.nombre,
@@ -232,7 +236,7 @@ const FacturaComponent = () => {
 
   const eliminarProducto = (lineId: number) => {
     setProductos((productos) =>
-      productos.filter((producto) => producto.id !== lineId)
+      productos.filter((producto) => producto.id !== lineId),
     );
   };
 
@@ -267,7 +271,7 @@ const FacturaComponent = () => {
       MySwal.fire(
         "Error",
         "El descuento fijo no puede exceder el subtotal.",
-        "error"
+        "error",
       );
       return;
     }
@@ -315,7 +319,7 @@ const FacturaComponent = () => {
 
   const validarCampoCliente = (
     key: keyof NewClientData,
-    value: any
+    value: any,
   ): string | null => {
     if (key === "name" && (!value || value.trim() === "")) {
       return "El nombre es obligatorio.";
@@ -362,16 +366,14 @@ const FacturaComponent = () => {
     const nuevosErrores: Partial<Record<keyof NewClientData, string>> = {};
     let valido = true;
 
-    const camposObligatorios: (keyof NewClientData)[] = [
-      "name",
-    ];
+    const camposObligatorios: (keyof NewClientData)[] = ["name"];
 
     const esNIT = String(nuevoCliente.typeIdentificationId) === "6";
     if (esNIT) {
       camposObligatorios.push(
         "verificationDigit",
         "personTypeId",
-        "taxLiabilityId"
+        "taxLiabilityId",
       );
     }
 
@@ -407,7 +409,7 @@ const FacturaComponent = () => {
 
   const handleGuardarFactura = async (
     efectivoRecibido?: number,
-    cambio?: number
+    cambio?: number,
   ) => {
     if (productos.length === 0) {
       MySwal.fire("Error", "Debes agregar al menos un producto.", "error");
@@ -432,11 +434,11 @@ const FacturaComponent = () => {
     // CALCULAR AQUÍ (dentro de la función)
     const valorBruto = productos.reduce(
       (sum, p) => sum + p.price * p.quantity,
-      0
+      0,
     );
     const descuentoTotal = productos.reduce(
       (sum, p) => sum + p.totalDiscount,
-      0
+      0,
     );
     const subtotal = valorBruto - descuentoTotal;
     const totalConTransporte =
@@ -464,14 +466,14 @@ const FacturaComponent = () => {
           tipoPago === "abono"
             ? abono
             : tipoPago === "contado"
-            ? totalConTransporte
-            : 0,
+              ? totalConTransporte
+              : 0,
         remainingBalance:
           tipoPago === "abono"
             ? totalConTransporte - abono
             : tipoPago === "credito"
-            ? totalConTransporte
-            : 0,
+              ? totalConTransporte
+              : 0,
         cashReceived: efectivoRecibido,
         changeGiven: cambio,
         invoiceDetails: productos.map((p) => ({
@@ -520,6 +522,11 @@ const FacturaComponent = () => {
           cashier: "Administrador",
           clientIdentification: formData.identificacion || "Sin identificación",
           cliente: formData.nombre,
+          ...(entrega === "llevar" && {
+            direccion: formData.direccion || "Sin dirección",
+            barrio: formData.barrio || "Sin barrio",
+            celular: formData.celular || "Sin celular",
+          }),
         },
         products: productos.map((p) => ({
           nombre: p.nombre,
@@ -573,6 +580,7 @@ const FacturaComponent = () => {
         identificacion: "",
         direccion: "",
         ciudad: "",
+        barrio: "",
         caja: "",
         factura: "",
         vendedor: "",
@@ -592,7 +600,7 @@ const FacturaComponent = () => {
       MySwal.fire(
         "Error",
         error.message || "No se pudo crear la factura",
-        "error"
+        "error",
       );
     } finally {
       setGenerandoFactura(false);
@@ -640,7 +648,7 @@ const FacturaComponent = () => {
       MySwal.fire(
         "Error",
         "Por favor completa todos los campos obligatorios.",
-        "error"
+        "error",
       );
       return;
     }
@@ -654,7 +662,7 @@ const FacturaComponent = () => {
       // 2. Formatear el cliente para el estado local
       const nuevoClienteConFormato: Client = {
         ...clienteCreado,
-        cityName: clienteCreado.municipality || "Sin ciudad",
+        cityName: clienteCreado.neighborhood || "Sin ciudad",
       };
 
       // 3. Agregar al inicio de la lista SIN llamar a la API
@@ -667,7 +675,7 @@ const FacturaComponent = () => {
         MySwal.fire(
           "Advertencia",
           "Cliente creado pero sin ID válido.",
-          "warning"
+          "warning",
         );
         setMostrarModalCliente(false);
         return;
@@ -685,6 +693,7 @@ const FacturaComponent = () => {
         cliente: opcionSeleccionada,
         nombre: clienteCreado.name || "",
         celular: clienteCreado.phone || "",
+        barrio: clienteCreado.neighborhood || "",
         identificacion: clienteCreado.identification
           ? clienteCreado.identification.toString()
           : "",
@@ -712,7 +721,7 @@ const FacturaComponent = () => {
       MySwal.fire(
         "Error",
         error?.message || "No se pudo crear el cliente.",
-        "error"
+        "error",
       );
     } finally {
       setGuardandoCliente(false);
@@ -722,11 +731,11 @@ const FacturaComponent = () => {
   useEffect(() => {
     const valorBruto = productos.reduce(
       (sum, p) => sum + p.price * p.quantity,
-      0
+      0,
     );
     const descuentoTotal = productos.reduce(
       (sum, p) => sum + p.totalDiscount,
-      0
+      0,
     );
     const subtotal = valorBruto - descuentoTotal;
 
@@ -774,7 +783,7 @@ const FacturaComponent = () => {
       if (clientesData) {
         const clientesConvertidos: Client[] = clientesData.map((cliente) => ({
           ...cliente,
-          cityName: cliente.municipality || "Sin ciudad",
+          cityName: cliente.neighborhood || "Sin ciudad",
         }));
         setClientes(clientesConvertidos);
         setFilteredClientes(clientesConvertidos);
@@ -795,7 +804,7 @@ const FacturaComponent = () => {
       MySwal.fire(
         "Error",
         "No se pudieron cargar los datos iniciales.",
-        "error"
+        "error",
       );
     } finally {
       setCargandoClientes(false);
@@ -813,7 +822,7 @@ const FacturaComponent = () => {
       MySwal.fire(
         "Error",
         "No hay un número de teléfono registrado para este cliente.",
-        "error"
+        "error",
       );
       return;
     }
@@ -836,7 +845,7 @@ ${companyData?.companyName || ""}`;
 
     // Crear URL de WhatsApp
     const urlWhatsApp = `https://wa.me/57${numeroLimpio}?text=${encodeURIComponent(
-      mensaje
+      mensaje,
     )}`;
 
     // Abrir WhatsApp en nueva ventana
@@ -844,7 +853,7 @@ ${companyData?.companyName || ""}`;
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -861,6 +870,7 @@ ${companyData?.companyName || ""}`;
         nombre: "",
         celular: "",
         identificacion: "",
+        barrio: "",
         direccion: "",
         ciudad: "",
         caja: "",
@@ -873,7 +883,7 @@ ${companyData?.companyName || ""}`;
 
     // Buscamos el cliente en la lista actualizada
     const selectedClient = filteredClientes.find(
-      (client) => client.id === clienteId
+      (client) => client.id === clienteId,
     );
 
     if (selectedClient) {
@@ -883,11 +893,11 @@ ${companyData?.companyName || ""}`;
         cliente: selectedOption,
         nombre: selectedClient.name || "",
         celular: selectedClient.phone || "",
-        // Aquí está la clave: usamos el dato real del cliente
         identificacion: selectedClient.identification
           ? selectedClient.identification.toString()
           : "",
         direccion: selectedClient.address || "",
+        barrio: selectedClient.neighborhood || "",
         ciudad: selectedClient.cityName || "",
         caja: "",
         factura: "",
@@ -898,7 +908,7 @@ ${companyData?.companyName || ""}`;
   };
   const valorBruto = productos.reduce(
     (sum, p) => sum + p.price * p.quantity,
-    0
+    0,
   );
   const descuentoTotal = productos.reduce((sum, p) => sum + p.totalDiscount, 0);
 
@@ -971,10 +981,11 @@ ${companyData?.companyName || ""}`;
                     <Form.Control
                       type="text"
                       value={formData.nombre}
-                      readOnly
+                      onChange={(e) =>
+                        setFormData({ ...formData, nombre: e.target.value })
+                      }
                     />
                   </Form.Group>
-
                   <Row>
                     <Col md={6}>
                       <Form.Group className="mb-3">
@@ -1023,7 +1034,7 @@ ${companyData?.companyName || ""}`;
                           selectedValue={clienteSeleccionado?.value || null}
                           onChange={(newValue) => {
                             const selectedClient = filteredClientes.find(
-                              (client) => client.id === newValue
+                              (client) => client.id === newValue,
                             );
                             if (selectedClient) {
                               setClienteSeleccionado({
@@ -1061,18 +1072,44 @@ ${companyData?.companyName || ""}`;
                     </div>
                   </Form.Group>
 
-                  <Form.Group className="mb-3">
-                    <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Dirección
-                    </Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={formData.direccion || ""}
-                      onChange={(e) =>
-                        setFormData({ ...formData, direccion: e.target.value })
-                      }
-                    />
-                  </Form.Group>
+                  <Row>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label
+                          style={{ fontSize: "13px", fontWeight: "600" }}
+                        >
+                          Dirección
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={formData.direccion || ""}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              direccion: e.target.value,
+                            })
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label
+                          style={{ fontSize: "13px", fontWeight: "600" }}
+                        >
+                          Barrio
+                        </Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={formData.ciudad || ""}
+                          onChange={(e) =>
+                            setFormData({ ...formData, ciudad: e.target.value })
+                          }
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
             </Card.Body>
@@ -1299,7 +1336,7 @@ ${companyData?.companyName || ""}`;
                           onChange={(e) => {
                             const valor = e.target.value.replace(/\./g, "");
                             setCostoTransporte(
-                              valor === "" ? 0 : Number(valor)
+                              valor === "" ? 0 : Number(valor),
                             );
                           }}
                           style={{
@@ -1595,7 +1632,7 @@ ${companyData?.companyName || ""}`;
                   selectedValue={nuevoProducto.id || 0}
                   onChange={(newValue) => {
                     const selectedProduct = productosDisponibles.find(
-                      (producto) => producto.id === newValue
+                      (producto) => producto.id === newValue,
                     );
                     setNuevoProducto({
                       ...nuevoProducto,

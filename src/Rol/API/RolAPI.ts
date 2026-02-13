@@ -1,8 +1,9 @@
-import { RolTypes } from "../Types/RolTypes";
+import { RolTypes,Permission } from "../Types/RolTypes";
 import { BASE_URL_APIS_USER } from "../../constants";
 
 //const URL = 'http://localhost:8081/api/v1/back-user-service/rol';
 const URL: string = `${BASE_URL_APIS_USER}/rol`;
+const URL_Permission: string = `${BASE_URL_APIS_USER}/permission`;
 
 export const GetRol = async (
   page: number,
@@ -61,6 +62,28 @@ export async function CreateRol(branchDto: RolTypes): Promise<void> {
         throw error;
     }
 }
+
+
+export const GetAllPermissions = async (): Promise<Permission[]> => {
+  try {
+    const response = await fetch(`${URL_Permission}/get-all-no-page`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Error al obtener permisos:", error);
+    throw error;
+  }
+};
 
 export const GetSearchRol = async (
   page: number,

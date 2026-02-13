@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { LoadingProvider } from "./GeneralComponents/GeneralCrud/LoadingContext.tsx";
 import {
   createBrowserRouter,
   Navigate,
@@ -86,7 +87,7 @@ const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: "/company",
+        path: "/config",
         element: <CompanyPresentation />,
       },
 
@@ -322,6 +323,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <LoadingProvider>
+      <RouterProvider router={router} />
+    </LoadingProvider>
   </React.StrictMode>
 );

@@ -9,9 +9,11 @@ import {
 import "./Dashboard.css";
 import { getDashboardMetrics } from "../API/DashboardAPI";
 import { DashboardResponseDTO } from "../Types/DashboardTypes";
+import { useLoading } from "../../GeneralComponents/GeneralCrud/LoadingContext";
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { setIsLoading } = useLoading();
   const [dashboardData, setDashboardData] = useState<DashboardResponseDTO | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,11 +30,12 @@ const Dashboard: React.FC = () => {
         setError('No se pudieron cargar las métricas del dashboard');
       } finally {
         setLoading(false);
+        setIsLoading(false);
       }
     };
 
     fetchDashboardData();
-  }, []);
+  }, [setIsLoading]);
 
   const metrics = useMemo(() => {
     if (!dashboardData) return [];
