@@ -64,7 +64,7 @@ export async function CreateNumeration(branchDto: NumerationTypes): Promise<void
     
     throw error;
   }
-}
+};
 
 export const GetSearchNumeration = async (
   page: number,
