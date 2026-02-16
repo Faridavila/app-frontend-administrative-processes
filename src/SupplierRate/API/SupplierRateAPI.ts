@@ -39,10 +39,9 @@ export const GetSupplierRate = async (
     return data.content; 
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };
-
 
 export async function CreateSupplierRate(branchDto: SupplierRateTypes): Promise<void> {
     try {
@@ -58,9 +57,13 @@ export async function CreateSupplierRate(branchDto: SupplierRateTypes): Promise<
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
-        throw error;
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      throw new Error("No se pudo conectar con el servidor. Verifica tu conexión.");
     }
-}
+    
+    throw error;
+  }
+};
 
 export const GetSearchSupplierRate = async (
   page: number,
@@ -99,10 +102,9 @@ export const GetSearchSupplierRate = async (
     return data.content;
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };
-
 
 
 export async function UpdateSupplierRate(id: number, branchDto: SupplierRateTypes): Promise<void> {
@@ -119,10 +121,13 @@ export async function UpdateSupplierRate(id: number, branchDto: SupplierRateType
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
-        throw error;
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      throw new Error("No se pudo conectar con el servidor. Verifica tu conexión.");
     }
-}
-
+    
+    throw error;
+  }
+};
 export async function GeneralSupplierRate( branchDto: GeneralRate): Promise<void> {
     try {
         const response = await fetch(`${URL}/general-rates`, {
@@ -137,10 +142,13 @@ export async function GeneralSupplierRate( branchDto: GeneralRate): Promise<void
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
-        throw error;
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      throw new Error("No se pudo conectar con el servidor. Verifica tu conexión.");
     }
-}
-
+    
+    throw error;
+  }
+};
 
 
 export async function DeleteSupplierRate(id: number): Promise<void> {

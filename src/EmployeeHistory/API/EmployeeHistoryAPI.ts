@@ -39,9 +39,10 @@ export const GetEmployeeHistory = async (
     return data.content; 
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };
+
 
 export const GetSearchEmployeeHistory = async (
   page: number,
@@ -80,9 +81,10 @@ export const GetSearchEmployeeHistory = async (
     return data.content;
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };
+
 
 
 export async function GetAllEmployeePaymentNoPage(): Promise<EmployeeHistoryTypes[] | null> {

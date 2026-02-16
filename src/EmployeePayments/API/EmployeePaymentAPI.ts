@@ -3,13 +3,14 @@ import { BASE_URL_APIS_CORE } from "../../constants";
 
 //const URL = 'http://localhost:8080/api/v1/back-app-catalog-core-service/transaction-employee';
 const URL: string = `${BASE_URL_APIS_CORE}/transaction-employee`;
-
 export const GetEmployeePayment = async (
   page: number,
   size: number,
   filters: Partial<EmployeePaymentTypes>,
   sortOrder: string = '',  
-  sortBy?: keyof EmployeePaymentTypes
+  sortBy?: keyof EmployeePaymentTypes,
+  startDate?: string,  
+  endDate?: string     
 ): Promise<EmployeePaymentTypes[]> => {
   const queryParams = new URLSearchParams();
 
@@ -21,6 +22,13 @@ export const GetEmployeePayment = async (
 
   if (sortBy) {
     queryParams.append('sortBy', String(sortBy)); 
+  }
+
+  if (startDate) {
+    queryParams.append('startDate', startDate);
+  }
+  if (endDate) {
+    queryParams.append('endDate', endDate);
   }
 
   Object.keys(filters).forEach(key => {
@@ -39,7 +47,7 @@ export const GetEmployeePayment = async (
     return data.content; 
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };
 
@@ -67,43 +75,49 @@ export const GetSearchEmployeePayment = async (
   page: number,
   size: number,
   filters: Partial<EmployeePaymentTypes>,
-  sortOrder: string = 'ASC',  
-  sortBy?: keyof EmployeePaymentTypes 
+  sortOrder: string = '',  
+  sortBy?: keyof EmployeePaymentTypes,
+  startDate?: string,
+  endDate?: string
 ): Promise<EmployeePaymentTypes[]> => {
   const queryParams = new URLSearchParams();
 
   queryParams.append('page', String(page));
   queryParams.append('size', String(size));
 
-
   const validSortOrder = sortOrder === 'ASC' || sortOrder === 'DESC' ? sortOrder : 'ASC';
   queryParams.append('orders', validSortOrder);
 
   if (sortBy) {
-    queryParams.append('sortBy', String(sortBy));
+    queryParams.append('sortBy', String(sortBy)); 
   }
 
-  
+  if (startDate) {
+    queryParams.append('startDate', startDate);
+  }
+  if (endDate) {
+    queryParams.append('endDate', endDate);
+  }
+
   Object.keys(filters).forEach(key => {
     const value = filters[key as keyof EmployeePaymentTypes];
-    if (value !== undefined && value !== null && value !== '') {
+    if (value) {
       queryParams.append(key, String(value));
     }
   });
 
   try {
-    const response = await fetch(`${URL}/search?${queryParams.toString()}`);
+   const response = await fetch(`${URL}/search?${queryParams.toString()}`);
     if (!response.ok) {
       throw new Error('Error en la respuesta del servidor');
     }
     const data = await response.json();
-    return data.content;
+    return data.content; 
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+    throw error;
   }
 };
-
 
 export async function GetAllEmployeePaymentNoPage(): Promise<EmployeePaymentTypes[] | null> {
   try {

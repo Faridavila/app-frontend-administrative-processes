@@ -7,13 +7,15 @@ import { EmployeePaymentSortFieldMap } from "../Types/MapeoEmployeePaymentTypes"
 import FavoritoButton from "../../FavoritoButton/components/FavoritoButton";
 import EmployeeSelect from "./SelectEmployeePayment";
 import { EmployeeHistoryTypes } from "../../EmployeeHistory/Types/EmployeeHistoryTypes";
-import {GetEmployeePayment, CreateEmployeePayment,GetSearchEmployeePayment,} from "../API/EmployeePaymentAPI";
+import {GetEmployeePayment, CreateEmployeePayment, GetSearchEmployeePayment} from "../API/EmployeePaymentAPI";
 
 const EmployeePayment = () => {
   const [currentUserId, setCurrentUserId] = useState<number>(0);
   const [currentItem, setCurrentItem] = useState<EmployeePaymentTypes | null>(null);
   const [generalActionKey, setGeneralActionKey] = useState<string | null>(null);
   const generalActionKeyRef = useRef<string | null>(null);
+  const [fromDate, setFromDate] = useState<string>(""); 
+  const [toDate, setToDate] = useState<string>("");
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
@@ -26,16 +28,24 @@ const EmployeePayment = () => {
     generalActionKeyRef.current = generalActionKey;
   }, [generalActionKey]);
 
-  const itemTemplate = (): EmployeePaymentTypes => ({
+const itemTemplate = (): EmployeePaymentTypes => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const currentDate = `${year}-${month}-${day}`;
+
+  return {
     id: 0,
     employeeId: 0,
     employeeName: "",
-    date: new Date().toISOString().split("T")[0],
+    date: currentDate,  
     paymentAmount: 0,
     typeTransaction: "",
     observation: "",
     status: "",
-  });
+  };
+};
 
   const getStatusColor = (typeTransaction: string) => {
     switch (typeTransaction) {
@@ -55,6 +65,54 @@ const EmployeePayment = () => {
     return value.toLocaleString('es-ES');
   };
 
+  const formatDateForBackend = (date: string): string => {
+    if (!date) return "";
+    const [year, month, day] = date.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
+  const fetchWithDates = async (
+    page: number,
+    size: number,
+    filters: Partial<EmployeePaymentTypes>,
+    sortOrder?: string,
+    sortBy?: keyof EmployeePaymentTypes
+  ) => {
+    const formattedStartDate = fromDate ? formatDateForBackend(fromDate) : undefined;
+    const formattedEndDate = toDate ? formatDateForBackend(toDate) : undefined;
+
+    return await GetEmployeePayment(
+      page,
+      size,
+      filters,
+      sortOrder || "ASC",
+      sortBy,
+      formattedStartDate,
+      formattedEndDate
+    );
+  };
+
+  const searchWithDates = async (
+    page: number,
+    size: number,
+    filters: Partial<EmployeePaymentTypes>,
+    sortOrder?: string,
+    sortBy?: keyof EmployeePaymentTypes
+  ) => {
+    const formattedStartDate = fromDate ? formatDateForBackend(fromDate) : undefined;
+    const formattedEndDate = toDate ? formatDateForBackend(toDate) : undefined;
+
+    return await GetSearchEmployeePayment(
+      page,
+      size,
+      filters,
+      sortOrder || "ASC",
+      sortBy,
+      formattedStartDate,
+      formattedEndDate
+    );
+  };
+
   const columns: {
     key: keyof EmployeePaymentTypes;
     label: string;
@@ -63,7 +121,7 @@ const EmployeePayment = () => {
     hiddenInCreate?: boolean;
     hiddenInEdit?: boolean;
     hidden?: boolean;
-     type?: "text" | "number" | "image" | "password" | "date";
+    type?: "text" | "number" | "image" | "password" | "date";
     render?: (item: EmployeePaymentTypes) => React.ReactNode;
   }[] = [
     { key: "id", label: "ID", hiddenInCreate: true, hiddenInEdit: true },
@@ -397,21 +455,25 @@ const EmployeePayment = () => {
             <input
               type="date"
               className="form-control date-input-responsive"
-
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
               aria-label="Fecha desde"
             />
             <input
               type="date"
               className="form-control date-input-responsive"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
               aria-label="Fecha hasta"
             />
           </div>
         </div>
+        
         <div className="card">
           <div className="card-datatable table-responsive">
             <CRUDForm<EmployeePaymentTypes>
-              fetchItems={GetEmployeePayment}
-              searchItem={GetSearchEmployeePayment}
+              fetchItems={fetchWithDates}
+              searchItem={searchWithDates}
               createItem={CreateEmployeePayment}
               updateItem={async () => {}}
               deleteItem={async () => {}}
@@ -451,6 +513,7 @@ const EmployeePayment = () => {
                 order: 6,
                 ariaLabel: "Registrar movimiento",
               }}
+              key={`${fromDate}-${toDate}`}
             />
           </div>
         </div>

@@ -41,7 +41,7 @@ export const GetProduct = async (
     return data.content || [];
   } catch (error) {
     console.error('❌ Error al obtener productos:', error);
-    return [];
+    throw error;
   }
 };
 
@@ -83,7 +83,7 @@ export const GetSearchProduct = async (
     return data.content || [];
   } catch (error) {
     console.error('❌ Error al buscar productos:', error);
-    return [];
+    throw error;
   }
 };
 

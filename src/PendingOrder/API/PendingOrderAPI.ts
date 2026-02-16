@@ -8,36 +8,38 @@ export const GetPendingOrder = async (
   page: number,
   size: number,
   filters: Partial<PendingOrderTypes>,
-  sortOrder?: string,
+  sortOrder: string = '',  
   sortBy?: keyof PendingOrderTypes
 ): Promise<PendingOrderTypes[]> => {
-  try {
-    const params = new URLSearchParams({
-      page: page.toString(),
-      size: size.toString(),
-      orders: sortOrder || "ASC",
-      sortBy: sortBy ? String(sortBy) : "id",
-    });
+  const queryParams = new URLSearchParams();
 
-    const response = await fetch(
-      `${URL}?${params.toString()}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  queryParams.append('page', String(page));
+  queryParams.append('size', String(size));
 
-    if (!response.ok) {
-      throw new Error(`Error al obtener pedidos pendientes: ${response.statusText}`);
+  const validSortOrder = sortOrder === 'ASC' || sortOrder === 'DESC' ? sortOrder : 'ASC';
+  queryParams.append('orders', validSortOrder);
+
+  if (sortBy) {
+    queryParams.append('sortBy', String(sortBy)); 
+  }
+
+  Object.keys(filters).forEach(key => {
+    const value = filters[key as keyof PendingOrderTypes];
+    if (value) {
+      queryParams.append(key, String(value));
     }
+  });
 
+  try {
+    const response = await fetch(`${URL}?${queryParams.toString()}`);
+    if (!response.ok) {
+      throw new Error('Error en la respuesta del servidor');
+    }
     const data = await response.json();
-    return data.content || data || [];
+    return data.content; 
   } catch (error) {
-    console.error("Error en GetPendingOrder:", error);
-    throw error;
+    console.error('Error al obtener los elementos:', error);
+   throw error;
   }
 };
 

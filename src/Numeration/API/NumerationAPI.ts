@@ -39,7 +39,7 @@ export const GetNumeration = async (
     return data.content; 
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };
 
@@ -58,8 +58,12 @@ export async function CreateNumeration(branchDto: NumerationTypes): Promise<void
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
-        throw error;
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      throw new Error("No se pudo conectar con el servidor. Verifica tu conexión.");
     }
+    
+    throw error;
+  }
 }
 
 export const GetSearchNumeration = async (
@@ -99,7 +103,7 @@ export const GetSearchNumeration = async (
     return data.content;
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+     throw error;
   }
 };
 
@@ -119,6 +123,7 @@ export async function UpdateNumeration(id: number, branchDto: NumerationTypes): 
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 
@@ -133,8 +138,10 @@ export async function DeleteNumeration(id: number): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
+
 
 
 export async function GetAllNumerationNoPage(): Promise<NumerationTypes[] | null> {

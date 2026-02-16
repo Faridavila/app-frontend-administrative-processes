@@ -1,13 +1,18 @@
-
 const HandLoadingSpinner = () => {
   return (
     <div style={{
+      position: 'fixed', // 🔥 CAMBIO: fixed en lugar de relativo
+      top: 0, // 🔥 NUEVO
+      left: 0, // 🔥 NUEVO
+      right: 0, // 🔥 NUEVO
+      bottom: 0, // 🔥 NUEVO
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: '100vh',
-      backgroundColor: 'transparent'
+      backgroundColor: 'rgba(255, 255, 255, 0.98)', // 🔥 CAMBIO: fondo blanco casi opaco
+      zIndex: 9999 // 🔥 NUEVO: asegurar que esté encima de todo
     }}>
       <div style={{
         position: 'relative',

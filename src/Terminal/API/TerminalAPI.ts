@@ -39,10 +39,9 @@ export const GetTerminal = async (
     return data.content; 
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };
-
 
 export async function CreateTerminal(branchDto: TerminalTypes): Promise<void> {
     try {
@@ -99,10 +98,9 @@ export const GetSearchTerminal = async (
     return data.content;
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };
-
 
 
 export async function UpdateTerminal(id: number, branchDto: TerminalTypes): Promise<void> {

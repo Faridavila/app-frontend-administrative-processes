@@ -6,14 +6,15 @@ import EconomicActivitySelect from "./EconomicActivitySelect";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 import HandLoadingSpinner from "../../Spinner/SpinnerAnimation";
-import { useLoading } from "../../GeneralComponents/GeneralCrud/LoadingContext"; // 🔥 IMPORTAR
+import { useLoading } from "../../GeneralComponents/GeneralCrud/LoadingContext";
 
 const MySwal = withReactContent(Swal);
 
 const CompanyPresentation: React.FC = () => {
-  const { setIsLoading: setGlobalLoading } = useLoading(); // 🔥 USAR HOOK
+  const { setIsLoading: setGlobalLoading } = useLoading();
   const [showModal, setShowModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); 
+  const [showContent, setShowContent] = useState<boolean>(false); 
   const [company, setCompany] = useState<CompanyType>({
     id: 0,
     companyName: "",
@@ -28,38 +29,47 @@ const CompanyPresentation: React.FC = () => {
     status: "ACTIVE",
   });
 
-  const [originalCompany, setOriginalCompany] = useState<CompanyType | null>(
-    null
-  );
-
+  const [originalCompany, setOriginalCompany] = useState<CompanyType | null>(null);
   const [errors, setErrors] = useState<Partial<Record<keyof CompanyType, string>>>({});
   const [isSaveDisabled, setIsSaveDisabled] = useState(true);
-
   const [imagePreview, setImagePreview] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  useEffect(() => {
-    const fetchCompanyData = async () => {
-      setIsLoading(true);
-      setImagePreview("");
+useEffect(() => {
+  const fetchCompanyData = async () => {
+    setIsLoading(true);
+    setImagePreview("");
 
-      try {
-        const data = await GetCompanyById(1);
-        if (data) {
-          setCompany(data);
-          setOriginalCompany(data);
-          setImagePreview(
-            data.image ||
-              "http://res.cloudinary.com/dfotyo6jc/image/upload/v1766077849/t9cqloco0esjldqgmuop.png"
-          );
-        }
-      } finally {
-        setIsLoading(false);
-        setGlobalLoading(false); // 🔥 DESACTIVAR LOADING GLOBAL
+    try {
+      const data = await GetCompanyById(1);
+      if (data) {
+        setCompany(data);
+        setOriginalCompany(data);
+        setImagePreview(
+          data.image ||
+            "http://res.cloudinary.com/dfotyo6jc/image/upload/v1766077849/t9cqloco0esjldqgmuop.png"
+        );
+      } else {
+        // 🔥 AGREGAR: Mostrar error si no hay datos
+        MySwal.fire("Error", "No se pudo cargar la información de la empresa", "error");
       }
-    };
-    fetchCompanyData();
-  }, [setGlobalLoading]); // 🔥 AGREGAR DEPENDENCIA
+      
+      setTimeout(() => {
+        setShowContent(true);
+      }, 300);
+    } catch (error) { // 🔥 AGREGAR: Capturar errores
+      console.error("Error al cargar la empresa:", error);
+      MySwal.fire("Error", "Error al cargar los datos de la empresa", "error");
+      setTimeout(() => {
+        setShowContent(true); // Mostrar contenido aunque falle
+      }, 300);
+    } finally {
+      setIsLoading(false);
+      setGlobalLoading(false);
+    }
+  };
+  fetchCompanyData();
+}, [setGlobalLoading]);
 
   useEffect(() => {
     if (company && company.id !== 0) {
@@ -287,10 +297,29 @@ const CompanyPresentation: React.FC = () => {
     }
   };
 
+  // 🔥 LOADING FULL-SCREEN
+  if (isLoading && !showContent) {
+    return (
+      <div
+        className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+        style={{ zIndex: 9999, backgroundColor: "rgba(255, 255, 255, 0.95)" }}
+      >
+        <HandLoadingSpinner />
+      </div>
+    );
+  }
+
   return (
     <div className="app-content content">
-      <div className="content-wrapper container-fluid  p-0">
-        <div className="content-header row">
+      <div className="content-wrapper container-fluid p-0">
+        {/* 🔥 Header con animación */}
+        <div 
+          className={`content-header row ${showContent ? 'animate__animated animate__fadeInDown' : ''}`}
+          style={{
+            opacity: showContent ? 1 : 0,
+            animationDelay: '0ms'
+          }}
+        >
           <div className="content-header-left col-md-9 col-12 mb-2">
             <div className="row breadcrumbs-top">
               <div className="col-12">
@@ -314,7 +343,14 @@ const CompanyPresentation: React.FC = () => {
         </div>
 
         <div className="content-body">
-          <Card className="shadow-lg animate__animated animate__fadeInUp mb-4">
+          {/* 🔥 Card con animación */}
+          <Card 
+            className={`shadow-lg mb-4 ${showContent ? 'animate__animated animate__fadeInUp' : ''}`}
+            style={{
+              opacity: showContent ? 1 : 0,
+              animationDelay: '100ms'
+            }}
+          >
             <Card.Body>
               <Row>
                 <Col
@@ -322,26 +358,21 @@ const CompanyPresentation: React.FC = () => {
                   className="d-flex align-items-center justify-content-center"
                   style={{ minHeight: "400px" }}
                 >
-                  {isLoading ? (
-                    <div className="text-center">
-                      <HandLoadingSpinner />
-                      <p className="mt-3 text-muted">Cargando logo...</p>
-                    </div>
-                  ) : (
-                    <img
-                      src={
-                        imagePreview ||
-                        "http://res.cloudinary.com/dfotyo6jc/image/upload/v1766077849/t9cqloco0esjldqgmuop.png"
-                      }
-                      alt="Company Logo"
-                      className="img-fluid"
-                      style={{
-                        maxHeight: "330px",
-                        maxWidth: "100%",
-                        objectFit: "contain",
-                      }}
-                    />
-                  )}
+                  <img
+                    src={
+                      imagePreview ||
+                      "http://res.cloudinary.com/dfotyo6jc/image/upload/v1766077849/t9cqloco0esjldqgmuop.png"
+                    }
+                    alt="Company Logo"
+                    className={showContent ? 'animate__animated animate__zoomIn' : ''}
+                    style={{
+                      maxHeight: "330px",
+                      maxWidth: "100%",
+                      objectFit: "contain",
+                      animationDelay: '200ms',
+                      opacity: showContent ? 1 : 0
+                    }}
+                  />
                 </Col>
                 <Col md={8}>
                   <h4 className="card-title mb-3">Información de la Empresa</h4>
@@ -417,16 +448,16 @@ const CompanyPresentation: React.FC = () => {
                       <Form.Label>Logo de la Empresa</Form.Label>
                       <div className="d-flex flex-column align-items-center">
                         <div className="mb-2">
-                            <img
-                              src={imagePreview}
-                              alt="Company Logo"
-                              className="img-fluid"
-                              style={{
-                                maxHeight: "200px",
-                                maxWidth: "100%",
-                                objectFit: "contain",
-                              }}
-                            />
+                          <img
+                            src={imagePreview}
+                            alt="Company Logo"
+                            className="img-fluid"
+                            style={{
+                              maxHeight: "200px",
+                              maxWidth: "100%",
+                              objectFit: "contain",
+                            }}
+                          />
                         </div>
                         <div className="d-flex gap-1">
                           <Button
@@ -588,7 +619,7 @@ const CompanyPresentation: React.FC = () => {
         </div>
       </div>
 
-      {isLoading && (
+      {isLoading && showContent && (
         <div
           className="loading-overlay position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
           style={{ zIndex: 9999, backgroundColor: "rgba(255, 255, 255, 0.8)" }}

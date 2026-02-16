@@ -803,7 +803,7 @@ const FacturaComponent = () => {
       console.error("Error al inicializar componente:", error);
       MySwal.fire(
         "Error",
-        "No se pudieron cargar los datos iniciales.",
+        "No se pudieron cargar los datos.",
         "error",
       );
     } finally {

@@ -39,7 +39,7 @@ export const GetSupplierPendingProduct = async (
     return data.content; 
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };
 
@@ -81,6 +81,6 @@ export const GetSearchSupplierPendingProduct = async (
     return data.content;
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };

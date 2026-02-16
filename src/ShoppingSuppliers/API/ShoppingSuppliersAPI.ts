@@ -39,7 +39,7 @@ export const GetShoppingSuppliers = async (
     return data.content; 
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };
 
@@ -106,7 +106,7 @@ export const GetSearchShoppingSuppliers = async (
     return data.content;
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+      throw error;
   }
 };
 

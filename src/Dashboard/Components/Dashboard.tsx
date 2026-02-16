@@ -10,24 +10,42 @@ import "./Dashboard.css";
 import { getDashboardMetrics } from "../API/DashboardAPI";
 import { DashboardResponseDTO } from "../Types/DashboardTypes";
 import { useLoading } from "../../GeneralComponents/GeneralCrud/LoadingContext";
+import HandLoadingSpinner from "../../Spinner/SpinnerAnimation";
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
+
+const MySwal = withReactContent(Swal);
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { setIsLoading } = useLoading();
   const [dashboardData, setDashboardData] = useState<DashboardResponseDTO | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [showContent, setShowContent] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+      setLoading(true);
+      
       try {
-        setLoading(true);
-        setError(null);
         const data = await getDashboardMetrics();
-        setDashboardData(data);
+        
+        if (data) {
+          setDashboardData(data);
+        } else {
+          MySwal.fire("Error", "No se pudieron cargar las métricas del dashboard", "error");
+        }
+        
+        setTimeout(() => {
+          setShowContent(true);
+        }, 300);
       } catch (err) {
         console.error('Error al cargar métricas del dashboard:', err);
-        setError('No se pudieron cargar las métricas del dashboard');
+        MySwal.fire("Error", "Error al cargar los datos del dashboard", "error");
+        
+        setTimeout(() => {
+          setShowContent(true);
+        }, 300);
       } finally {
         setLoading(false);
         setIsLoading(false);
@@ -37,8 +55,34 @@ const Dashboard: React.FC = () => {
     fetchDashboardData();
   }, [setIsLoading]);
 
+  // 🔥 DATOS VACÍOS COMO FALLBACK
   const metrics = useMemo(() => {
-    if (!dashboardData) return [];
+    if (!dashboardData) {
+      return [
+        {
+          title: "Ventas Hoy",
+          value: "$0",
+          accent: "var(--home-green-100)",
+          icon: FiTrendingUp,
+        },
+        {
+          title: "Entregas Pendientes",
+          value: "0",
+          caption: "0 urgentes",
+          accent: "var(--home-amber-100)",
+          icon: FiTruck,
+          route: "/pending-order"
+        },
+        {
+          title: "Facturas Pendientes",
+          value: "0",
+          caption: "0 urgentes",
+          accent: "var(--home-amber-100)",
+          icon: FiFileText,
+          route: "/invoice"
+        },
+      ];
+    }
     
     return [
       {
@@ -67,7 +111,55 @@ const Dashboard: React.FC = () => {
   }, [dashboardData]);
 
   const modules = useMemo(() => {
-    if (!dashboardData) return [];
+    if (!dashboardData) {
+      return [
+        {
+          title: "Gestión de Inventarios",
+          subtitle: "Administra productos, stock y movimientos de inventario",
+          kpi: "0",
+          kpiCaption: "Sin datos",
+          accent: "var(--home-indigo-500)",
+          icon: FiPackage,
+          route: "/inventory"
+        },
+        {
+          title: "Administración de Nómina",
+          subtitle: "Empleados, salarios y reportes de nómina",
+          kpi: "0",
+          kpiCaption: "Sin datos",
+          accent: "var(--home-green-500)",
+          icon: FiUserCheck,
+          route: "/employee-history"
+        },
+        {
+          title: "Coordinación de Entregas",
+          subtitle: "Rutas, asignación y confirmaciones",
+          kpi: "0",
+          kpiCaption: "Sin datos",
+          accent: "var(--home-orange-500)",
+          icon: FiMapPin,
+          route: "/assign-order"
+        },
+        {
+          title: "Gestión de Proveedores",
+          subtitle: "Proveedores, compras y órdenes",
+          kpi: "0",
+          kpiCaption: "Sin datos",
+          accent: "var(--home-violet-500)",
+          icon: FiShoppingBag,
+          route: "/supplier"
+        },
+        {
+          title: "Información de Clientes",
+          subtitle: "Clientes, historial y facturación",
+          kpi: "0",
+          kpiCaption: "Sin datos",
+          accent: "var(--home-pink-500)",
+          icon: FiUsers,
+          route: "/client"
+        },
+      ];
+    }
 
     return [
       {
@@ -120,32 +212,14 @@ const Dashboard: React.FC = () => {
     ];
   }, [dashboardData]);
 
-  if (loading) {
+  // LOADING FULL-SCREEN
+  if (loading && !showContent) {
     return (
-      <div className="app-content content">
-        <div className="content-wrapper container-fluid p-0">
-          <div className="content-body">
-            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Cargando...</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="app-content content">
-        <div className="content-wrapper container-fluid p-0">
-          <div className="content-body">
-            <div className="alert alert-danger" role="alert">
-              <strong>Error:</strong> {error}
-            </div>
-          </div>
-        </div>
+      <div 
+        className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+        style={{ zIndex: 9999, backgroundColor: "rgba(255, 255, 255, 0.95)" }}
+      >
+        <HandLoadingSpinner />
       </div>
     );
   }
@@ -153,7 +227,14 @@ const Dashboard: React.FC = () => {
   return (
     <div className="app-content content">
       <div className="content-wrapper container-fluid p-0">
-        <div className="content-header row">
+        {/* Header con animación */}
+        <div 
+          className={`content-header row ${showContent ? 'animate__animated animate__fadeInDown' : ''}`}
+          style={{
+            opacity: showContent ? 1 : 0,
+            animationDelay: '0ms'
+          }}
+        >
           <div className="content-header-left col-md-9 col-12 mb-2">
             <div className="row breadcrumbs-top">
               <div className="col-12">
@@ -172,13 +253,19 @@ const Dashboard: React.FC = () => {
 
         <div className="content-body">
           <div className="home-scope">
-            {/* Métricas */}
+            {/* Métricas con animación secuencial */}
             <Row className="g-1 g-md-2 mb-1 home-eq-row">
               {metrics.map((m, i) => (
                 <Col key={m.title} xl={4} md={6} sm={12}>
                   <Card
-                    className="home-card home-metric animate__animated animate__fadeInUp h-100 clickable-card"
-                    style={{ animationDelay: `${i * 60}ms` }}
+                    className={`home-card home-metric h-100 clickable-card ${
+                      showContent ? 'animate__animated animate__fadeInUp' : ''
+                    }`}
+                    style={{ 
+                      animationDelay: showContent ? `${i * 100}ms` : '0ms',
+                      opacity: showContent ? 1 : 0,
+                      transition: 'opacity 0.3s ease-in-out'
+                    }}
                     onClick={() => m.route && navigate(m.route)}
                   >
                     <Card.Body className="d-flex flex-column">
@@ -200,13 +287,19 @@ const Dashboard: React.FC = () => {
               ))}
             </Row>
 
-            {/* Módulos */}
+            {/* Módulos con animación secuencial */}
             <Row className="g-2 g-md-2 home-eq-row">
               {modules.map((m, i) => (
                 <Col key={m.title} xl={4} md={6} sm={12}>
                   <Card
-                    className="home-card home-module animate__animated animate__fadeInUp h-100 clickable-card"
-                    style={{ animationDelay: `${i * 60}ms` }}
+                    className={`home-card home-module h-100 clickable-card ${
+                      showContent ? 'animate__animated animate__fadeInUp' : ''
+                    }`}
+                    style={{ 
+                      animationDelay: showContent ? `${(i + metrics.length) * 100}ms` : '0ms',
+                      opacity: showContent ? 1 : 0,
+                      transition: 'opacity 0.3s ease-in-out'
+                    }}
                     onClick={() => navigate(m.route)}
                   >
                     <Card.Body className="d-flex flex-column">

@@ -55,9 +55,10 @@ export const GetPaymentMethod = async (
     return data.content; 
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };
+
 
 
 export async function CreatePaymentMethod(branchDto:PaymentMethodTypes): Promise<void> {
@@ -74,7 +75,12 @@ export async function CreatePaymentMethod(branchDto:PaymentMethodTypes): Promise
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      throw new Error("No se pudo conectar con el servidor. Verifica tu conexión.");
     }
+    
+    throw error;
+  }
 }
 
 export const GetSearchPaymentMethod = async (
@@ -114,7 +120,7 @@ export const GetSearchPaymentMethod = async (
     return data.content;
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+     throw error;
   }
 };
 
@@ -134,9 +140,9 @@ export async function UpdatePaymentMethod(id: number, branchDto:PaymentMethodTyp
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
-
 
 export async function DeletePaymentMethod(id: number): Promise<void> {
     try {
@@ -148,6 +154,7 @@ export async function DeletePaymentMethod(id: number): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
+        throw error;
     }
 }
 

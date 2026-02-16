@@ -19,7 +19,7 @@ import "./CRUDGeneral.css";
 
 const MySwal = withReactContent(Swal);
 
-type Orders = "ASC" | "DESC" ;
+type Orders = "ASC" | "DESC";
 
 interface CRUDIcon {
   icon: React.ReactNode;
@@ -96,8 +96,8 @@ export interface CRUDFormProps<T> {
     sortOrder?: string,
     sortBy?: keyof T,
     extraParams?: Record<string, any>,
-    startDate?: string,  
-    endDate?: string 
+    startDate?: string,
+    endDate?: string,
   ) => Promise<T[]>;
   searchItem?: (
     page: number,
@@ -105,32 +105,32 @@ export interface CRUDFormProps<T> {
     filters: Partial<T>,
     sortOrder?: string,
     sortBy?: keyof T,
-    extraParams?: Record<string, any>
+    extraParams?: Record<string, any>,
   ) => Promise<T[]>;
   createItem: (
     item: T,
     imageFile: File | null,
-    extraParams?: Record<string, any>
+    extraParams?: Record<string, any>,
   ) => Promise<void>;
   updateItem: (
     id: number,
     item: T,
     imageFile: File | null,
-    extraParams?: Record<string, any>
+    extraParams?: Record<string, any>,
   ) => Promise<void>;
   deleteItem: (id: number) => Promise<void>;
   generalItems?:
     | ((
         item: T,
         imageFile: File | null,
-        extraParams?: Record<string, any>
+        extraParams?: Record<string, any>,
       ) => Promise<void>)
     | Record<
         string,
         (
           item: T,
           imageFile: File | null,
-          extraParams?: Record<string, any>
+          extraParams?: Record<string, any>,
         ) => Promise<void>
       >;
   itemTemplate: () => T;
@@ -141,18 +141,18 @@ export interface CRUDFormProps<T> {
     colKey: keyof T,
     value: any,
     onUpdate: (update: Partial<T>) => void,
-    currentItem: T
+    currentItem: T,
   ) => React.ReactNode;
   renderCustomAddModal?: (
     onSave: () => Promise<void>,
-    onCancel: () => void
+    onCancel: () => void,
   ) => React.ReactNode;
   renderCustomActionModal?: (
     onSave: () => Promise<void>,
     onCancel: () => void,
     generalActionKey: string,
     currentItem: T | null,
-    onFieldUpdate: (update: Partial<T>) => void
+    onFieldUpdate: (update: Partial<T>) => void,
   ) => React.ReactNode;
   modalSize?: "sm" | "lg" | "xl";
   customModalClass?: string;
@@ -160,7 +160,7 @@ export interface CRUDFormProps<T> {
   renderCustomActionValidation?: (generalActionKey: string) => boolean;
   customSave?: (
     onSuccess: () => void,
-    onError: (error: any) => void
+    onError: (error: any) => void,
   ) => Promise<void>;
   customIcons?: CRUDIcon[];
   customGeneralActionButtons?: CustomGeneralActionButton[];
@@ -252,18 +252,22 @@ const CRUDForm = <T extends { id: number }>({
   const [page, setPage] = useState(1);
   const [pageSize] = useState(6);
   const [filters, setFilters] = useState<Partial<T>>({});
+  const [localFilters, setLocalFilters] = useState<Partial<T>>({});
   const [showFilters, setShowFilters] = useState(false);
   const [allItems, setAllItems] = useState<T[]>([]);
   const [sortOrder, setSortOrder] = useState<Orders>("ASC");
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [showContent, setShowContent] = useState<boolean>(false);
   const tableRef = useRef<HTMLDivElement>(null);
+  const filterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { setIsLoading: setGlobalLoading } = useLoading();
   const headerTopRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const [maxHeaderTop, setMaxHeaderTop] = useState<number>(0);
   const [sortField, setSortField] = useState<keyof T | null>(() => {
-  const firstVisibleColumn = columns.find(col => !col.hidden);
-  return firstVisibleColumn ? firstVisibleColumn.key : null;
-});
+    const firstVisibleColumn = columns.find((col) => !col.hidden);
+    return firstVisibleColumn ? firstVisibleColumn.key : null;
+  });
 
   const handleFieldUpdate = useCallback(
     (update: Partial<T>) => {
@@ -271,10 +275,11 @@ const CRUDForm = <T extends { id: number }>({
         setCurrentItem({ ...currentItem, ...update } as unknown as T);
       }
     },
-    [currentItem]
+    [currentItem],
   );
 
   useEffect(() => {
+    setIsLoading(true); 
     fetchAndSetData();
   }, [page, filters, sortField, sortOrder, extraParams]);
 
@@ -325,7 +330,7 @@ const CRUDForm = <T extends { id: number }>({
     }
     requestAnimationFrame(() => {
       const heights = Object.values(headerTopRefs.current).map((el) =>
-        el ? el.offsetHeight : 0
+        el ? el.offsetHeight : 0,
       );
       setMaxHeaderTop(Math.max(0, ...heights));
     });
@@ -334,7 +339,7 @@ const CRUDForm = <T extends { id: number }>({
     const onResize = () => {
       if (!showFilters) return;
       const heights = Object.values(headerTopRefs.current).map((el) =>
-        el ? el.offsetHeight : 0
+        el ? el.offsetHeight : 0,
       );
       setMaxHeaderTop(Math.max(0, ...heights));
     };
@@ -342,6 +347,13 @@ const CRUDForm = <T extends { id: number }>({
     return () => window.removeEventListener("resize", onResize);
   }, [showFilters]);
 
+  useEffect(() => {
+  return () => {
+    if (filterTimeoutRef.current) {
+      clearTimeout(filterTimeoutRef.current);
+    }
+  };
+}, []);
   const fetchAndSetData = async () => {
     try {
       if (extraParams) {
@@ -366,7 +378,7 @@ const CRUDForm = <T extends { id: number }>({
             activeFilters,
             sortOrderParam,
             sortFieldParam as keyof T,
-            extraParams
+            extraParams,
           )
         : await fetchItems(
             page - 1,
@@ -374,7 +386,7 @@ const CRUDForm = <T extends { id: number }>({
             {},
             sortOrderParam,
             sortFieldParam as keyof T,
-            extraParams
+            extraParams,
           );
 
       setAllItems(fetchedItems);
@@ -384,12 +396,17 @@ const CRUDForm = <T extends { id: number }>({
       MySwal.fire("Error", "Error al obtener los datos", "error");
       setItems([]);
     } finally {
-    setGlobalLoading(false); 
-  }
+      setGlobalLoading(false);
+      setIsLoading(false);
+      setIsInitialLoading(false);
+      setTimeout(() => {
+        setShowContent(true);
+      }, 100);
+    }
   };
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    key: keyof T
+    key: keyof T,
   ) => {
     const file = e.target.files?.[0];
     if (!file || !currentItem) return;
@@ -421,7 +438,7 @@ const CRUDForm = <T extends { id: number }>({
       setErrors((prev) => ({
         ...prev,
         [key]: `Formato de imagen no válido. Formatos aceptados: ${acceptedFormats.join(
-          ", "
+          ", ",
         )}`,
       }));
       return;
@@ -467,13 +484,13 @@ const CRUDForm = <T extends { id: number }>({
   };
   const handleShowModal = (
     operation: "add" | "edit",
-    item: T | null = null
+    item: T | null = null,
   ) => {
     setOperation(operation);
     setCurrentItem(item || itemTemplate());
     setErrors({});
     setIsSaveDisabled(
-      operation !== "add" || !renderCustomAddModal ? true : false
+      operation !== "add" || !renderCustomAddModal ? true : false,
     );
     if (operation === "add") {
       onAddModalOpen?.();
@@ -533,7 +550,7 @@ const CRUDForm = <T extends { id: number }>({
     const title = pageTitle || "Datos";
     const allItems = await fetchAllData();
     const visibleColumns = columns.filter(
-      (col) => !col.hidden || col.key === "id"
+      (col) => !col.hidden || col.key === "id",
     );
     const filteredItems = allItems.map((item) => {
       const filteredItem: Record<string, any> = {};
@@ -556,7 +573,7 @@ const CRUDForm = <T extends { id: number }>({
     if (column) {
       if (column.dependentOn && currentItem) {
         const dependentColumn = columns.find(
-          (col) => col.key === column.dependentOn
+          (col) => col.key === column.dependentOn,
         );
         if (dependentColumn) {
           const dependentRawValue = currentItem[dependentColumn.key];
@@ -669,9 +686,9 @@ const CRUDForm = <T extends { id: number }>({
             MySwal.fire(
               "Error",
               message || "No se pudo guardar el elemento.",
-              "error"
+              "error",
             );
-          }
+          },
         );
         return;
       }
@@ -680,7 +697,7 @@ const CRUDForm = <T extends { id: number }>({
           | ((
               item: T,
               imageFile: File | null,
-              extraParams?: Record<string, any>
+              extraParams?: Record<string, any>,
             ) => Promise<void>)
           | undefined;
         if (typeof generalItems === "function") {
@@ -710,7 +727,7 @@ const CRUDForm = <T extends { id: number }>({
         MySwal.fire(
           "Actualizado!",
           "Elemento actualizado con éxito.",
-          "success"
+          "success",
         );
       }
       await fetchAndSetData();
@@ -721,7 +738,7 @@ const CRUDForm = <T extends { id: number }>({
       MySwal.fire(
         "Error",
         message || "No se pudo guardar el elemento.",
-        "error"
+        "error",
       );
     } finally {
       setIsLoading(false);
@@ -795,7 +812,7 @@ const CRUDForm = <T extends { id: number }>({
             MySwal.fire(
               "Eliminado!",
               "El elemento ha sido eliminado.",
-              "success"
+              "success",
             );
             fetchAndSetData();
           })
@@ -835,22 +852,37 @@ const CRUDForm = <T extends { id: number }>({
       }
     });
   };
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFilters({ ...filters, [name]: value || undefined });
-    setPage(1);
-  };
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
-const handleSortChange = (key: keyof T) => {
-  if (sortField === key) {
-    setSortOrder((prevOrder) => (prevOrder === "ASC" ? "DESC" : "ASC"));
-  } else {
-    setSortField(key);
-    setSortOrder("ASC");
+
+  
+const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target;
+  
+  // 🔥 Actualizar el estado local inmediatamente (para que el input muestre el valor)
+  setLocalFilters(prev => ({ ...prev, [name]: value || undefined }));
+  
+  // 🔥 Cancelar el timeout anterior
+  if (filterTimeoutRef.current) {
+    clearTimeout(filterTimeoutRef.current);
   }
+  
+  // 🔥 Crear nuevo timeout que actualizará el estado real después de 500ms
+  filterTimeoutRef.current = setTimeout(() => {
+    setFilters(prev => ({ ...prev, [name]: value || undefined }));
+    setPage(1);
+  }, 700);
 };
+const handlePageChange = (newPage: number) => {
+  setShowContent(false); 
+  setPage(newPage);
+};
+  const handleSortChange = (key: keyof T) => {
+    if (sortField === key) {
+      setSortOrder((prevOrder) => (prevOrder === "ASC" ? "DESC" : "ASC"));
+    } else {
+      setSortField(key);
+      setSortOrder("ASC");
+    }
+  };
   const editableColumns = columns.filter((col) => {
     if (currentItem && col.formHidden && col.formHidden(currentItem))
       return false;
@@ -1016,7 +1048,7 @@ const handleSortChange = (key: keyof T) => {
       if (generalActionKey === "subtract")
         return customSubtractActionButton?.label || "Perdida";
       const customBtn = customGeneralActionButtons?.find(
-        (b) => b.key === generalActionKey
+        (b) => b.key === generalActionKey,
       );
       return customBtn?.label || generalActionKey;
     }
@@ -1028,7 +1060,13 @@ const handleSortChange = (key: keyof T) => {
       <div className="row mt-3">
         <div className="col-md-12">
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <div className="button-container">
+            <div
+              className={`button-container ${showContent ? "animate__animated animate__fadeInDown" : ""}`}
+              style={{
+                opacity: showContent ? 1 : 0,
+                animationDelay: "0ms",
+              }}
+            >
               {sortedButtons.map((btnConfig) => (
                 <Button
                   key={btnConfig.key}
@@ -1045,7 +1083,13 @@ const handleSortChange = (key: keyof T) => {
               ))}
             </div>
           </div>
-          <div className="table-responsive">
+          <div
+            className={`table-responsive ${showContent ? "animate__animated animate__fadeInUp" : ""}`}
+            style={{
+              opacity: showContent ? 1 : 0,
+              animationDelay: "100ms",
+            }}
+          >
             <Table bordered hover className="table">
               <thead>
                 <tr>
@@ -1095,46 +1139,55 @@ const handleSortChange = (key: keyof T) => {
                             </div>
                             {showFilters && (
                               <div className="th-filter">
-                                {/* 🔥 CAMBIO PRINCIPAL: Renderizar input tipo date si col.type === "date" */}
                                 {col.type === "date" ? (
                                   <Form.Control
                                     type="date"
                                     name={String(col.key)}
                                     placeholder={`Filtrar por ${col.label}`}
+                                    value={String(localFilters[col.key] || "")} 
                                     onChange={handleFilterChange}
+                                    onClick={(e) => e.stopPropagation()} 
                                     className="filter-input"
-                                    disabled={isLoading}
+                                    
                                   />
                                 ) : (
                                   <Form.Control
                                     type="text"
                                     name={String(col.key)}
                                     placeholder={`Filtrar por ${col.label}`}
+                                   value={String(localFilters[col.key] || "")} 
                                     onChange={handleFilterChange}
+                                    onClick={(e) => e.stopPropagation()} 
                                     className="filter-input"
-                                    disabled={isLoading}
+                                    
                                   />
                                 )}
                               </div>
                             )}
                           </div>
                         </th>
-                      )
+                      ),
                   )}
                 </tr>
               </thead>
               <tbody>
-                {items.map((item) => (
+                {items.map((item, index) => (
                   <tr
                     key={item.id ?? "unknown"}
                     onClick={() => handleRowClick(item)}
-                    className={rowClassName ? rowClassName(item) : ""}
+                    className={`${rowClassName ? rowClassName(item) : ""} ${
+                      showContent ? "animate__animated animate__fadeIn" : ""
+                    }`}
                     style={{
                       cursor: "pointer",
                       backgroundColor:
                         selectedItem && selectedItem.id === item.id
                           ? "#cc322d"
                           : "transparent",
+                      opacity: showContent ? 1 : 0,
+                      animationDelay: showContent
+                        ? `${150 + index * 50}ms`
+                        : "0ms",
                     }}
                   >
                     {columns.map(
@@ -1165,13 +1218,21 @@ const handleSortChange = (key: keyof T) => {
                               "N/A"
                             )}
                           </td>
-                        )
+                        ),
                     )}
                   </tr>
                 ))}
               </tbody>
             </Table>
-            <div className="pagination-container d-flex justify-content-center">
+            <div
+              className={`pagination-container d-flex justify-content-center ${
+                showContent ? "animate__animated animate__fadeInUp" : ""
+              }`}
+              style={{
+                opacity: showContent ? 1 : 0,
+                animationDelay: "200ms",
+              }}
+            >
               <Button
                 className="btn btn-outline-primary btn-sm me-1"
                 onClick={() => handlePageChange(page - 1)}
@@ -1233,7 +1294,7 @@ const handleSortChange = (key: keyof T) => {
           </div>
         </div>
       </div>
-      {isLoading && (
+      {isInitialLoading  && (
         <div
           className="loading-overlay position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
           style={{ zIndex: 9999, backgroundColor: "rgba(255, 255, 255, 0.8)" }}
@@ -1264,7 +1325,7 @@ const handleSortChange = (key: keyof T) => {
                   handleCloseModal,
                   generalActionKey,
                   currentItem,
-                  handleFieldUpdate
+                  handleFieldUpdate,
                 )}
               </div>
             ) : (operation === "add" || operation === "edit") &&
@@ -1285,14 +1346,14 @@ const handleSortChange = (key: keyof T) => {
                                 col.key,
                                 currentItem[col.key],
                                 handleFieldUpdate,
-                                currentItem
+                                currentItem,
                               )}
                             {(!renderCustomFormField ||
                               !renderCustomFormField(
                                 col.key,
                                 currentItem[col.key],
                                 handleFieldUpdate,
-                                currentItem
+                                currentItem,
                               )) && (
                               <>
                                 {col.type === "image" ? (
@@ -1304,7 +1365,7 @@ const handleSortChange = (key: keyof T) => {
                                           src={
                                             currentItem[col.key] instanceof File
                                               ? URL.createObjectURL(
-                                                  currentItem[col.key] as File
+                                                  currentItem[col.key] as File,
                                                 )
                                               : String(currentItem[col.key])
                                           }
@@ -1326,7 +1387,7 @@ const handleSortChange = (key: keyof T) => {
                                       type="file"
                                       accept={
                                         col.imageOptions?.acceptedFormats?.join(
-                                          ","
+                                          ",",
                                         ) || "image/*"
                                       }
                                       className="form-control"
@@ -1334,7 +1395,7 @@ const handleSortChange = (key: keyof T) => {
                                       onChange={(e) =>
                                         handleFileChange(
                                           e as React.ChangeEvent<HTMLInputElement>,
-                                          col.key
+                                          col.key,
                                         )
                                       }
                                       aria-label={col.label}
@@ -1353,8 +1414,8 @@ const handleSortChange = (key: keyof T) => {
                                         col.key === "password"
                                           ? "password"
                                           : col.type === "date"
-                                          ? "date"
-                                          : "text"
+                                            ? "date"
+                                            : "text"
                                       }
                                       name={String(col.key)}
                                       placeholder={col.label}
@@ -1378,7 +1439,7 @@ const handleSortChange = (key: keyof T) => {
                                 col.key,
                                 currentItem[col.key],
                                 handleFieldUpdate,
-                                currentItem
+                                currentItem,
                               ) &&
                               errors[col.key] && (
                                 <div className="text-danger mt-1">
@@ -1397,14 +1458,14 @@ const handleSortChange = (key: keyof T) => {
                                 col.key,
                                 currentItem[col.key],
                                 handleFieldUpdate,
-                                currentItem
+                                currentItem,
                               )}
                             {(!renderCustomFormField ||
                               !renderCustomFormField(
                                 col.key,
                                 currentItem[col.key],
                                 handleFieldUpdate,
-                                currentItem
+                                currentItem,
                               )) && (
                               <>
                                 {col.type === "image" ? (
@@ -1415,7 +1476,7 @@ const handleSortChange = (key: keyof T) => {
                                           src={
                                             currentItem[col.key] instanceof File
                                               ? URL.createObjectURL(
-                                                  currentItem[col.key] as File
+                                                  currentItem[col.key] as File,
                                                 )
                                               : String(currentItem[col.key])
                                           }
@@ -1434,13 +1495,13 @@ const handleSortChange = (key: keyof T) => {
                                     <Form.Control
                                       type="file"
                                       accept={col.imageOptions?.acceptedFormats?.join(
-                                        ","
+                                        ",",
                                       )}
                                       name={String(col.key)}
                                       onChange={(e) =>
                                         handleFileChange(
                                           e as React.ChangeEvent<HTMLInputElement>,
-                                          col.key
+                                          col.key,
                                         )
                                       }
                                       aria-label={col.label}
@@ -1459,8 +1520,8 @@ const handleSortChange = (key: keyof T) => {
                                         col.key === "password"
                                           ? "password"
                                           : col.type === "date"
-                                          ? "date"
-                                          : "text"
+                                            ? "date"
+                                            : "text"
                                       }
                                       name={String(col.key)}
                                       placeholder={col.label}
@@ -1483,7 +1544,7 @@ const handleSortChange = (key: keyof T) => {
                                 col.key,
                                 currentItem[col.key],
                                 handleFieldUpdate,
-                                currentItem
+                                currentItem,
                               ) &&
                               errors[col.key] && (
                                 <div className="text-danger mt-1">

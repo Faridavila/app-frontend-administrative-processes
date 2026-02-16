@@ -84,10 +84,11 @@ export const GetAssignOrder = async (
     
     return mappedData;
   } catch (error) {
-    console.error('❌ Error al obtener los elementos:', error);
-    return [];
+    console.error('Error al obtener los elementos:', error);
+   throw error;
   }
 };
+
 
 export async function CreateAssignOrder(
   assignOrderDto: AssignOrderTypes,
@@ -160,10 +161,11 @@ export const GetSearchAssignOrder = async (
     
     return mappedData;
   } catch (error) {
-    console.error('❌ Error al buscar:', error);
-    return [];
+    console.error('Error al obtener los elementos:', error);
+   throw error;
   }
 };
+
 
 export async function UpdateAssignOrder(
   id: number,

@@ -22,11 +22,11 @@ export async function GetCompanyById(id: number): Promise<CompanyType | null> {
       return data;
     } else {
       console.error(`Error al cargar el ID de company ${id}: ${response.status} - ${await response.text()}`);
-      return null;  
+      throw new Error(`Error al cargar company: ${response.status}`); 
     }
   } catch (error) {
     console.error(`Error en el ID ${id}:`, error);
-    return null;  
+    throw error; 
   }
 }
 
@@ -35,7 +35,7 @@ export const UpdateCompany = async (companyId: 1, formData: FormData): Promise<b
   try {
     const response = await fetch(`${API_URL}/update/${companyId}`, {
       method: 'PUT',
-      body: formData, // No poner headers Content-Type → el navegador lo hace automáticamente
+      body: formData,
     });
 
     return response.ok;
@@ -81,7 +81,7 @@ try {
   return data.content; 
 } catch (error) {
   console.error('Error al obtener los elementos:', error);
-  return [];
+ throw error;
 }
 };
 
@@ -140,7 +140,7 @@ try {
   return data.content;
 } catch (error) {
   console.error('Error al obtener los elementos:', error);
-  return [];
+  throw error;
 }
 };
 

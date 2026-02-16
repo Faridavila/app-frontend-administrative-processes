@@ -39,7 +39,7 @@ export const GetPosition = async (
     return data.content; 
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+    throw error;
   }
 };
 
@@ -58,8 +58,12 @@ export async function CreatePosition(branchDto: PositionTypes): Promise<void> {
         }
     } catch (error) {
         console.error("Error al llamar a la API:", error);
-        throw error;
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      throw new Error("No se pudo conectar con el servidor. Verifica tu conexión.");
     }
+    
+    throw error;
+  }
 }
 
 export const GetSearchPosition = async (
@@ -99,7 +103,7 @@ export const GetSearchPosition = async (
     return data.content;
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+    throw error;
   }
 };
 

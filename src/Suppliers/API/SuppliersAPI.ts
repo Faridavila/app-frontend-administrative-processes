@@ -39,7 +39,7 @@ export const GetSuppliers = async (
     return data.content || data; 
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+    throw error;
   }
 };
 

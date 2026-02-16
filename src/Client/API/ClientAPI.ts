@@ -46,7 +46,7 @@ export const GetClient = async (
     return data.content; 
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+    throw error;
   }
 };
 
@@ -69,9 +69,14 @@ export async function CreateClient(branchDto: ClientTypes): Promise<ClientTypes>
         
     } catch (error) {
         console.error("Error al llamar a la API:", error);
-        throw error;
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      throw new Error("No se pudo conectar con el servidor. Verifica tu conexión.");
     }
-}
+    
+    throw error;
+  }
+};
+
 
 export const GetSearchClient = async (
   page: number,
@@ -110,7 +115,7 @@ export const GetSearchClient = async (
     return data.content;
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+    throw error;
   }
 };
 

@@ -37,11 +37,11 @@ export const GetCompleteOrderHistory = async (
       }
       const data = await response.json();
       return data.content; 
-    } catch (error) {
-      console.error('Error al obtener los elementos:', error);
-      return [];
-    }
-  };
+  } catch (error) {
+    console.error('Error al obtener los elementos:', error);
+   throw error;
+  }
+};
 
 
 

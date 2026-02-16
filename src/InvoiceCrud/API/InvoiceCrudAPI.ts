@@ -16,10 +16,10 @@ export async function GetGenerateInvoiceById(id: number): Promise<ObjectResponse
       throw new Error(`La solicitud a la API falló ${response.status}`);
     }
   } catch (error) {
-    console.error("Error al llamar a la API:", error);
-    return null;
+    console.error('Error al obtener los elementos:', error);
+   throw error;
   }
-}
+};
 
 export const GetInvoice = async (
   page: number,
@@ -56,9 +56,10 @@ export const GetInvoice = async (
     return data.content; 
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };
+
 
 export async function CreateInvoiceCrud(
   InvoiceCrudDto: InvoiceCrudTypes,
@@ -82,10 +83,10 @@ export async function CreateInvoiceCrud(
 
     const data = await response.json();
     console.log("InvoiceCrudo creado:", data);
-  } catch (error) {
-    console.error("Error al llamar a la API:", error);
-    throw error;
-  }
+    } catch (error) {
+        console.error("Error al llamar a la API:", error);
+        throw error;
+    }
 }
 
 export async function UpdateIntorySubtract( branchDto: InvoiceCrudTypes): Promise<void> {
@@ -161,7 +162,7 @@ export const GetSearchInvoiceCrud = async (
     return data.content;
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };
 
@@ -260,4 +261,57 @@ export const GetPurchasePrice = async (
 };
 
 
+export async function UpdateInvoiceStatus(
+  id: number,
+  status: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(`${URL}/set-status/${id}?status=${status}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
+    if (response.status === 204) {
+      return true;
+    } else if (response.status === 404) {
+      throw new Error("Factura no encontrada");
+    } else {
+      throw new Error(`Error al actualizar el estado: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error al cambiar el estado de la factura:", error);
+    throw error;
+  }
+}
+
+export async function UpdateInvoiceStatusWithPayment(
+  id: number,
+  status: string,
+  initialPayment: number,
+  remainingBalance: number
+): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `${URL}/set-status-with-payment/${id}?status=${status}&initialPayment=${initialPayment}&remainingBalance=${remainingBalance}`, 
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.status === 204) {
+      return true;
+    } else if (response.status === 404) {
+      throw new Error("Factura no encontrada");
+    } else {
+      throw new Error(`Error al actualizar el estado: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error al cambiar el estado de la factura:", error);
+    throw error;
+  }
+}

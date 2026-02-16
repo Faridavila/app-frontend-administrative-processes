@@ -43,7 +43,7 @@ export const GetWarehouses = async (
     return data.content; 
   } catch (error) {
     console.error('Error al obtener los elementos:', error);
-    return [];
+   throw error;
   }
 };
 
@@ -61,8 +61,13 @@ export async function CreateWarehouse(warehouseDto: WarehouseTypes): Promise<voi
         `La solicitud a la API falló con estado ${response.status}`
       );
     }
-  } catch (error) {
-    console.error("Error al llamar a la API:", error);
+    } catch (error) {
+        console.error("Error al llamar a la API:", error);
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      throw new Error("No se pudo conectar con el servidor. Verifica tu conexión.");
+    }
+    
+    throw error;
   }
 }
 
@@ -95,11 +100,10 @@ export const GetSearchWarehouses = async (
     const data = await response.json();
     return data.content;
   } catch (error) {
-    console.error("Error al obtener los elementos:", error);
-    return [];
+    console.error('Error al obtener los elementos:', error);
+   throw error;
   }
 };
-
 
 export async function UpdateWarehouse(
   id: number,
@@ -118,10 +122,12 @@ export async function UpdateWarehouse(
         `La solicitud a la API falló con estado ${response.status}`
       );
     }
-  } catch (error) {
-    console.error("Error al llamar a la API:", error);
-  }
+    } catch (error) {
+        console.error("Error al llamar a la API:", error);
+        throw error;
+    }
 }
+
 
 export async function DeleteWarehouse(id: number): Promise<void> {
   try {
@@ -133,9 +139,10 @@ export async function DeleteWarehouse(id: number): Promise<void> {
         `La solicitud a la API falló con estado ${response.status}`
       );
     }
-  } catch (error) {
-    console.error("Error al llamar a la API:", error);
-  }
+    } catch (error) {
+        console.error("Error al llamar a la API:", error);
+        throw error;
+    }
 }
 
 
