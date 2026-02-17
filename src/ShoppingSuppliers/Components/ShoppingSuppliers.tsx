@@ -332,7 +332,7 @@ const ShoppingSuppliers: React.FC<ShoppingSuppliersCRUDProps> = ({
       total: total,
       footer: {
         showGeneratedBy: true,
-        generatedByText: `Hecho en Colombia por ${companyData.companyName}`,
+        generatedByText: `Hecho en Colombia por BizManage  Cel:3172116796`,
         showPageNumber: true,
       },
       fileName: `Compra_${selectedShoppingSupplier.supplierName.replace(

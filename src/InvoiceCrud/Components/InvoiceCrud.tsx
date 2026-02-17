@@ -291,7 +291,7 @@ const InvoiceCrud = () => {
         observacion: invoiceData.observations || "",
         footer: {
           showGeneratedBy: true,
-          generatedByText: `Hecho en Colombia por ${companyData?.companyName || ""}`,
+          generatedByText: `Hecho en Colombia por BizManage - Cel:3172116796`,
           showPageNumber: false,
         },
         fileName: `Factura_${invoiceData.invoiceNumber || selectedInvoiceId}.pdf`,

@@ -221,7 +221,7 @@ const FacturaComponent = () => {
         observacion,
         footer: {
           showGeneratedBy: true,
-          generatedByText: `Hecho en Colombia por ${companyData?.companyName}`,
+          generatedByText: `Hecho en Colombia por BizManage - Cel:3172116796`,
           showPageNumber: false,
         },
         fileName: `Factura_${invoiceNumber || Date.now()}.pdf`,
@@ -554,7 +554,7 @@ const FacturaComponent = () => {
         observacion,
         footer: {
           showGeneratedBy: true,
-          generatedByText: `Hecho en Colombia por ${companyData?.companyName}`,
+          generatedByText: `Hecho en Colombia por BizManage - Cel:3172116796`,
           showPageNumber: false,
         },
         fileName: `Factura_${response?.invoiceNumber || Date.now()}.pdf`,
@@ -779,7 +779,7 @@ const FacturaComponent = () => {
         setProductosDisponibles(productosData);
       }
 
-      // Procesar clientes
+
       if (clientesData) {
         const clientesConvertidos: Client[] = clientesData.map((cliente) => ({
           ...cliente,
@@ -789,7 +789,6 @@ const FacturaComponent = () => {
         setFilteredClientes(clientesConvertidos);
       }
 
-      // Procesar métodos de pago
       if (paymentMethodsData) {
         const metodosActivos = paymentMethodsData
           .filter((method: any) => method.status === "ACTIVE")
@@ -811,10 +810,9 @@ const FacturaComponent = () => {
     }
   };
 
-  // ✅ UN SOLO useEffect PARA TODO
   useEffect(() => {
     inicializarComponente();
-  }, []); // Array vacío = solo se ejecuta UNA vez al montar
+  }, []); 
 
   // Función para enviar PDF por WhatsApp
   const enviarPorWhatsApp = () => {
@@ -827,10 +825,10 @@ const FacturaComponent = () => {
       return;
     }
 
-    // Limpiar el número de teléfono (quitar espacios, guiones, etc.)
+
     const numeroLimpio = formData.celular.replace(/\D/g, "");
 
-    // Construir el mensaje
+
     const mensaje = `Hola ${formData.nombre}, te enviamos la factura N° ${
       invoiceNumber || "Pendiente"
     }

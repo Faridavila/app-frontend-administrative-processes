@@ -279,7 +279,7 @@ const CRUDForm = <T extends { id: number }>({
   );
 
   useEffect(() => {
-    setIsLoading(true); 
+    setIsLoading(true);
     fetchAndSetData();
   }, [page, filters, sortField, sortOrder, extraParams]);
 
@@ -348,12 +348,12 @@ const CRUDForm = <T extends { id: number }>({
   }, [showFilters]);
 
   useEffect(() => {
-  return () => {
-    if (filterTimeoutRef.current) {
-      clearTimeout(filterTimeoutRef.current);
-    }
-  };
-}, []);
+    return () => {
+      if (filterTimeoutRef.current) {
+        clearTimeout(filterTimeoutRef.current);
+      }
+    };
+  }, []);
   const fetchAndSetData = async () => {
     try {
       if (extraParams) {
@@ -853,28 +853,23 @@ const CRUDForm = <T extends { id: number }>({
     });
   };
 
-  
-const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const { name, value } = e.target;
-  
-  // 🔥 Actualizar el estado local inmediatamente (para que el input muestre el valor)
-  setLocalFilters(prev => ({ ...prev, [name]: value || undefined }));
-  
-  // 🔥 Cancelar el timeout anterior
-  if (filterTimeoutRef.current) {
-    clearTimeout(filterTimeoutRef.current);
-  }
-  
-  // 🔥 Crear nuevo timeout que actualizará el estado real después de 500ms
-  filterTimeoutRef.current = setTimeout(() => {
-    setFilters(prev => ({ ...prev, [name]: value || undefined }));
-    setPage(1);
-  }, 700);
-};
-const handlePageChange = (newPage: number) => {
-  setShowContent(false); 
-  setPage(newPage);
-};
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setLocalFilters((prev) => ({ ...prev, [name]: value || undefined }));
+
+    if (filterTimeoutRef.current) {
+      clearTimeout(filterTimeoutRef.current);
+    }
+    filterTimeoutRef.current = setTimeout(() => {
+      setFilters((prev) => ({ ...prev, [name]: value || undefined }));
+      setPage(1);
+    }, 700);
+  };
+  const handlePageChange = (newPage: number) => {
+
+    setPage(newPage);
+  };
   const handleSortChange = (key: keyof T) => {
     if (sortField === key) {
       setSortOrder((prevOrder) => (prevOrder === "ASC" ? "DESC" : "ASC"));
@@ -1144,22 +1139,20 @@ const handlePageChange = (newPage: number) => {
                                     type="date"
                                     name={String(col.key)}
                                     placeholder={`Filtrar por ${col.label}`}
-                                    value={String(localFilters[col.key] || "")} 
+                                    value={String(localFilters[col.key] || "")}
                                     onChange={handleFilterChange}
-                                    onClick={(e) => e.stopPropagation()} 
+                                    onClick={(e) => e.stopPropagation()}
                                     className="filter-input"
-                                    
                                   />
                                 ) : (
                                   <Form.Control
                                     type="text"
                                     name={String(col.key)}
                                     placeholder={`Filtrar por ${col.label}`}
-                                   value={String(localFilters[col.key] || "")} 
+                                    value={String(localFilters[col.key] || "")}
                                     onChange={handleFilterChange}
-                                    onClick={(e) => e.stopPropagation()} 
+                                    onClick={(e) => e.stopPropagation()}
                                     className="filter-input"
-                                    
                                   />
                                 )}
                               </div>
@@ -1224,15 +1217,7 @@ const handlePageChange = (newPage: number) => {
                 ))}
               </tbody>
             </Table>
-            <div
-              className={`pagination-container d-flex justify-content-center ${
-                showContent ? "animate__animated animate__fadeInUp" : ""
-              }`}
-              style={{
-                opacity: showContent ? 1 : 0,
-                animationDelay: "200ms",
-              }}
-            >
+            <div className="pagination-container d-flex justify-content-center">
               <Button
                 className="btn btn-outline-primary btn-sm me-1"
                 onClick={() => handlePageChange(page - 1)}
@@ -1294,7 +1279,7 @@ const handlePageChange = (newPage: number) => {
           </div>
         </div>
       </div>
-      {isInitialLoading  && (
+      {isInitialLoading && (
         <div
           className="loading-overlay position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
           style={{ zIndex: 9999, backgroundColor: "rgba(255, 255, 255, 0.8)" }}

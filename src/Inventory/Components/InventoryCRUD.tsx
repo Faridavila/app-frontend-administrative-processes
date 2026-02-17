@@ -194,8 +194,6 @@ const InventoryCRUD = () => {
         />
       );
     }
-    // El campo "date" ahora es manejado automáticamente por CRUDForm
-    // ya que tiene type: "date" en la definición de columnas
     return null;
   };
 
