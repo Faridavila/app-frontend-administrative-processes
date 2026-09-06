@@ -234,7 +234,7 @@ const InvoiceCrud = () => {
         companyInfo: {
           logo:
             companyData?.image ||
-            "https://res.cloudinary.com/dfotyo6jc/image/upload/v1761872392/Captura_de_pantalla_2025-10-30_195850_kwda8d.png",
+            "https://res.cloudinary.com/dgtdyrtss/image/upload/v1779911682/empresas/Logo_nuevo_dv0ufw.png",
           logoWidth: 40,
           logoHeight: 40,
           name: invoiceData.statusBill === "COTIZACION" ? "COTIZACION" : "",

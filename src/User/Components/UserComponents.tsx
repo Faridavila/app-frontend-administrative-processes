@@ -127,7 +127,6 @@ const UserCRUD = () => {
       key: "companyName",
       label: "Empresa",
       required: true,
-      hidden:true,
       hiddenInCreate: true, 
       hiddenInEdit: true 
 

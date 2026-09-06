@@ -89,43 +89,60 @@ class PDFInvoiceGenerator {
   }
 
   private async convertToGrayscale(imageUrl: string): Promise<string> {
+    try {
+      // Intentar obtener la imagen como blob (más fiable que crear un <img> por CORS)
+      const resp = await fetch(imageUrl, { cache: 'force-cache', mode: 'cors' });
+      if (!resp.ok) throw new Error('Error al obtener la imagen');
+      const blob = await resp.blob();
+
+      // Usar createImageBitmap para dibujar en canvas sin problemas de tainting
+      const bitmap = await (createImageBitmap ? createImageBitmap(blob) : await this.createImageFromBlob(blob));
+
+      const canvas = document.createElement('canvas');
+      const scale = 4;
+      canvas.width = bitmap.width * scale;
+      canvas.height = bitmap.height * scale;
+
+      const ctx = canvas.getContext('2d', {
+        alpha: false,
+        willReadFrequently: true,
+      });
+      if (!ctx) throw new Error('No se pudo obtener el contexto del canvas');
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'medium';
+      ctx.scale(scale, scale);
+      ctx.drawImage(bitmap as unknown as CanvasImageSource, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        const gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        data[i] = data[i + 1] = data[i + 2] = gray;
+      }
+      ctx.putImageData(imageData, 0, 0);
+
+      return canvas.toDataURL('image/png', 0.8);
+    } catch (err) {
+      // Rechazar para que el llamador use el fallback de texto
+      throw err;
+    }
+  }
+
+  // Fallback simple para entornos donde createImageBitmap no existe
+  private async createImageFromBlob(blob: Blob): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(blob);
       const img = new Image();
-      img.crossOrigin = 'Anonymous';
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const scale = 4;
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        
-        const ctx = canvas.getContext('2d', {
-          alpha: false,
-          willReadFrequently: true
-        });
-        
-        if (!ctx) {
-          reject(new Error('No se pudo obtener el contexto del canvas'));
-          return;
-        }
-        
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'medium';
-        ctx.scale(scale, scale);
-        ctx.drawImage(img, 0, 0);
-        
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        
-        for (let i = 0; i < data.length; i += 4) {
-          const gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
-          data[i] = data[i + 1] = data[i + 2] = gray;
-        }
-        
-        ctx.putImageData(imageData, 0, 0);
-        resolve(canvas.toDataURL('image/png', 0.8));
+        URL.revokeObjectURL(url);
+        resolve(img);
       };
-      img.onerror = () => reject(new Error('Error al cargar la imagen'));
-      img.src = imageUrl;
+      img.onerror = (e) => {
+        URL.revokeObjectURL(url);
+        reject(e);
+      };
+      img.src = url;
     });
   }
 

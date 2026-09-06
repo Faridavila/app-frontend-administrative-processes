@@ -129,7 +129,13 @@ const MainMenu: React.FC<MainMenuProps> = ({
           requiredPath: "/position",
         },
         { id: 3.1, title: "Roles", route: "/rol", requiredPath: "/rol" },
-        { id: 3.2, title: "Usuarios", route: "/user", requiredPath: "/user" },
+        {
+          id: 3.2,
+          title: "Compañias",
+          route: "/company",
+          requiredPath: "/company",
+        },
+        { id: 3.3, title: "Usuarios", route: "/user", requiredPath: "/user" },
       ],
     },
     {
@@ -227,24 +233,30 @@ const MainMenu: React.FC<MainMenuProps> = ({
       subItems: [
         {
           id: 8.1,
+          title: "Ventas rapidas",
+          route: "/quick-sale",
+          requiredPath: "/quick-sale",
+        },
+        {
+          id: 8.2,
           title: "Facturas",
           route: "/invoice",
           requiredPath: "/invoice",
         },
         {
-          id: 8.2,
+          id: 8.3,
           title: "Medio de pago",
           route: "/payment-method",
           requiredPath: "/payment-method",
         },
         {
-          id: 8.3,
+          id: 8.4,
           title: "Rango de numerracion",
           route: "/numeration",
           requiredPath: "/numeration",
         },
         {
-          id: 8.4,
+          id: 8.5,
           title: "Terminal",
           route: "/terminal",
           requiredPath: "/terminal",

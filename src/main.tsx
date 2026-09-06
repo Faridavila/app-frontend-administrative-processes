@@ -68,6 +68,7 @@ import Calculator from "./Calculator/Calculator.tsx";
 import InvoiceDetail from "./InvoicePOS/Components/InvoiceDetail.tsx";
 import TerminalCRUD from "./Terminal/Components/Terminal.tsx";
 import WarehouseRelocation from "./WarehouseRelocation/Components/WarehouseRelocation.tsx";
+import VentaEnCaja from "./QuickSales/QuickSale.tsx";
 
 const router = createBrowserRouter([
   {
@@ -188,6 +189,10 @@ const router = createBrowserRouter([
         element: <InvoiceCrud />,
       },
       {
+        path: "/quick-sale",
+        element: <VentaEnCaja />,
+      },
+      {
         path: "/new-invoice",
         element: <InvoicePOS />,
       },
@@ -266,7 +271,7 @@ const router = createBrowserRouter([
       },
 
       {
-        path: "/configCompany",
+        path: "/company",
         element: <CompanyCRUD />,
       },
       {
@@ -326,5 +331,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <LoadingProvider>
       <RouterProvider router={router} />
     </LoadingProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
