@@ -505,7 +505,7 @@ const FacturaComponent = () => {
       // GENERAR PDF
       setInvoiceConfig({
         companyInfo: {
-          logo: "https://res.cloudinary.com/dfotyo6jc/image/upload/v1761872392/Captura_de_pantalla_2025-10-30_195850_kwda8d.png",
+          logo: "https://res.cloudinary.com/dgtdyrtss/image/upload/v1779911682/empresas/Logo_nuevo_dv0ufw.png",
           logoWidth: 40,
           logoHeight: 40,
           name: "cotizacion" === cotizacion ? "COTIZACION" : "",
