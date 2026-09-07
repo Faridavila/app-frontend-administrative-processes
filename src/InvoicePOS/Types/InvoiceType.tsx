@@ -22,6 +22,7 @@ export interface Client {
   address: string;
   neighborhood: string;
   cityName: string;
+  commission?: boolean;
 }   
 
 export interface NewClientData {

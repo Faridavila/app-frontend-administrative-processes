@@ -363,7 +363,7 @@ const VentaEnCaja: React.FC = () => {
         observacion: observations,
         footer: {
           showGeneratedBy: true,
-          generatedByText: "Hecho en Colombia por BizManage - Cel:3172116796",
+          generatedByText: "Hecho en Colombia por Dalyx Solutions - Cel:3172116796",
           showPageNumber: false,
         },
         fileName: `Factura_${response?.invoiceNumber || Date.now()}.pdf`,

@@ -119,6 +119,33 @@ export const GetSearchClient = async (
   }
 };
 
+export type ClientFilterField = "name" | "phone" | "address" | "neighborhood";
+
+export const GetClientsByField = async (
+  field: ClientFilterField,
+  value: string,
+  page: number = 0,
+  size: number = 20,
+): Promise<ClientTypes[]> => {
+  const searchValue = value.trim();
+  if (!searchValue) return [];
+
+  const queryParams = new URLSearchParams({
+    field,
+    value: searchValue,
+    page: String(page),
+    size: String(size),
+  });
+
+  const response = await fetch(`${URL}/filter?${queryParams.toString()}`);
+  if (!response.ok) {
+    throw new Error(`Error al filtrar clientes: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return Array.isArray(data?.content) ? data.content : [];
+};
+
 
 
 export async function UpdateClient(id: number, branchDto:ClientTypes): Promise<void> {

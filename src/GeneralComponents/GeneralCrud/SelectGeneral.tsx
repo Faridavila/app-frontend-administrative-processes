@@ -9,6 +9,7 @@ export interface SelectOption {
 
 interface GenericSelectProps {
   fetchData: () => Promise<any[] | null>; 
+  searchData?: (searchTerm: string) => Promise<any[] | null>;
   selectedValue: number;
   onChange: (newValue: number, selectedItem?: any) => void;
   labelKey: string; 
@@ -18,6 +19,7 @@ interface GenericSelectProps {
 
 const GenericSelect: React.FC<GenericSelectProps> = ({ 
   fetchData, 
+  searchData,
   selectedValue, 
   onChange, 
   labelKey, 
@@ -26,6 +28,7 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
 }) => {
   const [allOptions, setAllOptions] = useState<SelectOption[]>([]);
   const [allData, setAllData] = useState<any[]>([]); 
+  const [initialData, setInitialData] = useState<any[]>([]);
   const [filteredOptions, setFilteredOptions] = useState<SelectOption[]>([]);
   const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -35,6 +38,7 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchRequestRef = useRef(0);
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -45,6 +49,7 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
         
         if (data && Array.isArray(data) && data.length > 0) {
           setAllData(data);
+          setInitialData(data);
           
           const formattedOptions = data.map(item => ({
             value: item[valueKey],
@@ -56,6 +61,7 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
           setSelectedOption(formattedOptions.find(option => option.value === selectedValue) || null);
         } else {
           setAllData([]);
+          setInitialData([]);
           setAllOptions([]);
           setFilteredOptions([]);
           setSelectedOption(null);
@@ -88,15 +94,46 @@ const GenericSelect: React.FC<GenericSelectProps> = ({
 
   useEffect(() => {
     if (!searchTerm.trim()) {
+      setAllData(initialData);
       setFilteredOptions(allOptions);
-    } else {
+      return;
+    }
+
+    if (selectedOption && searchTerm === selectedOption.label) {
+      return;
+    }
+
+    if (!searchData) {
       const lowerSearch = searchTerm.toLowerCase();
       const filtered = allOptions.filter(option =>
         option.label.toLowerCase().includes(lowerSearch)
       );
       setFilteredOptions(filtered);
+      return;
     }
-  }, [searchTerm, allOptions]);
+
+    const requestId = ++searchRequestRef.current;
+    const timeoutId = window.setTimeout(async () => {
+      try {
+        const data = await searchData(searchTerm.trim());
+        if (requestId !== searchRequestRef.current) return;
+
+        const results = Array.isArray(data) ? data : [];
+        setAllData(results);
+        setFilteredOptions(results.map(item => ({
+          value: item[valueKey],
+          label: item[labelKey],
+        })));
+      } catch (error) {
+        if (requestId !== searchRequestRef.current) return;
+        console.error('Error searching options:', error);
+        setAllData([]);
+        setFilteredOptions([]);
+      }
+    }, 350);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchTerm, allOptions, initialData, searchData, selectedOption, labelKey, valueKey]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

@@ -18,4 +18,5 @@ export interface ClientTypes {
   taxLiabilityId: number | null;
   taxLiability: string;
   status: string;
+  commission?: boolean;
 }

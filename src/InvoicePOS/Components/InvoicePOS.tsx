@@ -59,6 +59,8 @@ const FacturaComponent = () => {
   const [productosDisponibles, setProductosDisponibles] = useState<any[]>([]);
   const [clientes, setClientes] = useState<Client[]>([]);
   const [filteredClientes, setFilteredClientes] = useState<Client[]>([]);
+  const [criterioBusquedaCliente, setCriterioBusquedaCliente] =
+    useState<string>("nombre");
   const [mostrarModalEfectivo, setMostrarModalEfectivo] = useState(false);
 
   const navigate = useNavigate();
@@ -69,6 +71,9 @@ const FacturaComponent = () => {
   const [entrega, setEntrega] = useState<string>("recoger");
   const [cotizacion, setCotizacion] = useState<string>("");
   const [costoTransporte, setCostoTransporte] = useState<number>(0);
+  const [agregarComision, setAgregarComision] = useState<boolean>(false);
+  const [clienteTieneComision, setClienteTieneComision] =
+    useState<boolean>(false);
   const [observacion, setObservacion] = useState<string>("");
   const [restante, setRestante] = useState<number>(0);
 
@@ -221,7 +226,7 @@ const FacturaComponent = () => {
         observacion,
         footer: {
           showGeneratedBy: true,
-          generatedByText: `Hecho en Colombia por BizManage - Cel:3172116796`,
+          generatedByText: `Hecho en Colombia por Dalyx Solutions - Cel:3172116796`,
           showPageNumber: false,
         },
         fileName: `Factura_${invoiceNumber || Date.now()}.pdf`,
@@ -456,6 +461,7 @@ const FacturaComponent = () => {
         paymentMethodId: formData.metodoPago,
         deliveryType: entrega.toUpperCase() as "LLEVAR" | "RECOGER",
         deliveryCost: entrega === "llevar" ? costoTransporte : 0,
+        commission: agregarComision,
         observations: observacion || "",
         totalDiscount: descuentoTotal,
         total: totalConTransporte,
@@ -554,7 +560,7 @@ const FacturaComponent = () => {
         observacion,
         footer: {
           showGeneratedBy: true,
-          generatedByText: `Hecho en Colombia por BizManage - Cel:3172116796`,
+          generatedByText: `Hecho en Colombia por Dalyx Solutions - Cel:3172116796`,
           showPageNumber: false,
         },
         fileName: `Factura_${response?.invoiceNumber || Date.now()}.pdf`,
@@ -592,6 +598,8 @@ const FacturaComponent = () => {
       setAbono(0);
       setEntrega("recoger");
       setCostoTransporte(0);
+      setAgregarComision(false);
+      setClienteTieneComision(false);
       setObservacion("");
       setTotalFactura(0);
       setCotizacion("");
@@ -859,10 +867,15 @@ ${companyData?.companyName || ""}`;
       [name]: name === "metodoPago" ? Number(value) : value,
     }));
   };
-  const handleClienteChange = (selectedOption: any) => {
+  const handleClienteChange = (
+    selectedOption: any,
+    clientFromSearch?: Client,
+  ) => {
     const clienteId = selectedOption?.value;
 
     if (!clienteId) {
+      setAgregarComision(false);
+      setClienteTieneComision(false);
       setFormData({
         cliente: null,
         nombre: "",
@@ -880,12 +893,16 @@ ${companyData?.companyName || ""}`;
     }
 
     // Buscamos el cliente en la lista actualizada
-    const selectedClient = filteredClientes.find(
-      (client) => client.id === clienteId,
-    );
+    const selectedClient =
+      clientFromSearch ||
+      filteredClientes.find((client) => client.id === clienteId) ||
+      clientes.find((client) => client.id === clienteId);
 
     if (selectedClient) {
+      const tieneComision = Boolean(selectedClient.commission);
       setCustomerId(clienteId);
+      setAgregarComision(tieneComision);
+      setClienteTieneComision(tieneComision);
 
       setFormData({
         cliente: selectedOption,
@@ -962,12 +979,80 @@ ${companyData?.companyName || ""}`;
               style={{
                 borderBottom: "2px solid #cc322d",
                 padding: "12px 20px",
+                position: "relative",
               }}
             >
-              <h6 className="mb-0" style={{ fontWeight: "600" }}>
-                <FiUser style={{ marginRight: "8px" }} /> Información del
-                Cliente
-              </h6>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "minmax(0, 1fr) minmax(280px, 460px)",
+                  alignItems: "start",
+                  columnGap: "24px",
+                  width: "100%",
+                }}
+              >
+                <h6
+                  className="mb-0"
+                  style={{ fontWeight: "600", flexShrink: 0 }}
+                >
+                  <FiUser style={{ marginRight: "8px" }} /> Información del
+                  Cliente
+                </h6>
+                {clienteTieneComision && (
+                  <div
+                    role="status"
+                    style={{
+                      position: "absolute",
+                      left: "50%",
+                      top: "50%",
+                      transform: "translate(-50%, -50%)",
+                      color: "#f4b400",
+                      fontSize: "17px",
+                      fontWeight: "700",
+                      whiteSpace: "nowrap",
+                      pointerEvents: "none",
+                    }}
+                  >
+                    Cliente de Farid
+                  </div>
+                )}
+                <Form.Group
+                  style={{
+                    width: "100%",
+                    gridColumn: 2,
+                    justifySelf: "end",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                  }}
+                >
+                  <Form.Label
+                    htmlFor="criterio-busqueda-cliente"
+                    className="mb-0"
+                    style={{
+                      fontSize: "13px",
+                      fontWeight: "600",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    Buscar por
+                  </Form.Label>
+                  <Form.Select
+                    id="criterio-busqueda-cliente"
+                    style={{ flex: 1 }}
+                    value={criterioBusquedaCliente}
+                    onChange={(event) =>
+                      setCriterioBusquedaCliente(event.target.value)
+                    }
+                    aria-label="Criterio de búsqueda de cliente"
+                  >
+                    <option value="nombre">Nombre</option>
+                    <option value="celular">Celular</option>
+                    <option value="direccion">Dirección</option>
+                    <option value="barrio">Barrio</option>
+                  </Form.Select>
+                </Form.Group>
+              </div>
             </Card.Header>
             <Card.Body style={{ padding: "20px" }}>
               <Row>
@@ -1030,25 +1115,30 @@ ${companyData?.companyName || ""}`;
                       <div style={{ flex: 1 }}>
                         <ClientSelect
                           selectedValue={clienteSeleccionado?.value || null}
-                          onChange={(newValue) => {
-                            const selectedClient = filteredClientes.find(
-                              (client) => client.id === newValue,
-                            );
+                          searchCriterion={criterioBusquedaCliente as "nombre" | "celular" | "direccion" | "barrio"}
+                          onChange={(newValue, clientFromSearch) => {
+                            if (!newValue) {
+                              setClienteSeleccionado(null);
+                              handleClienteChange(null);
+                              return;
+                            }
+
+                            const selectedClient =
+                              clientFromSearch ||
+                              filteredClientes.find(
+                                (client) => client.id === newValue,
+                              ) ||
+                              clientes.find((client) => client.id === newValue);
                             if (selectedClient) {
-                              setClienteSeleccionado({
+                              const selectedOption = {
                                 value: newValue,
                                 label: `${
                                   selectedClient.identification ||
                                   "Sin identificación"
                                 } - ${selectedClient.name}`,
-                              });
-                              handleClienteChange({
-                                value: newValue,
-                                label: `${
-                                  selectedClient.identification ||
-                                  "Sin identificación"
-                                } - ${selectedClient.name}`,
-                              });
+                              };
+                              setClienteSeleccionado(selectedOption);
+                              handleClienteChange(selectedOption, selectedClient);
                             }
                           }}
                           clientes={filteredClientes}
@@ -1310,6 +1400,18 @@ ${companyData?.companyName || ""}`;
                             setEntrega("llevar");
                           }
                         }}
+                        className="py-1"
+                      />
+                      <Form.Check
+                        type="checkbox"
+                        id="agregar-comision"
+                        label={
+                          <span className="fw-medium">Agregar comisión</span>
+                        }
+                        checked={agregarComision}
+                        onChange={(event) =>
+                          setAgregarComision(event.target.checked)
+                        }
                         className="py-1"
                       />
                     </Form.Group>

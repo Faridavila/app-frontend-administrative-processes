@@ -19,6 +19,7 @@ export interface GenerateInvoiceType {
   paymentMethodId: number;
   deliveryType: "LLEVAR" | "RECOGER";
   deliveryCost: number;
+  commission: boolean;
   observations: string;
   totalDiscount: number;
   total: number;
